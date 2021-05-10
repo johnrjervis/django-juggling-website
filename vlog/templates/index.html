@@ -38,11 +38,14 @@
       <div class="vid-container">
         <video class="video-with-splash" controls
         poster="images/splash.png" preload="metadata" muted>
-          <source src="images/five-ball-juggle-50-catches.mp4" type="video/mp4">
+          {% load static %}
+          <source src="{% static 'five_ball_juggle_50_catches.mp4' %}" type="video/mp4">
           <p>There was a problem displaying this video. Sorry!</p>
         </video>
       </div>
     </article>
+
+    <p id="id_error_message">No videos are available!</p>
 
   </main>
 
