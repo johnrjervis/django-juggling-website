@@ -33,19 +33,21 @@
     <article>
       <h2>This is my website for showing off my juggling skills!</h2>
 
-      <p>Here's the latest video:</p>
+      {% if first_video %}
+        <p>Here's the latest video:</p>
 
-      <div class="vid-container">
-        <video class="video-with-splash" controls
-        poster="images/splash.png" preload="metadata" muted>
-          {% load static %}
-          <source src="{% static 'five_ball_juggle_50_catches.mp4' %}" type="video/mp4">
-          <p>There was a problem displaying this video. Sorry!</p>
-        </video>
-      </div>
+        <div class="vid-container">
+          <video class="video-with-splash" controls
+          poster="images/splash.png" preload="metadata" muted>
+            {% load static %}
+            <source src="{% static first_video %}" type="video/mp4">
+            <p>There was a problem displaying this video. Sorry!</p>
+          </video>
+        </div>
+      {% elif error_message %}
+        <p id="id_error_message">{{ error_message }}</p>
+      {% endif %}
     </article>
-
-    <p id="id_error_message">No videos are available!</p>
 
   </main>
 
