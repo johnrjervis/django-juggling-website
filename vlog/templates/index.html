@@ -44,9 +44,10 @@
             <p>There was a problem displaying this video. Sorry!</p>
           </video>
         </div>
-      {% elif error_message %}
-        <p id="id_error_message">{{ error_message }}</p>
+      {% else %}
+        <p id="id_error_message">No videos are available!</p>
       {% endif %}
+
     </article>
 
   </main>

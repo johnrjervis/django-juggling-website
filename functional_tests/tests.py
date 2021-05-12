@@ -1,7 +1,8 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
-import unittest
+#import unittest
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -12,7 +13,7 @@ class NewVisitorTest(unittest.TestCase):
     def test_homepage_contents(self):
 
         # A netizen stumbles across a cool juggling site
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # On inspecting the site's title, netizen realises that this is none other than JJ's juggling site
         self.assertEqual("JJ's juggling site", self.browser.title)
@@ -37,5 +38,5 @@ class NewVisitorTest(unittest.TestCase):
         # On returning to the page after the update the netizen sees a new video on the site
         # ...
 
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
+#if __name__ == '__main__':
+#    unittest.main(warnings='ignore')
