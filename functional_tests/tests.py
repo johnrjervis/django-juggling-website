@@ -1,6 +1,13 @@
 from django.test import LiveServerTestCase
 from selenium import webdriver
-#import unittest
+from selenium.webdriver.common.keys import Keys
+import time
+
+def quit_if_possible(browser):
+    try:
+        browser.quit()
+    except:
+        pass
 
 class NewVisitorTest(LiveServerTestCase):
 
@@ -12,7 +19,9 @@ class NewVisitorTest(LiveServerTestCase):
 
     def test_homepage_contents(self):
 
-        # A netizen stumbles across a cool juggling site
+        # A net user stumbles across a cool juggling site
+        visitor_browser = self.browser
+        self.addCleanup(lambda: quit_if_possible(visitor_browser))
         self.browser.get(self.live_server_url)
 
         # On inspecting the site's title, netizen realises that this is none other than JJ's juggling site
@@ -33,9 +42,23 @@ class NewVisitorTest(LiveServerTestCase):
         ### Need to check video title, not just video element
 
         # JJ logs in to the admin site and uploads a new video
-        self.fail('Set up the admin site')
+        jj_browser = webdriver.Firefox()
+        self.addCleanup(lambda: quit_if_possible(jj_browser))
+        self.browser = jj_browser
+        self.browser.get(f'{self.live_server_url}/admin')
+        username_field = self.browser.find_element_by_id('id_username')
+        username_field.send_keys('jj')
+        password_field = self.browser.find_element_by_id('id_password')
+        password_field.send_keys('mypassword')
+        #time.sleep(2)
+        password_field.send_keys(Keys.ENTER)
+        time.sleep(10)
+        pagebody = self.browser.find_element_by_tag_name('body')
+        self.assertIn('jugglingvideo', pagebody.text)
+        print(pagebody.text)
+        #self.fail('Set up the admin site')
 
-        # On returning to the page after the update the netizen sees a new video on the site
+        # On returning to the page after the update the net user sees a new video on the site
         # ...
 
 #if __name__ == '__main__':
