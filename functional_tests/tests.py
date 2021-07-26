@@ -1,27 +1,33 @@
-from django.test import LiveServerTestCase
+#from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from django.contrib.auth.models import User
 import time
 
-def quit_if_possible(browser):
-    try:
-        browser.quit()
-    except:
-        pass
-
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
+        self.make_superuser()
 
     def tearDown(self):
         self.browser.quit()
+
+    def quit_if_possible(self, browser):
+        try:
+            browser.quit()
+        except:
+            pass
+
+    def make_superuser(self):
+        User.objects.create_superuser(username='admin_user', email='admin@jjs_juggling_site.com', password='secret_password')
 
     def test_homepage_contents(self):
 
         # A net user stumbles across a cool juggling site
         visitor_browser = self.browser
-        self.addCleanup(lambda: quit_if_possible(visitor_browser))
+        self.addCleanup(lambda: self.quit_if_possible(visitor_browser))
         self.browser.get(self.live_server_url)
 
         # On inspecting the site's title, netizen realises that this is none other than JJ's juggling site
@@ -43,19 +49,17 @@ class NewVisitorTest(LiveServerTestCase):
 
         # JJ logs in to the admin site and uploads a new video
         jj_browser = webdriver.Firefox()
-        self.addCleanup(lambda: quit_if_possible(jj_browser))
+        self.addCleanup(lambda: self.quit_if_possible(jj_browser))
         self.browser = jj_browser
         self.browser.get(f'{self.live_server_url}/admin')
         username_field = self.browser.find_element_by_id('id_username')
-        username_field.send_keys('jj')
+        username_field.send_keys('admin_user')
         password_field = self.browser.find_element_by_id('id_password')
-        password_field.send_keys('mypassword')
-        #time.sleep(2)
+        password_field.send_keys('secret_password')
         password_field.send_keys(Keys.ENTER)
         time.sleep(10)
         pagebody = self.browser.find_element_by_tag_name('body')
         self.assertIn('jugglingvideo', pagebody.text)
-        print(pagebody.text)
         #self.fail('Set up the admin site')
 
         # On returning to the page after the update the net user sees a new video on the site
