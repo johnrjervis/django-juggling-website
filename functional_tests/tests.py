@@ -43,10 +43,6 @@ class NewVisitorTest(StaticLiveServerTestCase):
         videos = self.browser.find_elements_by_tag_name('video')
         self.assertEqual(len(videos), 0)
 
-        ### Need to log in to admin to set video #1.
-        ### May have to use Seleniums send keys etc. (see ch.5 for this)
-        ### Need to check video title, not just video element
-
         # JJ logs in to the admin site and uploads a new video
         jj_browser = webdriver.Firefox()
         self.addCleanup(lambda: self.quit_if_possible(jj_browser))
@@ -57,13 +53,23 @@ class NewVisitorTest(StaticLiveServerTestCase):
         password_field = self.browser.find_element_by_id('id_password')
         password_field.send_keys('secret_password')
         password_field.send_keys(Keys.ENTER)
-        time.sleep(10)
-        pagebody = self.browser.find_element_by_tag_name('body')
-        self.assertIn('jugglingvideo', pagebody.text)
-        #self.fail('Set up the admin site')
+        time.sleep(4)
+        application_div = self.browser.find_element_by_class_name('model-jugglingvideo')
+        self.assertIn('Juggling videos', application_div.text)
+        add_link = application_div.find_element_by_class_name('addlink')
+        add_link.click()
+        time.sleep(4)
+        new_video_field = self.browser.find_element_by_id('id_filename')
+        new_video_field.send_keys('five_ball_juggle_50_catches.mp4')
+        time.sleep(1)
+        new_video_field.send_keys(Keys.ENTER)
+        time.sleep(4)
 
         # On returning to the page after the update the net user sees a new video on the site
-        # ...
+        self.browser = visitor_browser
+        self.browser.refresh()
+        time.sleep(4)
+        videos = self.browser.find_elements_by_tag_name('video')
+        self.assertEqual(len(videos), 1)
+        self.assertIn('five_ball_juggle_50_catches.mp4', videos[0].get_attribute('innerHTML'))
 
-#if __name__ == '__main__':
-#    unittest.main(warnings='ignore')
