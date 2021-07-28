@@ -5,11 +5,11 @@ from vlog.models import JugglingVideo
 # Create your views here.
 def home_page(request):
     videos = JugglingVideo.objects.all()
-    first_video_filename = ''
+    first_video = ''
 
     if videos:
-        first_video_filename = videos[0].filename
+        first_video = videos[0]
 
-    return render(request, 'index.html', {
-        'first_video' : first_video_filename,
+    return render(request, 'vlog/index.html', {
+        'first_video' : first_video,
     })
