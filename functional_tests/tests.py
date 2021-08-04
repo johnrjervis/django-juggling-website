@@ -3,9 +3,11 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from django.contrib.auth.models import User
+from selenium.common.exceptions import WebDriverException
 import time
 
 class NewVisitorTest(StaticLiveServerTestCase):
+    MAX_WAIT = 10
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -22,6 +24,18 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
     def make_superuser(self):
         User.objects.create_superuser(username='admin_user', email='admin@jjs_juggling_site.com', password='secret_password')
+
+    def wait_for_element(self, element_type, search_method):
+        start_time = time.time()
+        while True:
+            try:
+                element = search_method(element_type)
+            except WebDriverException as e:
+                if time.time() > start_time + self.MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+            else:
+                return element
 
     def test_homepage_contents(self):
 
@@ -53,23 +67,23 @@ class NewVisitorTest(StaticLiveServerTestCase):
         password_field = self.browser.find_element_by_id('id_password')
         password_field.send_keys('secret_password')
         password_field.send_keys(Keys.ENTER)
-        time.sleep(4)
-        application_div = self.browser.find_element_by_class_name('model-jugglingvideo')
+        #time.sleep(4)
+        application_div = self.wait_for_element('model-jugglingvideo', self.browser.find_element_by_class_name)
         self.assertIn('Juggling videos', application_div.text)
         add_link = application_div.find_element_by_class_name('addlink')
         add_link.click()
-        time.sleep(4)
-        new_video_field = self.browser.find_element_by_id('id_filename')
+        #time.sleep(4)
+        new_video_field = self.wait_for_element('id_filename', self.browser.find_element_by_id)
         new_video_field.send_keys('five_ball_juggle_50_catches.mp4')
-        time.sleep(1)
+        #time.sleep(1)
         new_video_field.send_keys(Keys.ENTER)
-        time.sleep(4)
+        #time.sleep(4)
 
         # On returning to the page after the update the net user sees a new video on the site
         self.browser = visitor_browser
         self.browser.refresh()
-        time.sleep(4)
-        videos = self.browser.find_elements_by_tag_name('video')
+        #time.sleep(4)
+        videos = self.wait_for_element('video', self.browser.find_elements_by_tag_name)
         self.assertEqual(len(videos), 1)
         self.assertIn('five_ball_juggle_50_catches.mp4', videos[0].get_attribute('innerHTML'))
 
