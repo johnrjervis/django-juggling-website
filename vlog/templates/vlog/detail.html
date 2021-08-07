@@ -31,10 +31,9 @@
   <main>
 
     <article>
-      <h2>This is my website for showing off my juggling skills!</h2>
 
       {% if first_video %}
-        <p>Here's the latest video:</p>
+      <h2 class="detail_heading">{{ first_video.filename }}</h2>
 
         <div class="vid-container">
           <video class="video-with-splash" controls
@@ -44,8 +43,6 @@
             <p>There was a problem displaying this video. Sorry!</p>
           </video>
         </div>
-
-        <p><a href="/videos/1" class="info_link">Click here for more information on this video</a></p>
 
       {% else %}
         <p id="id_error_message">No videos are available!</p>

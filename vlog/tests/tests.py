@@ -2,14 +2,11 @@ from django.test import TestCase
 from django.urls import resolve
 from vlog.models import JugglingVideo
 
-class HomePageTest(TestCase):
+class HomePageViewTest(TestCase):
 
     def test_home_page_returns_correct_html(self):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'vlog/index.html')
-
-
-class VideoModelTest(TestCase):
 
     def test_home_page_displays_error_if_no_videos_in_database(self):
         response = self.client.get('/')
@@ -38,6 +35,20 @@ class VideoModelTest(TestCase):
         #print(response.content.decode())
 
         self.assertIn(first_video.filename, response.content.decode())
+
+class VideoDetailViewTest(TestCase):
+
+    def test_detail_view_displays_video(self):
+        first_video = JugglingVideo()
+        first_video.filename = 'five_ball_juggle_50_catches.mp4'
+        first_video.save()
+
+        response = self.client.get('/videos/1/')
+
+        self.assertContains(response, first_video.filename)
+        self.assertTemplateUsed(response, 'vlog/detail.html')
+
+class VideoModelTest(TestCase):
 
     def test_saving_and_retrieving_videos(self):
         first_video = JugglingVideo()
