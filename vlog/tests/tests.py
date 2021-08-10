@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import resolve
+from django.utils import timezone
 from vlog.models import JugglingVideo
 
 class HomePageViewTest(TestCase):
@@ -32,7 +33,6 @@ class HomePageViewTest(TestCase):
         first_video.save()
 
         response = self.client.get('/')
-        #print(response.content.decode())
 
         self.assertContains(response, first_video.filename)
 
@@ -50,13 +50,32 @@ class VideoDetailViewTest(TestCase):
 
         self.assertContains(response, first_video.filename)
 
+    def test_detail_view_displays_title(self):
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.get('/videos/1/')
+
+        self.assertContains(response, first_video.title)
+
+    def test_detail_view_displays_pub_date(self):
+        pub_time = timezone.now()
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
+
+        response = self.client.get('/videos/1/')
+        time_string = pub_time.strftime(format = '%Y/%m/%d at %H:%M')
+        #print(response.content.decode())
+
+        self.assertContains(response, time_string)
+
 class VideoModelTest(TestCase):
 
     def test_saving_and_retrieving_videos(self):
-        first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
+        first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now())
 
         saved_videos = JugglingVideo.objects.all()
         first_saved_video = saved_videos[0]
 
         self.assertEqual(saved_videos.count(), 1)
         self.assertEqual(first_video.filename, first_saved_video.filename)
+        self.assertEqual(first_video.title, first_saved_video.title)
+        self.assertEqual(first_video.pub_date, first_saved_video.pub_date)

@@ -37,8 +37,7 @@
         <p>Here's the latest video:</p>
 
         <div class="vid-container">
-          <video class="video-with-splash" controls
-          poster="images/splash.png" preload="metadata" muted>
+          <video class="video-with-splash" controls preload="metadata" muted>
             {% load static %}
             <source src="{% static first_video.filename %}" type="video/mp4">
             <p>There was a problem displaying this video. Sorry!</p>

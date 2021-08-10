@@ -1,8 +1,9 @@
 #from django.test import LiveServerTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.contrib.auth.models import User
+from django.utils import timezone
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from django.contrib.auth.models import User
 from selenium.common.exceptions import WebDriverException
 import time
 
@@ -77,8 +78,12 @@ class NewVisitorTest(StaticLiveServerTestCase):
         add_link.click()
         #time.sleep(4)
         new_video_field = self.wait_for_element('id_filename', self.browser.find_element_by_id)
+        fv_pub_date = timezone.now().strftime(format = '%Y/%m/%d at %H:%M')
         first_video_filename = 'five_ball_juggle_50_catches.mp4'
         new_video_field.send_keys(first_video_filename)
+        title_field = self.browser.find_element_by_id('id_title')
+        fv_title = 'Five ball juggle 50 catches'
+        title_field.send_keys(fv_title)
         #time.sleep(1)
         new_video_field.send_keys(Keys.ENTER)
         #time.sleep(4)
@@ -93,11 +98,16 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # The user notices that there is a link for more information about the video
         further_info_link = self.wait_for_element('info_link', self.browser.find_element_by_class_name)
         self.assertIn('Click here for more information on this video', further_info_link.text)
+        #time.sleep(4)
         # The user clicks the link
         further_info_link.click()
-        # The title of the video is displayed, although it seems to be just the video's filename
+        # The title of the video is displayed
         video_title = self.wait_for_element('detail_heading', self.browser.find_element_by_class_name)
-        self.assertEqual(first_video_filename, video_title.text)
+        self.assertEqual(video_title.text, fv_title)
+        # The video's publication date is also displayed
+        displayed_date = self.browser.find_element_by_class_name('video_pub_date')
+        self.assertIn(fv_pub_date, displayed_date.text)
         # The format of the further info link is the base url + videos/ + a number with at least one digit
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
+        #time.sleep(4)
 
