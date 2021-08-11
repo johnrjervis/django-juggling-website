@@ -32,18 +32,18 @@
 
     <article>
 
-      {% if first_video %}
-        <h2 class="detail_heading">{{ first_video.title }}</h2>
+      {% if video %}
+        <h2 class="detail_heading">{{ video.title }}</h2>
 
         <div class="vid-container">
           <video class="video-with-splash" controls preload="metadata" muted>
             {% load static %}
-            <source src="{% static first_video.filename %}" type="video/mp4">
+            <source src="{% static video.filename %}" type="video/mp4">
             <p>There was a problem displaying this video. Sorry!</p>
           </video>
         </div>
 
-        <p class="video_pub_date">Published on {{ first_video.pub_date|date:'Y/m/d \a\t H:i' }}</p>
+        <p class="video_pub_date">Published on {{ video.pub_date|date:'Y/m/d \a\t H:i' }}</p>
       {% else %}
         <p id="id_error_message">No videos are available!</p>
       {% endif %}

@@ -20,5 +20,5 @@ from vlog import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home_page, name='home'),
-    path('videos/1/', views.detail, name='detail'),
+    path('videos/<int:jugglingvideo_id>/', views.detail, name='detail'),
 ]

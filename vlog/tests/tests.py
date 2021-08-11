@@ -39,21 +39,35 @@ class HomePageViewTest(TestCase):
 class VideoDetailViewTest(TestCase):
 
     def test_detail_view_uses_correct_template(self):
-        response = self.client.get('/videos/1/')
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
+
+        response = self.client.get(f'/videos/{first_video.id}/')
 
         self.assertTemplateUsed(response, 'vlog/detail.html')
 
     def test_detail_view_displays_video(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
-        response = self.client.get('/videos/1/')
+        response = self.client.get(f'/videos/{first_video.id}/')
 
         self.assertContains(response, first_video.filename)
+
+    def test_detail_views_only_display_correct_videos(self):
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
+        second_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
+
+        response1 = self.client.get(f'/videos/{first_video.id}/')
+        response2 = self.client.get(f'/videos/{second_video.id}/')
+
+        self.assertContains(response1, first_video.filename)
+        self.assertNotContains(response1, second_video.filename)
+        self.assertContains(response2, second_video.filename)
+        self.assertNotContains(response2, first_video.filename)
 
     def test_detail_view_displays_title(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.get('/videos/1/')
+        response = self.client.get(f'/videos/{first_video.id}/')
 
         self.assertContains(response, first_video.title)
 
@@ -61,7 +75,7 @@ class VideoDetailViewTest(TestCase):
         pub_time = timezone.now()
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
 
-        response = self.client.get('/videos/1/')
+        response = self.client.get(f'/videos/{first_video.id}/')
         time_string = pub_time.strftime(format = '%Y/%m/%d at %H:%M')
         #print(response.content.decode())
 

@@ -15,13 +15,9 @@ def home_page(request):
         'first_video' : first_video,
     })
 
-def detail(request):
-    videos = JugglingVideo.objects.all()
-    first_video = ''
-
-    if videos:
-        first_video = videos[0]
+def detail(request, jugglingvideo_id):
+    video = JugglingVideo.objects.get(id = jugglingvideo_id)
 
     return render(request, 'vlog/detail.html', {
-        'first_video' : first_video,
+        'video' : video,
     })
