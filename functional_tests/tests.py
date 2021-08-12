@@ -43,7 +43,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # A net user stumbles across a cool juggling site
         visitor_browser = self.browser
         self.addCleanup(lambda: self.quit_if_possible(visitor_browser))
-        self.browser.get(self.live_server_url)
+        self.browser.get(f'{self.live_server_url}/juggling/')
 
         # On inspecting the site's title, the net user realises that this is none other than JJ's juggling site
         self.assertEqual("JJ's juggling site", self.browser.title)
@@ -65,7 +65,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         jj_browser = webdriver.Firefox()
         self.addCleanup(lambda: self.quit_if_possible(jj_browser))
         self.browser = jj_browser
-        self.browser.get(f'{self.live_server_url}/admin')
+        self.browser.get(f'{self.live_server_url}/admin/')
         username_field = self.browser.find_element_by_id('id_username')
         username_field.send_keys('admin_user')
         password_field = self.browser.find_element_by_id('id_password')

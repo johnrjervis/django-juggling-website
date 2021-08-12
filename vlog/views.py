@@ -4,7 +4,7 @@ from vlog.models import JugglingVideo
 
 # Create your views here.
 
-def home_page(request):
+def index(request):
     videos = JugglingVideo.objects.all()
     first_video = ''
 

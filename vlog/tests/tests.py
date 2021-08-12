@@ -6,24 +6,24 @@ from vlog.models import JugglingVideo
 class HomePageViewTest(TestCase):
 
     def test_home_page_uses_correct_template(self):
-        response = self.client.get('/')
+        response = self.client.get('/juggling/')
 
         self.assertTemplateUsed(response, 'vlog/index.html')
 
     def test_home_page_displays_error_if_no_videos_in_database(self):
-        response = self.client.get('/')
+        response = self.client.get('/juggling/')
 
         self.assertContains(response, 'No videos are available!')
 
     def test_home_page_hides_video_element_if_no_videos_available(self):
-        response = self.client.get('/')
+        response = self.client.get('/juggling/')
 
         self.assertNotContains(response, '</video>')
 
     def test_home_page_hides_error_if_videos_are_available(self):
         first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
 
-        response = self.client.get('/')
+        response = self.client.get('/juggling/')
 
         self.assertNotContains(response, 'No videos are available!')
 
@@ -32,7 +32,7 @@ class HomePageViewTest(TestCase):
         first_video.filename = 'five_ball_juggle_50_catches.mp4'
         first_video.save()
 
-        response = self.client.get('/')
+        response = self.client.get('/juggling/')
 
         self.assertContains(response, first_video.filename)
 
@@ -41,14 +41,14 @@ class VideoDetailViewTest(TestCase):
     def test_detail_view_uses_correct_template(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
-        response = self.client.get(f'/videos/{first_video.id}/')
+        response = self.client.get(f'/juggling/videos/{first_video.id}/')
 
         self.assertTemplateUsed(response, 'vlog/detail.html')
 
     def test_detail_view_displays_video(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
-        response = self.client.get(f'/videos/{first_video.id}/')
+        response = self.client.get(f'/juggling/videos/{first_video.id}/')
 
         self.assertContains(response, first_video.filename)
 
@@ -56,8 +56,8 @@ class VideoDetailViewTest(TestCase):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
         second_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
 
-        response1 = self.client.get(f'/videos/{first_video.id}/')
-        response2 = self.client.get(f'/videos/{second_video.id}/')
+        response1 = self.client.get(f'/juggling/videos/{first_video.id}/')
+        response2 = self.client.get(f'/juggling/videos/{second_video.id}/')
 
         self.assertContains(response1, first_video.filename)
         self.assertNotContains(response1, second_video.filename)
@@ -67,7 +67,7 @@ class VideoDetailViewTest(TestCase):
     def test_detail_view_displays_title(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.get(f'/videos/{first_video.id}/')
+        response = self.client.get(f'/juggling/videos/{first_video.id}/')
 
         self.assertContains(response, first_video.title)
 
@@ -75,7 +75,7 @@ class VideoDetailViewTest(TestCase):
         pub_time = timezone.now()
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
 
-        response = self.client.get(f'/videos/{first_video.id}/')
+        response = self.client.get(f'/juggling/videos/{first_video.id}/')
         time_string = pub_time.strftime(format = '%Y/%m/%d at %H:%M')
         #print(response.content.decode())
 
