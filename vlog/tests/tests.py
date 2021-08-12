@@ -2,8 +2,9 @@ from django.test import TestCase
 from django.urls import resolve
 from django.utils import timezone
 from vlog.models import JugglingVideo
+from datetime import timedelta
 
-class HomePageViewTest(TestCase):
+class IndexViewTest(TestCase):
 
     def test_home_page_uses_correct_template(self):
         response = self.client.get('/juggling/')
@@ -28,13 +29,22 @@ class HomePageViewTest(TestCase):
         self.assertNotContains(response, 'No videos are available!')
 
     def test_home_page_shows_video_if_availabe(self):
-        first_video = JugglingVideo()
-        first_video.filename = 'five_ball_juggle_50_catches.mp4'
-        first_video.save()
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
         response = self.client.get('/juggling/')
 
         self.assertContains(response, first_video.filename)
+
+    def test_home_page_shows_most_recently_published_video(self):
+        older_date = timezone.now() - timedelta(days = 5)
+        newer_date = timezone.now()
+        older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
+        newer_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = newer_date)
+
+        response = self.client.get('/juggling/')
+
+        self.assertContains(response, newer_video.filename)
+        self.assertNotContains(response, older_video.filename)
 
 class VideoDetailViewTest(TestCase):
 

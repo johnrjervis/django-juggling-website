@@ -5,14 +5,14 @@ from vlog.models import JugglingVideo
 # Create your views here.
 
 def index(request):
-    videos = JugglingVideo.objects.all()
-    first_video = ''
+    videos = JugglingVideo.objects.all().order_by('-pub_date')
+    latest_video = ''
 
     if videos:
-        first_video = videos[0]
+        latest_video = videos[0]
 
     return render(request, 'vlog/index.html', {
-        'first_video' : first_video,
+        'latest_video' : latest_video,
     })
 
 def detail(request, jugglingvideo_id):

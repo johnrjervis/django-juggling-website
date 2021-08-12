@@ -33,18 +33,18 @@
     <article>
       <h2>This is my website for showing off my juggling skills!</h2>
 
-      {% if first_video %}
+      {% if latest_video %}
         <p>Here's the latest video:</p>
 
         <div class="vid-container">
           <video class="video-with-splash" controls preload="metadata" muted>
             {% load static %}
-            <source src="{% static first_video.filename %}" type="video/mp4">
+            <source src="{% static latest_video.filename %}" type="video/mp4">
             <p>There was a problem displaying this video. Sorry!</p>
           </video>
         </div>
 
-        <p><a href="/juggling/videos/{{ first_video.id }}" class="info_link">Click here for more information on this video</a></p>
+        <p><a href="/juggling/videos/{{ latest_video.id }}" class="info_link">Click here for more information on this video</a></p>
 
       {% else %}
         <p id="id_error_message">No videos are available!</p>
