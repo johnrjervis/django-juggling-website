@@ -91,6 +91,45 @@ class VideoDetailViewTest(TestCase):
 
         self.assertContains(response, time_string)
 
+class VideosListViewTest(TestCase):
+
+    def test_video_list_view_uses_correct_template(self):
+        response = self.client.get('/juggling/videos/')
+
+        self.assertTemplateUsed(response, 'vlog/videos.html')
+
+    def test_older_video_displayed_in_videos_archive(self):
+        """
+        The homepage displays the most recently published article
+        All other videos should be displayed on the videos page (the archive)
+        """
+        older_date = timezone.now() - timedelta(days = 5)
+        newer_date = timezone.now()
+        older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
+        newer_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = newer_date)
+
+        response = self.client.get('/juggling/videos/')
+
+        self.assertContains(response, older_video.filename)
+        self.assertNotContains(response, newer_video.filename)
+
+    def test_newer_videos_displayed_first_in_videos_archive(self):
+        """
+        Videos in the archive should be displayed newest first
+        """
+        oldest_date = timezone.now() - timedelta(days = 10)
+        older_date = timezone.now() - timedelta(days = 5)
+        newer_date = timezone.now()
+        oldest_video = JugglingVideo.objects.create(filename = 'under_the_arm.mp4', pub_date = oldest_date)
+        older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
+        newer_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = newer_date)
+
+        response = self.client.get('/juggling/videos/')
+
+        self.assertEqual(len(response.context['videos_list']), 2)
+        self.assertEqual(response.context['videos_list'][0], older_video)
+        self.assertEqual(response.context['videos_list'][1], oldest_video)
+
 class VideoModelTest(TestCase):
 
     def test_saving_and_retrieving_videos(self):

@@ -19,5 +19,6 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('videos/', views.videos, name='videos'),
     path('videos/<int:jugglingvideo_id>/', views.detail, name='detail'),
 ]

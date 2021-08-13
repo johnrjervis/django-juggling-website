@@ -36,9 +36,10 @@ class NewVisitorTest(StaticLiveServerTestCase):
                     raise e
                 time.sleep(0.5)
             else:
-                return element
+                time.sleep(1)
+                return search_method(element_type)
 
-    def test_homepage_contents(self):
+    def test_full_site(self):
 
         # A net user stumbles across a cool juggling site
         visitor_browser = self.browser
@@ -61,7 +62,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         further_info_links = self.wait_for_element('info_link', self.browser.find_elements_by_class_name)
         self.assertEqual(len(further_info_links), 0)
 
-        # JJ logs in to the admin site and uploads a new video
+        # JJ logs in to the admin site and uploads the first video
         jj_browser = webdriver.Firefox()
         self.addCleanup(lambda: self.quit_if_possible(jj_browser))
         self.browser = jj_browser
@@ -71,19 +72,19 @@ class NewVisitorTest(StaticLiveServerTestCase):
         password_field = self.browser.find_element_by_id('id_password')
         password_field.send_keys('secret_password')
         password_field.send_keys(Keys.ENTER)
-        #time.sleep(4)
-        application_div = self.wait_for_element('model-jugglingvideo', self.browser.find_element_by_class_name)
+        time.sleep(1)
+        application_div = self.wait_for_element('app-vlog', self.browser.find_element_by_class_name)
         self.assertIn('Juggling videos', application_div.text)
-        add_link = application_div.find_element_by_class_name('addlink')
+        add_link = application_div.find_element_by_link_text('Add')
         add_link.click()
-        #time.sleep(4)
+        time.sleep(1)
         new_video_field = self.wait_for_element('id_filename', self.browser.find_element_by_id)
-        fv_pub_date = timezone.now().strftime(format = '%Y/%m/%d at %H:%M')
+        first_pub_date = timezone.now().strftime(format = '%Y/%m/%d at %H:%M')
         first_video_filename = 'five_ball_juggle_50_catches.mp4'
         new_video_field.send_keys(first_video_filename)
         title_field = self.browser.find_element_by_id('id_title')
-        fv_title = 'Five ball juggle 50 catches'
-        title_field.send_keys(fv_title)
+        first_title = 'Five ball juggle 50 catches'
+        title_field.send_keys(first_title)
         #time.sleep(1)
         new_video_field.send_keys(Keys.ENTER)
         #time.sleep(4)
@@ -91,23 +92,56 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # On returning to the page after the update, the net user sees a new video on the site
         self.browser = visitor_browser
         self.browser.refresh()
-        #time.sleep(4)
+        time.sleep(1)
         videos = self.wait_for_element('video', self.browser.find_elements_by_tag_name)
         self.assertEqual(len(videos), 1)
         self.assertIn(first_video_filename, videos[0].get_attribute('innerHTML'))
         # The user notices that there is a link for more information about the video
-        further_info_link = self.wait_for_element('info_link', self.browser.find_element_by_class_name)
+        further_info_link = self.wait_for_element('Click here for more information on this video', self.browser.find_element_by_link_text)
         self.assertIn('Click here for more information on this video', further_info_link.text)
-        #time.sleep(4)
         # The user clicks the link
         further_info_link.click()
+        time.sleep(1)
         # The title of the video is displayed
         video_title = self.wait_for_element('detail_heading', self.browser.find_element_by_class_name)
-        self.assertEqual(video_title.text, fv_title)
+        self.assertEqual(video_title.text, first_title)
         # The video's publication date is also displayed
         displayed_date = self.browser.find_element_by_class_name('video_pub_date')
-        self.assertIn(fv_pub_date, displayed_date.text)
+        self.assertIn(first_pub_date, displayed_date.text)
         # The format of the further info link is the base url + videos/ + a number with at least one digit
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
+        # The user returns to the homepage
+        homepage_link = self.browser.find_element_by_link_text('Home')
+        homepage_link.click()
         #time.sleep(4)
 
+        # Later on, JJ uploads another juggling video
+        self.browser = jj_browser
+        new_add_link = self.wait_for_element('ADD JUGGLING VIDEO', self.browser.find_element_by_link_text)
+        new_add_link.click()
+        new_video_field = self.wait_for_element('id_filename', self.browser.find_element_by_id)
+        second_pub_date = timezone.now().strftime(format = '%Y/%m/%d at %H:%M')
+        self.assertGreaterEqual(second_pub_date, first_pub_date)
+        second_video_filename = 'behind_the_back_juggle.mp4'
+        new_video_field.send_keys(second_video_filename)
+        title_field = self.browser.find_element_by_id('id_title')
+        second_title = 'Behind the back juggle'
+        title_field.send_keys(second_title)
+        new_video_field.send_keys(Keys.ENTER)
+
+        # The net user returns to the juggling site hoping to watch the first video again
+        time.sleep(1)
+        self.browser = visitor_browser
+        self.browser.refresh() #get(f'{self.live_server_url}/juggling/')
+        # However, the homepage now shows the newer video
+        time.sleep(1)
+        videos = self.wait_for_element('video', self.browser.find_elements_by_tag_name)
+        self.assertEqual(len(videos), 1)
+        self.assertIn(second_video_filename, videos[0].get_attribute('innerHTML'))
+        # The user clicks the archive link to see the original video
+        archive_link = self.wait_for_element('Videos', self.browser.find_element_by_link_text)
+        archive_link.click()
+        # The original video is indeed in the archive
+        video_title = self.wait_for_element('video_heading', self.browser.find_element_by_class_name)
+        self.assertEqual(video_title.text, first_title)
+        #time.sleep(24)
