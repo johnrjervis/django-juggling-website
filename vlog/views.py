@@ -1,11 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 #from django.http import HttpResponse
 from vlog.models import JugglingVideo
+from django.utils import timezone
 
 # Create your views here.
 
 def index(request):
-    videos = JugglingVideo.objects.all().order_by('-pub_date')
+    videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
     latest_video = ''
 
     if videos:
@@ -16,7 +17,7 @@ def index(request):
     })
 
 def videos(request):
-    videos = JugglingVideo.objects.all().order_by('-pub_date')
+    videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
     videos_list = ''
 
     if len(videos) > 1:
@@ -27,7 +28,7 @@ def videos(request):
     })
 
 def detail(request, jugglingvideo_id):
-    video = JugglingVideo.objects.get(id = jugglingvideo_id)
+    video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
 
     return render(request, 'vlog/detail.html', {
         'video' : video,
