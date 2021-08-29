@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 import time
+import tkinter as tk
 
 class NewVisitorTest(StaticLiveServerTestCase):
     MAX_WAIT = 10
@@ -13,6 +14,14 @@ class NewVisitorTest(StaticLiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.make_superuser()
+        root = tk.Tk()
+        screenwidth = root.winfo_screenwidth()
+        screenheight = root.winfo_screenheight()
+        # it seems that mint's menu bar is 64 pixels high
+        self.gap = 2
+        self.browser_height = int(screenheight - 64)
+        self.browser_width = int((screenwidth / 2) - self.gap)
+        root.destroy()
 
     def tearDown(self):
         self.browser.quit()
@@ -44,6 +53,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # A net user stumbles across a cool juggling site
         visitor_browser = self.browser
         self.addCleanup(lambda: self.quit_if_possible(visitor_browser))
+        self.browser.set_window_size(self.browser_width, self.browser_height)
+        self.browser.set_window_position(0, 0)
         self.browser.get(f'{self.live_server_url}/juggling/')
 
         # On inspecting the site's title, the net user realises that this is none other than JJ's juggling site
@@ -66,6 +77,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
         jj_browser = webdriver.Firefox()
         self.addCleanup(lambda: self.quit_if_possible(jj_browser))
         self.browser = jj_browser
+        self.browser.set_window_size(self.browser_width, self.browser_height)
+        time.sleep(1)
+        self.browser.set_window_position(self.browser_width + (self.gap * 2), 0)
         self.browser.get(f'{self.live_server_url}/admin/')
         username_field = self.browser.find_element_by_id('id_username')
         username_field.send_keys('admin_user')
