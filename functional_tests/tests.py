@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 import time
 import tkinter as tk
+import datetime as dt
 
 class NewVisitorTest(StaticLiveServerTestCase):
     MAX_WAIT = 10
@@ -34,6 +35,14 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
     def make_superuser(self):
         User.objects.create_superuser(username='admin_user', email='admin@jjs_juggling_site.com', password='secret_password')
+
+    def datestring_to_datetime(self, datestring):
+        """Converts the pub date (as it appears on the page) into a datetime object"""
+        date, time = datestring.strip('Published on ').split(' at ')
+        year, month, day = date.split('/')
+        hours, minutes = time.split(':')
+        datelist = [int(elem) for elem in [year, month, day, hours, minutes]]
+        return dt.datetime(*datelist, tzinfo = dt.timezone.utc)
 
     def wait_for_element(self, element_type, search_method):
         start_time = time.time()
@@ -93,7 +102,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         add_link.click()
         time.sleep(1)
         new_video_field = self.wait_for_element('id_filename', self.browser.find_element_by_id)
-        first_pub_date = timezone.now().strftime(format = '%Y/%m/%d at %H:%M')
+        first_pub_date = timezone.now()
         first_video_filename = 'five_ball_juggle_50_catches.mp4'
         new_video_field.send_keys(first_video_filename)
         title_field = self.browser.find_element_by_id('id_title')
@@ -120,8 +129,10 @@ class NewVisitorTest(StaticLiveServerTestCase):
         video_title = self.wait_for_element('detail_heading', self.browser.find_element_by_class_name)
         self.assertEqual(video_title.text, first_title)
         # The video's publication date is also displayed
-        displayed_date = self.browser.find_element_by_class_name('video_pub_date')
-        self.assertIn(first_pub_date, displayed_date.text)
+        displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
+        displayed_pub_date = self.datestring_to_datetime(displayed_date_field.text)
+        #self.assertIn(first_pub_date, displayed_date.text) # Replaced by assertAlmostEqual statement below
+        self.assertAlmostEqual(first_pub_date, displayed_pub_date, delta = dt.timedelta(minutes = 1))
         # The format of the further info link is the base url + videos/ + a number with at least one digit
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
         # The user returns to the homepage
@@ -134,7 +145,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         new_add_link = self.wait_for_element('ADD JUGGLING VIDEO', self.browser.find_element_by_link_text)
         new_add_link.click()
         new_video_field = self.wait_for_element('id_filename', self.browser.find_element_by_id)
-        second_pub_date = timezone.now().strftime(format = '%Y/%m/%d at %H:%M')
+        second_pub_date = timezone.now()
         self.assertGreaterEqual(second_pub_date, first_pub_date)
         second_video_filename = 'behind_the_back_juggle.mp4'
         new_video_field.send_keys(second_video_filename)
