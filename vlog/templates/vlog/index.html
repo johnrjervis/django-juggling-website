@@ -20,8 +20,8 @@
 
     <nav>
       <ul>			
-        <li class="selected"><a href="/juggling/">Home</a></li> 
-        <li><a href="/juggling/videos/">Videos</a></li>
+        <li class="selected"><a href="{% url 'vlog:index' %}">Home</a></li> 
+        <li><a href="{% url 'vlog:videos' %}">Videos</a></li>
         <li><a href="/juggling/learn/">Learn</a></li>
         <li><a href="/juggling/about/">About</a></li>
       </ul>
@@ -44,7 +44,7 @@
           </video>
         </div>
 
-        <p><a href="/juggling/videos/{{ latest_video.id }}" class="info_link">Click here for more information on this video</a></p>
+        <p><a href="{% url 'vlog:detail' latest_video.id %}" class="info_link">Click here for more information on this video</a></p>
 
       {% else %}
         <p id="id_error_message">No videos are available!</p>

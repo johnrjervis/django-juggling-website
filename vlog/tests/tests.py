@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.urls import resolve
+from django.urls import resolve, reverse
 from django.utils import timezone
 from vlog.models import JugglingVideo
 from datetime import timedelta
@@ -7,31 +7,31 @@ from datetime import timedelta
 class IndexViewTest(TestCase):
 
     def test_home_page_uses_correct_template(self):
-        response = self.client.get('/juggling/')
+        response = self.client.get(reverse('vlog:index'))
 
         self.assertTemplateUsed(response, 'vlog/index.html')
 
     def test_home_page_displays_error_if_no_videos_in_database(self):
-        response = self.client.get('/juggling/')
+        response = self.client.get(reverse('vlog:index'))
 
         self.assertContains(response, 'No videos are available!')
 
     def test_home_page_hides_video_element_if_no_videos_available(self):
-        response = self.client.get('/juggling/')
+        response = self.client.get(reverse('vlog:index'))
 
         self.assertNotContains(response, '</video>')
 
     def test_home_page_hides_error_if_videos_are_available(self):
         first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
 
-        response = self.client.get('/juggling/')
+        response = self.client.get(reverse('vlog:index'))
 
         self.assertNotContains(response, 'No videos are available!')
 
     def test_home_page_shows_video_if_availabe(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
-        response = self.client.get('/juggling/')
+        response = self.client.get(reverse('vlog:index'))
 
         self.assertContains(response, first_video.filename)
 
@@ -41,7 +41,7 @@ class IndexViewTest(TestCase):
         older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
         current_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = current_date)
 
-        response = self.client.get('/juggling/')
+        response = self.client.get(reverse('vlog:index'))
 
         self.assertContains(response, current_video.filename)
         self.assertNotContains(response, older_video.filename)
@@ -55,7 +55,7 @@ class IndexViewTest(TestCase):
         future_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = future_date)
         current_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = current_date)
 
-        response = self.client.get('/juggling/')
+        response = self.client.get(reverse('vlog:index'))
 
         self.assertContains(response, current_video.filename)
         self.assertNotContains(response, future_video.filename)
@@ -65,14 +65,14 @@ class VideoDetailViewTest(TestCase):
     def test_detail_view_uses_correct_template(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
-        response = self.client.get(f'/juggling/videos/{first_video.id}/')
+        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
 
         self.assertTemplateUsed(response, 'vlog/detail.html')
 
     def test_detail_view_displays_video(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
-        response = self.client.get(f'/juggling/videos/{first_video.id}/')
+        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
 
         self.assertContains(response, first_video.filename)
 
@@ -80,8 +80,8 @@ class VideoDetailViewTest(TestCase):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
         second_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
 
-        response1 = self.client.get(f'/juggling/videos/{first_video.id}/')
-        response2 = self.client.get(f'/juggling/videos/{second_video.id}/')
+        response1 = self.client.get(reverse('vlog:detail', args = [first_video.id]))
+        response2 = self.client.get(reverse('vlog:detail', args = [second_video.id]))
 
         self.assertContains(response1, first_video.filename)
         self.assertNotContains(response1, second_video.filename)
@@ -91,7 +91,7 @@ class VideoDetailViewTest(TestCase):
     def test_detail_view_displays_title(self):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.get(f'/juggling/videos/{first_video.id}/')
+        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
 
         self.assertContains(response, first_video.title)
 
@@ -99,7 +99,7 @@ class VideoDetailViewTest(TestCase):
         pub_time = timezone.now()
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
 
-        response = self.client.get(f'/juggling/videos/{first_video.id}/')
+        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
         time_string = pub_time.strftime(format = '%Y/%m/%d at %H:%M')
         #print(response.content.decode())
 
@@ -112,7 +112,7 @@ class VideoDetailViewTest(TestCase):
         future_date = timezone.now() + timedelta(days = 5)
         future_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = future_date)
 
-        response = self.client.get(f'/juggling/videos/{future_video.id}/')
+        response = self.client.get(reverse('vlog:detail', args = [future_video.id]))
 
         self.assertEqual(response.status_code, 404)
 
@@ -120,7 +120,7 @@ class VideoDetailViewTest(TestCase):
 class VideosListViewTest(TestCase):
 
     def test_video_list_view_uses_correct_template(self):
-        response = self.client.get('/juggling/videos/')
+        response = self.client.get(reverse('vlog:videos'))
 
         self.assertTemplateUsed(response, 'vlog/videos.html')
 
@@ -134,7 +134,7 @@ class VideosListViewTest(TestCase):
         older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
         newer_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = newer_date)
 
-        response = self.client.get('/juggling/videos/')
+        response = self.client.get(reverse('vlog:videos'))
 
         self.assertContains(response, older_video.filename)
         self.assertNotContains(response, newer_video.filename)
@@ -150,7 +150,7 @@ class VideosListViewTest(TestCase):
         older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
         current_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = current_date)
 
-        response = self.client.get('/juggling/videos/')
+        response = self.client.get(reverse('vlog:videos'))
 
         self.assertEqual(len(response.context['videos_list']), 2)
         self.assertEqual(response.context['videos_list'][0], older_video)
@@ -167,7 +167,7 @@ class VideosListViewTest(TestCase):
         older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
         current_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = current_date)
 
-        response = self.client.get('/juggling/videos/')
+        response = self.client.get(reverse('vlog:videos'))
 
         self.assertContains(response, older_video.filename)
         self.assertContains(response, oldest_video.filename)
@@ -185,7 +185,7 @@ class VideosListViewTest(TestCase):
         older_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = older_date)
         current_video = JugglingVideo.objects.create(filename = 'under_the_arm.mp4', pub_date = current_date)
 
-        response = self.client.get('/juggling/videos/')
+        response = self.client.get(reverse('vlog:videos'))
 
         self.assertContains(response, older_video.filename)
         self.assertNotContains(response, current_video.filename)
