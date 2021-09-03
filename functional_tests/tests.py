@@ -109,7 +109,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         first_title = 'Five ball juggle 50 catches'
         title_field.send_keys(first_title)
         #time.sleep(1)
-        new_video_field.send_keys(Keys.ENTER)
+        title_field.send_keys(Keys.ENTER)
         #time.sleep(4)
 
         # On returning to the page after the update, the net user sees a new video on the site
@@ -152,7 +152,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         title_field = self.browser.find_element_by_id('id_title')
         second_title = 'Behind the back juggle'
         title_field.send_keys(second_title)
-        new_video_field.send_keys(Keys.ENTER)
+        title_field.send_keys(Keys.ENTER)
 
         # The net user returns to the juggling site hoping to watch the first video again
         time.sleep(1)

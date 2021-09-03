@@ -5,23 +5,38 @@ from vlog.models import JugglingVideo
 from datetime import timedelta
 
 class IndexViewTest(TestCase):
+    """
+    Tests for the index (AKA the home page)
+    """
 
     def test_home_page_uses_correct_template(self):
+        """
+        The correct template should be used when the home page is accessed 
+        """
         response = self.client.get(reverse('vlog:index'))
 
         self.assertTemplateUsed(response, 'vlog/index.html')
 
     def test_home_page_displays_error_if_no_videos_in_database(self):
+        """
+        The home page should display an error message if there are no video objects in the database 
+        """
         response = self.client.get(reverse('vlog:index'))
 
         self.assertContains(response, 'No videos are available!')
 
     def test_home_page_hides_video_element_if_no_videos_available(self):
+        """
+        The home page should not display any video elements if there are no video objects in the database 
+        """
         response = self.client.get(reverse('vlog:index'))
 
         self.assertNotContains(response, '</video>')
 
     def test_home_page_hides_error_if_videos_are_available(self):
+        """
+        The home page should not display an error message if there is a video object in the database 
+        """
         first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
 
         response = self.client.get(reverse('vlog:index'))
@@ -29,6 +44,9 @@ class IndexViewTest(TestCase):
         self.assertNotContains(response, 'No videos are available!')
 
     def test_home_page_shows_video_if_availabe(self):
+        """
+        The home page should display a video if there is a video object in the database 
+        """
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
         response = self.client.get(reverse('vlog:index'))
@@ -36,6 +54,9 @@ class IndexViewTest(TestCase):
         self.assertContains(response, first_video.filename)
 
     def test_home_page_shows_most_recently_published_video(self):
+        """
+        The home page should only display the video with the most recent publication date 
+        """
         older_date = timezone.now() - timedelta(days = 5)
         current_date = timezone.now()
         older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
@@ -61,8 +82,14 @@ class IndexViewTest(TestCase):
         self.assertNotContains(response, future_video.filename)
 
 class VideoDetailViewTest(TestCase):
+    """
+    Tests for the video detail view pages
+    """
 
     def test_detail_view_uses_correct_template(self):
+        """
+        The correct template should be used when a video's detail page is accessed 
+        """
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
@@ -70,6 +97,9 @@ class VideoDetailViewTest(TestCase):
         self.assertTemplateUsed(response, 'vlog/detail.html')
 
     def test_detail_view_displays_video(self):
+        """
+        The detail page for a juggling video object should display the correct video
+        """
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
@@ -77,6 +107,10 @@ class VideoDetailViewTest(TestCase):
         self.assertContains(response, first_video.filename)
 
     def test_detail_views_only_display_correct_videos(self):
+        """
+        The detail page for a juggling video object should only display the correct video
+        (Other videos in the database should not be displayed)
+        """
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
         second_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
 
@@ -89,6 +123,9 @@ class VideoDetailViewTest(TestCase):
         self.assertNotContains(response2, first_video.filename)
 
     def test_detail_view_displays_title(self):
+        """
+        A video's title attribute should be displayed on the video's detail page
+        """
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
@@ -96,6 +133,9 @@ class VideoDetailViewTest(TestCase):
         self.assertContains(response, first_video.title)
 
     def test_detail_view_displays_pub_date(self):
+        """
+        A video's publication date attribute should be displayed on the video's detail page
+        """
         pub_time = timezone.now()
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
 
@@ -118,8 +158,14 @@ class VideoDetailViewTest(TestCase):
 
 
 class VideosListViewTest(TestCase):
+    """
+    Tests for the videos page (AKA the archive)
+    """
 
     def test_video_list_view_uses_correct_template(self):
+        """
+        The correct template should be used when the videos archive page is accessed 
+        """
         response = self.client.get(reverse('vlog:videos'))
 
         self.assertTemplateUsed(response, 'vlog/videos.html')
@@ -192,8 +238,14 @@ class VideosListViewTest(TestCase):
         self.assertNotContains(response, future_video.filename)
 
 class VideoModelTest(TestCase):
+    """
+    Tests for the database)
+    """
 
     def test_saving_and_retrieving_videos(self):
+        """
+        The attributes of a video object should match those that it was saved with 
+        """
         first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now())
 
         saved_videos = JugglingVideo.objects.all()
