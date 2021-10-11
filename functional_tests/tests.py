@@ -18,8 +18,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
         root = tk.Tk()
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
-        # it seems that mint's menu bar is 64 pixels high
-        self.gap = 2
+        ## it seems that mint's menu bar is 64 pixels high
+        self.gap = 0
         self.browser_height = int(screenheight - 64)
         self.browser_width = int((screenwidth / 2) - self.gap)
         root.destroy()
@@ -72,6 +72,12 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # The site's title element confirms it
         h1_elem = self.browser.find_element_by_tag_name('h1').text
         self.assertEqual("JJ's juggling videos", h1_elem)
+
+        # The site has a distinctive green colour scheme
+        ## This section tests that the CSS has been applied
+        site_header = self.browser.find_element_by_tag_name('header')
+        site_header_colour = site_header.value_of_css_property('background-color')
+        self.assertEqual(site_header_colour, 'rgb(100, 246, 100)')
 
         # However, the site has only just been launched, and no videos have been uploaded yet
         error_message = self.browser.find_element_by_id('id_error_message').text

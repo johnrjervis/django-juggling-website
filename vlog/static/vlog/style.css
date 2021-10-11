@@ -1,0 +1,225 @@
+/* Fonts */
+
+@font-face {
+    font-family: 'tillanaregular';
+    src: url('../fonts/tillana-regular-webfont.woff2') format('woff2'),
+         url('../fonts/tillana-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'linguistics_proregular';
+    src: url('../fonts/linguisticspro-regular-webfont.woff2') format('woff2'),
+         url('../fonts/linguisticspro-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Main structural elements */
+
+* {
+  box-sizing: border-box;
+  font-family: 'linguistics_proregular', 'times new roman', serif;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  font-size: 10px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  font-size: 1.6rem;
+  color: darkgreen;
+}
+
+
+/* General formatting for body elements */
+
+*::selection {
+  background-color: darkgreen;
+  color: white;
+}
+
+h2 {
+  padding: 1rem 2rem 0.5rem;
+}
+
+article {
+  margin-top: 2rem;
+  padding-bottom: 3rem;
+  border-bottom: 5px solid darkgreen;
+}
+
+article:last-child {
+  border-bottom: none;
+  padding-bottom: 4rem;
+}
+
+p, dl {
+  margin-left: 2rem;
+  font-size: 1.8rem;
+  line-height: 1.4;
+}
+
+dl {
+  margin-bottom: 0;
+}
+
+dt {
+  margin-top: 1.2rem;
+}
+
+video {
+  max-width: 100%;
+}
+
+.vid-container {
+  text-align: center;
+}
+
+a {
+  color: green;
+}
+
+a:visited {
+  color: lightgreen;
+}
+
+a img {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Formatting for combined title-navigation bar and footer elements */
+
+header,
+nav,
+footer {
+  background-color: #64f664;
+}
+
+header {
+  border-bottom: 5px solid darkgreen;
+}
+
+h1 {
+  margin: 0;
+  padding: 2rem 0 0 2rem;
+  font-family: 'tillanaregular', 'times new roman', serif;
+}
+
+nav ul {
+  width: 75%;
+  list-style-type: none;
+  margin: 1rem auto 0;
+  padding: 0;
+}
+
+nav li {
+  text-align: center;
+}
+
+nav a {
+  display: inline-block;
+  width: 80%;
+  margin: 0.2rem 0;
+  border: 5px solid darkgreen;
+  border-radius: 10px 10px;
+  color: darkgreen;
+  background-color: #9ff99f;
+  font-size: 2rem;
+  text-decoration: none;
+}
+
+nav a:visited {
+  color: darkgreen;
+}
+
+nav a:hover {
+  color: white;
+  background-color: darkgreen;
+}
+
+nav a:active {
+  color: darkgreen;
+  background-color: white;
+}
+
+.selected a {
+  background-color: white;
+}
+
+
+footer {
+  width: 100%;
+  margin-top: auto;
+  border-top: 5px solid darkgreen;
+  padding: 1rem 2rem;
+  font-size: 1.8rem;
+}
+
+/* Responsive formatting - medium-sized screens */
+
+@media (min-width: 300px) {
+  nav li:nth-of-type(odd) {
+    width: 50%;
+    float: left;
+  }
+
+  nav li:nth-of-type(even) {
+    width: 50%;
+    float: right;
+  }
+
+  nav a {
+    width: 98%;
+  }
+
+}
+
+/* Responsive formatting - widescreen */
+
+@media (min-width: 600px) {
+  nav ul {
+    display: flex;
+    justify-content: center;
+    max-width: 600px;
+    position: relative;
+    top: 5px;
+  }
+
+  nav li {
+    width: 20%;
+  }
+
+  nav a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+    margin: 0;
+    border-radius: 20px 20px 0px 0px;    
+  }
+
+  nav a:active {
+    border-bottom: 5px solid white;
+  }
+
+  .selected a {
+    color: darkgreen;
+    background-color: white;
+    border-bottom: 5px solid white;
+  }
+
+  .selected a:hover {
+    color: darkgreen;
+    background-color: white;
+  }
+}
