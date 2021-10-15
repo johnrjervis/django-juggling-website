@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+
+<!-- Test site V2 -->
+{% load static %}
+
+  <head>
+    <title>JJ's juggling site</title>
+    <meta name="author" content="John J">
+    <meta name="description" content="My full stack test page v.0.0">
+    <meta name="keywords" content="HTML test page">
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="images/ico.png">
+    <link rel="stylesheet" type="text/css" href="{% static 'vlog/style.css' %}">
+  </head>
+
+  <body>
+
+  <header>
+    <h1>JJ's juggling videos</h1>
+
+    <nav>
+      <ul>
+        {% block nav_menu %}{% endblock %}
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    {% block main_content %}
+    {% endblock %}
+
+  </main>
+
+  <footer>
+    Videos and site design &copy; J. Jervis 2021
+  </footer>
+
+  </body>
+
+</html>
