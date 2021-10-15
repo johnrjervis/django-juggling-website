@@ -32,19 +32,24 @@
   <main>
 
     <article>
-      <h2>This is my website for showing off my juggling skills!</h2>
+      {% if videos_list %}
 
-      {% if latest_video %}
-        <p>Here's the latest video:</p>
+        {% for video in videos_list %}
 
-        <div class="vid-container">
-          <video class="video-with-splash" controls preload="metadata" muted>
-            <source src="{% static latest_video.filename %}" type="video/mp4">
-            <p>There was a problem displaying this video. Sorry!</p>
-          </video>
-        </div>
+          <h2>This is my website for showing off my juggling skills!</h2>
 
-        <p><a href="{% url 'vlog:detail' latest_video.id %}" class="info_link">Click here for more information on this video</a></p>
+          <p>Here's the latest video:</p>
+
+          <div class="vid-container">
+            <video class="video-with-splash" controls preload="metadata" muted>
+              <source src="{% static video.filename %}" type="video/mp4">
+              <p>There was a problem displaying this video. Sorry!</p>
+            </video>
+          </div>
+
+          <p><a href="{% url 'vlog:detail' video.id %}" class="info_link">Click here for more information on this video</a></p>
+
+        {% endfor %}
 
       {% else %}
         <p id="id_error_message">No videos are available!</p>

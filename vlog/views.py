@@ -7,13 +7,13 @@ from django.utils import timezone
 
 def index(request):
     videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
-    latest_video = ''
+    videos_list = ''
 
     if videos:
-        latest_video = videos[0]
+        videos_list = [videos[0]]
 
     return render(request, 'vlog/index.html', {
-        'latest_video' : latest_video,
+        'videos_list' : videos_list,
     })
 
 def videos(request):
