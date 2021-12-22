@@ -69,8 +69,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertEqual("JJ's juggling site", self.browser.title)
 
         # The site's title element confirms it
-        h1_elem = self.browser.find_element_by_tag_name('h1').text
-        self.assertEqual("JJ's juggling videos", h1_elem)
+        h1_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertEqual("JJ's juggling videos", h1_text)
 
         # The site has a distinctive green colour scheme
         ## This section tests that the CSS has been applied
@@ -175,3 +175,35 @@ class NewVisitorTest(StaticLiveServerTestCase):
         video_title = self.wait_for_element('video_heading', self.browser.find_element_by_class_name)
         self.assertEqual(video_title.text, first_title)
         #time.sleep(24)
+
+
+class LearnPageTest(StaticLiveServerTestCase):
+    MAX_WAIT = 10
+
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def wait_for_element(self, element_type, search_method):
+        start_time = time.time()
+        while True:
+            try:
+                element = search_method(element_type)
+            except WebDriverException as e:
+                if time.time() > start_time + self.MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+            else:
+                time.sleep(1)
+                return search_method(element_type)
+
+    def test_learn_page(self):
+
+        # A site visitor decides to visit the learn page
+        self.browser.get(f'{self.live_server_url}/juggling/learn/')
+        para = self.wait_for_element('p', self.browser.find_element_by_tag_name)
+
+        # However, the user finds that this part of the site has not been completed yet
+        self.assertEqual(para.text, 'This part of the site is still under construction.')

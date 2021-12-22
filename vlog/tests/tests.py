@@ -237,6 +237,27 @@ class VideosListViewTest(TestCase):
         self.assertNotContains(response, current_video.filename)
         self.assertNotContains(response, future_video.filename)
 
+class LearnViewTest(TestCase):
+    """
+    Tests for the Learn page
+    """
+
+    def test_learn_view_uses_correct_template(self):
+        """
+        Test that this view uses the correct template
+        """
+        response = self.client.get(reverse('vlog:learn'))
+
+        self.assertTemplateUsed(response, 'vlog/learn.html')
+
+    def test_learn_page_under_construction(self):
+        """
+        Test that the Learn page displays a message that explains it has not yet been built
+        """
+        response = self.client.get(reverse('vlog:learn'))
+
+        self.assertContains(response, 'This part of the site is still under construction.')
+
 class VideoModelTest(TestCase):
     """
     Tests for the database)

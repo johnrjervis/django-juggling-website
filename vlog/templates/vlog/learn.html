@@ -1,0 +1,18 @@
+{% extends 'vlog/base.html' %}
+
+{% load static %}
+
+{% block nav_menu %}
+        <li><a href="{% url 'vlog:index' %}">Home</a></li> 
+        <li><a href="{% url 'vlog:videos' %}">Videos</a></li>
+        <li class="selected"><a href="/juggling/learn/">Learn</a></li>
+        <li><a href="/juggling/about/">About</a></li>
+{% endblock %}
+
+{% block main_content %}
+
+    <article>
+      <p>This part of the site is still under construction.</p>
+    </article>
+
+{% endblock %}

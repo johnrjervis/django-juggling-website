@@ -33,3 +33,6 @@ def detail(request, jugglingvideo_id):
     return render(request, 'vlog/detail.html', {
         'video' : video,
     })
+
+def learn(request):
+    return render(request, 'vlog/learn.html')
