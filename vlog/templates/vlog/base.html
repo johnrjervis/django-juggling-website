@@ -20,8 +20,19 @@
     <h1>JJ's juggling videos</h1>
 
     <nav>
-      <ul>
-        {% block nav_menu %}{% endblock %}
+      <ul class="navlinks">
+        <li class="navlink">
+          <a href="{% url 'vlog:index' %}">Home</a>
+        </li> 
+        <li class="navlink">
+          <a href="{% url 'vlog:videos' %}">Videos</a>
+        </li>
+        <li class="navlink">
+          <a href="{% url 'vlog:learn' %}">Learn</a>
+        </li>
+        <li class="navlink">
+          <a href="/juggling/about/">About</a>
+        </li>
       </ul>
     </nav>
   </header>
