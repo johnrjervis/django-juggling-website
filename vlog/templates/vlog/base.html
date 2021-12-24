@@ -21,13 +21,13 @@
 
     <nav>
       <ul class="navlinks">
-        <li class="navlink">
+        <li class="navlink {% if selected == 'Home' %}selected{% endif %}">
           <a href="{% url 'vlog:index' %}">Home</a>
         </li> 
-        <li class="navlink">
+        <li class="navlink {% if selected == 'Videos' %}selected{% endif %}">
           <a href="{% url 'vlog:videos' %}">Videos</a>
         </li>
-        <li class="navlink">
+        <li class="navlink {% if selected == 'Learn' %}selected{% endif %}">
           <a href="{% url 'vlog:learn' %}">Learn</a>
         </li>
         <li class="navlink">

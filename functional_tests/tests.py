@@ -77,6 +77,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
         site_header = self.browser.find_element_by_tag_name('header')
         site_header_colour = site_header.value_of_css_property('background-color')
         self.assertEqual(site_header_colour, 'rgb(100, 246, 100)')
+        # And the home tab stands out in the navigation menu (because it has the 'selected' class applied)
+        index_tab = self.browser.find_element_by_class_name('selected')
+        self.assertEqual(index_tab.text, 'Home')
 
         # However, the site has only just been launched, and no videos have been uploaded yet
         error_message = self.browser.find_element_by_id('id_error_message').text

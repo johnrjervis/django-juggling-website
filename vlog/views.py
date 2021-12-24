@@ -13,6 +13,7 @@ def index(request):
         videos_list = [videos[0]]
 
     return render(request, 'vlog/index.html', {
+        'selected': 'Home',
         'videos_list' : videos_list,
     })
 
@@ -24,6 +25,7 @@ def videos(request):
         videos_list = videos[1:]
 
     return render(request, 'vlog/videos.html', {
+        'selected': 'Videos',
         'videos_list': videos_list
     })
 
@@ -31,8 +33,11 @@ def detail(request, jugglingvideo_id):
     video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
 
     return render(request, 'vlog/detail.html', {
+        'selected': 'Videos',
         'video' : video,
     })
 
 def learn(request):
-    return render(request, 'vlog/learn.html')
+    return render(request, 'vlog/learn.html', {
+        'selected': 'Learn',
+    })

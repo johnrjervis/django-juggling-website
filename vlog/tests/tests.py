@@ -81,6 +81,17 @@ class IndexViewTest(TestCase):
         self.assertContains(response, current_video.filename)
         self.assertNotContains(response, future_video.filename)
 
+    def test_context_dict_contains_correct_selected_item_for_index_view(self):
+        """
+        The context dict for the home page view should contain 'selected': 'Home'
+        The selected class should appear on the home page
+        """
+        response = self.client.get(reverse('vlog:index'))
+        selected = response.context[-1].get('selected')
+
+        self.assertEqual(selected, 'Home')
+        self.assertContains(response, '<li class="navlink selected">')
+
 class VideoDetailViewTest(TestCase):
     """
     Tests for the video detail view pages
@@ -155,6 +166,20 @@ class VideoDetailViewTest(TestCase):
         response = self.client.get(reverse('vlog:detail', args = [future_video.id]))
 
         self.assertEqual(response.status_code, 404)
+
+    def test_context_dict_contains_correct_selected_item_for_video_detail_view(self):
+        """
+        The context dict for the video detail view should contain 'selected': 'Videos'
+        The selected class should appear on the video page
+        """
+        pub_time = timezone.now()
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
+
+        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
+        selected = response.context[-1].get('selected')
+
+        self.assertEqual(selected, 'Videos')
+        self.assertContains(response, '<li class="navlink selected">')
 
 
 class VideosListViewTest(TestCase):
@@ -237,6 +262,18 @@ class VideosListViewTest(TestCase):
         self.assertNotContains(response, current_video.filename)
         self.assertNotContains(response, future_video.filename)
 
+    def test_context_dict_contains_correct_selected_item_for_videos_list_view(self):
+        """
+        The context dict for the video list view should contain 'selected': 'Videos'
+        The selected class should appear on the video page
+        """
+        response = self.client.get(reverse('vlog:videos'))
+        selected = response.context[-1].get('selected')
+
+        self.assertEqual(selected, 'Videos')
+        self.assertContains(response, '<li class="navlink selected">')
+
+
 class LearnViewTest(TestCase):
     """
     Tests for the Learn page
@@ -257,6 +294,18 @@ class LearnViewTest(TestCase):
         response = self.client.get(reverse('vlog:learn'))
 
         self.assertContains(response, 'This part of the site is still under construction.')
+
+    def test_context_dict_contains_correct_selected_item_for_learn_view(self):
+        """
+        The context dict for the learn view should contain 'selected': 'Learn'
+        The selected class should appear on the learn page
+        """
+        response = self.client.get(reverse('vlog:learn'))
+        selected = response.context[-1].get('selected')
+
+        self.assertEqual(selected, 'Learn')
+        self.assertContains(response, '<li class="navlink selected">')
+
 
 class VideoModelTest(TestCase):
     """
