@@ -20,7 +20,7 @@ from . import views
 app_name = 'vlog'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('videos/', views.videos, name='videos'),
-    path('videos/<int:jugglingvideo_id>/', views.detail, name='detail'),
+    path('videos/', views.videos_list, name='videos'),
+    path('videos/<int:jugglingvideo_id>/', views.video_detail, name='detail'),
     path('learn/', views.learn, name='learn'),
 ]

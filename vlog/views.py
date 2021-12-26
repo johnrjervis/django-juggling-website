@@ -17,7 +17,7 @@ def index(request):
         'videos_list' : videos_list,
     })
 
-def videos(request):
+def videos_list(request):
     videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
     videos_list = ''
 
@@ -29,7 +29,7 @@ def videos(request):
         'videos_list': videos_list
     })
 
-def detail(request, jugglingvideo_id):
+def video_detail(request, jugglingvideo_id):
     video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
 
     return render(request, 'vlog/detail.html', {
