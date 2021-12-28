@@ -1,4 +1,4 @@
-/* Fonts */
+/* ---------------- Fonts ---------------- */
 
 @font-face {
     font-family: 'tillanaregular';
@@ -16,7 +16,7 @@
     font-style: normal;
 }
 
-/* Main structural elements */
+/* ---------------- Main structural elements ---------------- */
 
 * {
   box-sizing: border-box;
@@ -39,7 +39,7 @@ body {
 }
 
 
-/* General formatting for body elements */
+/* ---------------- General formatting for body elements ---------------- */
 
 *::selection {
   background-color: darkgreen;
@@ -88,15 +88,15 @@ a {
 }
 
 a:visited {
-  color: lightgreen;
+  color: black;
 }
 
-a img {
+dd img {
   width: 1.5rem;
   height: 1.5rem;
 }
 
-/* Formatting for combined title-navigation bar and footer elements */
+/* ---------------- Formatting for combined title-navigation bar and footer elements ---------------- */
 
 header,
 nav,
@@ -114,15 +114,19 @@ h1 {
   font-family: 'tillanaregular', 'times new roman', serif;
 }
 
-nav ul {
+nav > ul {
   width: 75%;
-  list-style-type: none;
   margin: 1rem auto 0;
+}
+
+nav ul {
+  list-style-type: none;
   padding: 0;
 }
 
 nav li {
   text-align: center;
+  height: 50px;
 }
 
 nav a {
@@ -151,10 +155,9 @@ nav a:active {
   background-color: white;
 }
 
-.selected a {
+.selected > a {
   background-color: white;
 }
-
 
 footer {
   width: 100%;
@@ -164,15 +167,27 @@ footer {
   font-size: 1.8rem;
 }
 
-/* Responsive formatting - medium-sized screens */
+/* ---------------- Flyout menus ---------------- */
+
+.flyout {
+  position: relative;
+  top: -5px;
+  visibility: hidden;
+}
+
+.flyout ul {
+  flex-direction: column;
+}
+
+/* ---------------- Responsive formatting - medium-sized screens ---------------- */
 
 @media (min-width: 300px) {
-  nav li:nth-of-type(odd) {
+  .navlinks > li:nth-of-type(odd) {
     width: 50%;
     float: left;
   }
 
-  nav li:nth-of-type(even) {
+  .navlinks > li:nth-of-type(even) {
     width: 50%;
     float: right;
   }
@@ -180,10 +195,9 @@ footer {
   nav a {
     width: 98%;
   }
-
 }
 
-/* Responsive formatting - widescreen */
+/* ---------------- Responsive formatting - widescreen ---------------- */
 
 @media (min-width: 600px) {
   nav ul {
@@ -194,11 +208,7 @@ footer {
     top: 5px;
   }
 
-  nav li {
-    width: 20%;
-  }
-
-  nav a {
+  .navlinks li a {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -208,18 +218,30 @@ footer {
     border-radius: 20px 20px 0px 0px;    
   }
 
-  nav a:active {
-    border-bottom: 5px solid white;
+  .navlinks > li > a:active {
+    border-bottom: none;
+    padding-bottom: 5px;
   }
 
-  .selected a {
+  .selected > a {
     color: darkgreen;
     background-color: white;
-    border-bottom: 5px solid white;
+    border-bottom: none;
+    padding-bottom: 5px;
   }
 
-  .selected a:hover {
+  .selected > a:hover {
     color: darkgreen;
     background-color: white;
   }
+
+  .navlinks .flyout a {
+    width: 100%;
+    border-top: none;
+    border-radius: 0px;
+  }
+
+  .flyout ul li:last-child a {
+    border-radius: 0px 0px 15px 15px;
+  } 
 }
