@@ -4,7 +4,23 @@ from django.utils import timezone
 from vlog.models import JugglingVideo
 from datetime import timedelta
 
-class IndexViewTest(TestCase):
+class JugglingVideoSiteTest(TestCase):
+
+    def check_context_dict_contains_correct_selected_item_for_view(self, view_name, desired_selected_value, arguments = None):
+        """
+        The context dict for a given view should contain the correct value for 'selected' in the context dict
+        The selected class should appear on the appropriate page
+        """
+        # Note the name of this method cannot include test, because it is not intended to be run 'as is'
+        # Create a test method in a sub-class and call this method from that test
+        response = self.client.get(reverse(view_name, args = arguments))
+        selected = response.context[-1].get('selected')
+
+        self.assertEqual(selected, desired_selected_value)
+        self.assertContains(response, '<li class="navlink selected">')
+
+
+class IndexViewTest(JugglingVideoSiteTest):
     """
     Tests for the index (AKA the home page)
     """
@@ -86,13 +102,10 @@ class IndexViewTest(TestCase):
         The context dict for the home page view should contain 'selected': 'Home'
         The selected class should appear on the home page
         """
-        response = self.client.get(reverse('vlog:index'))
-        selected = response.context[-1].get('selected')
+        self.check_context_dict_contains_correct_selected_item_for_view('vlog:index', 'Home')
 
-        self.assertEqual(selected, 'Home')
-        self.assertContains(response, '<li class="navlink selected">')
 
-class VideoDetailViewTest(TestCase):
+class VideoDetailViewTest(JugglingVideoSiteTest):
     """
     Tests for the video detail view pages
     """
@@ -175,14 +188,10 @@ class VideoDetailViewTest(TestCase):
         pub_time = timezone.now()
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
 
-        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
-        selected = response.context[-1].get('selected')
-
-        self.assertEqual(selected, 'Videos')
-        self.assertContains(response, '<li class="navlink selected">')
+        self.check_context_dict_contains_correct_selected_item_for_view('vlog:detail', 'Videos', arguments = [first_video.id])
 
 
-class VideosListViewTest(TestCase):
+class VideosListViewTest(JugglingVideoSiteTest):
     """
     Tests for the videos page (AKA the archive)
     """
@@ -267,14 +276,10 @@ class VideosListViewTest(TestCase):
         The context dict for the video list view should contain 'selected': 'Videos'
         The selected class should appear on the video page
         """
-        response = self.client.get(reverse('vlog:videos'))
-        selected = response.context[-1].get('selected')
-
-        self.assertEqual(selected, 'Videos')
-        self.assertContains(response, '<li class="navlink selected">')
+        self.check_context_dict_contains_correct_selected_item_for_view('vlog:videos', 'Videos')
 
 
-class LearnViewTest(TestCase):
+class LearnViewTest(JugglingVideoSiteTest):
     """
     Tests for the Learn page
     """
@@ -300,11 +305,7 @@ class LearnViewTest(TestCase):
         The context dict for the learn view should contain 'selected': 'Learn'
         The selected class should appear on the learn page
         """
-        response = self.client.get(reverse('vlog:learn'))
-        selected = response.context[-1].get('selected')
-
-        self.assertEqual(selected, 'Learn')
-        self.assertContains(response, '<li class="navlink selected">')
+        self.check_context_dict_contains_correct_selected_item_for_view('vlog:learn', 'Learn')
 
 
 class VideoModelTest(TestCase):
@@ -325,3 +326,4 @@ class VideoModelTest(TestCase):
         self.assertEqual(first_video.filename, first_saved_video.filename)
         self.assertEqual(first_video.title, first_saved_video.title)
         self.assertEqual(first_video.pub_date, first_saved_video.pub_date)
+
