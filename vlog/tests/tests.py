@@ -303,9 +303,38 @@ class LearnViewTest(JugglingVideoSiteTest):
     def test_context_dict_contains_correct_selected_item_for_learn_view(self):
         """
         The context dict for the learn view should contain 'selected': 'Learn'
-        The selected class should appear on the learn page
+        The selected class should appear on the Learn page
         """
         self.check_context_dict_contains_correct_selected_item_for_view('vlog:learn', 'Learn')
+
+
+class AboutViewTest(JugglingVideoSiteTest):
+    """
+    Tests for the About page
+    """
+
+    def test_about_view_uses_correct_template(self):
+        """
+        Test that this view uses the correct template
+        """
+        response = self.client.get(reverse('vlog:about'))
+
+        self.assertTemplateUsed(response, 'vlog/about.html')
+
+    def test_learn_page_under_construction(self):
+        """
+        Test that the About page displays a message that explains it has not yet been built
+        """
+        response = self.client.get(reverse('vlog:about'))
+
+        self.assertContains(response, 'This part of the site is still under construction.')
+
+    def test_context_dict_contains_correct_selected_item_for_learn_view(self):
+        """
+        The context dict for the learn view should contain 'selected': 'About'
+        The selected class should appear on the About page
+        """
+        self.check_context_dict_contains_correct_selected_item_for_view('vlog:about', 'About')
 
 
 class VideoModelTest(TestCase):

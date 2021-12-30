@@ -41,3 +41,8 @@ def learn(request):
     return render(request, 'vlog/learn.html', {
         'selected': 'Learn',
     })
+
+def about(request):
+    return render(request, 'vlog/about.html', {
+        'selected': 'About',
+    })

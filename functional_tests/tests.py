@@ -17,18 +17,18 @@ class JugglingWebsiteTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def wait_for_element(self, element_type, search_method):
+    def wait_for_element(self, element_identifier, search_method):
         start_time = time.time()
         while True:
             try:
-                element = search_method(element_type)
+                element = search_method(element_identifier)
             except WebDriverException as e:
                 if time.time() > start_time + self.MAX_WAIT:
                     raise e
                 time.sleep(0.5)
             else:
                 time.sleep(1)
-                return search_method(element_type)
+                return search_method(element_identifier)
 
 
 class NewVisitorTest(JugglingWebsiteTest):
@@ -192,7 +192,23 @@ class LearnPageTest(JugglingWebsiteTest):
 
         # A site visitor decides to visit the learn page
         self.browser.get(f'{self.live_server_url}/juggling/learn/')
-        para = self.wait_for_element('p', self.browser.find_element_by_tag_name)
 
         # However, the user finds that this part of the site has not been completed yet
+        para = self.wait_for_element('p', self.browser.find_element_by_tag_name)
         self.assertEqual(para.text, 'This part of the site is still under construction.')
+
+
+class InfoPageTest(JugglingWebsiteTest):
+
+    def test_learn_page(self):
+
+        # Another visitor accesses the website
+        self.browser.get(f'{self.live_server_url}/juggling/')
+        # The visitor clicks on the info link to find out more about the juggling site
+        info_link = self.wait_for_element('About', self.browser.find_element_by_link_text)
+        info_link.click()
+
+        # However, this part of the site has not yet been built
+        para = self.wait_for_element('p', self.browser.find_element_by_tag_name)
+        self.assertEqual(para.text, 'This part of the site is still under construction.')
+

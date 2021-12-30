@@ -30,7 +30,7 @@
         <li class="navlink {% if selected == 'Learn' %}selected{% endif %}">
           <a href="{% url 'vlog:learn' %}">Learn</a>
         </li>
-        <li class="navlink">
+        <li class="navlink {% if selected == 'About' %}selected{% endif %}">
           <a href="/juggling/about/">About</a>
         </li>
       </ul>
