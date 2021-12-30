@@ -8,8 +8,30 @@ import time
 import tkinter as tk
 import datetime as dt
 
-class NewVisitorTest(StaticLiveServerTestCase):
+class JugglingWebsiteTest(StaticLiveServerTestCase):
     MAX_WAIT = 10
+
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def wait_for_element(self, element_type, search_method):
+        start_time = time.time()
+        while True:
+            try:
+                element = search_method(element_type)
+            except WebDriverException as e:
+                if time.time() > start_time + self.MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+            else:
+                time.sleep(1)
+                return search_method(element_type)
+
+
+class NewVisitorTest(JugglingWebsiteTest):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -22,9 +44,6 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.browser_height = int(screenheight - 64)
         self.browser_width = int((screenwidth / 2) - self.gap)
         root.destroy()
-
-    def tearDown(self):
-        self.browser.quit()
 
     def quit_if_possible(self, browser):
         try:
@@ -43,20 +62,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         datelist = [int(elem) for elem in [year, month, day, hours, minutes]]
         return dt.datetime(*datelist, tzinfo = dt.timezone.utc)
 
-    def wait_for_element(self, element_type, search_method):
-        start_time = time.time()
-        while True:
-            try:
-                element = search_method(element_type)
-            except WebDriverException as e:
-                if time.time() > start_time + self.MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-            else:
-                time.sleep(1)
-                return search_method(element_type)
-
-    def test_full_site(self):
+    def test_homepage_and_video_archive(self):
 
         # A net user stumbles across a cool juggling site
         visitor_browser = self.browser
@@ -180,27 +186,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         #time.sleep(24)
 
 
-class LearnPageTest(StaticLiveServerTestCase):
-    MAX_WAIT = 10
-
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-
-    def tearDown(self):
-        self.browser.quit()
-
-    def wait_for_element(self, element_type, search_method):
-        start_time = time.time()
-        while True:
-            try:
-                element = search_method(element_type)
-            except WebDriverException as e:
-                if time.time() > start_time + self.MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-            else:
-                time.sleep(1)
-                return search_method(element_type)
+class LearnPageTest(JugglingWebsiteTest):
 
     def test_learn_page(self):
 
