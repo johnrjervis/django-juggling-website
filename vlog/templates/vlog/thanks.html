@@ -1,0 +1,53 @@
+{% extends 'vlog/base.html' %}
+
+{% load static %}
+
+{% block main_content %}
+
+    <article>
+
+      <h2>Thanks!</h2>
+
+      <p>The following resources have all been invaluable in getting this site up and running. Note that all of the sites listed here provide their information and services for free.</p>
+
+      <dl>
+        <dt>Obey the Testing Goat!</dt>
+        <dd>I started out creating my juggling site by following the examples in Harry Percival's excellent book "Test-Driven Development with Python". I'd recommend buying a print copy if you're interested in web development with Python.</dd>
+        <dd>
+          Visit the 
+          <a href="https://www.obeythetestinggoat.com/" target="_blank">Obey the Testing Goat!</a>
+          <img src="images/external_link.png" alt="(external link)" srcset="images/external_link.svg">
+          site to see the free online version of the book.
+        </dd>
+
+        <dt>Django</dt>
+        <dd>This site was built using the Django framework.</dd>
+        <dd>
+          Head over to the 
+          <a href="https://www.djangoproject.com/" target="_blank">Django project</a>
+          <img src="images/external_link.png" alt="(external link)" srcset="images/external_link.svg">
+          website to find out more.
+        </dd>
+
+        <dt>Python</dt>
+        <dd>The Django framework is based on Python (the best programming language out there, IMO).</dd>
+        <dd>
+          Visit 
+          <a href="https://www.python.org/" target="_blank">Python website</a>
+          <img src="images/external_link.png" alt="(external link)" srcset="images/external_link.svg">
+          to download Python or find out more.
+        </dd>
+
+        <dt>The Mozilla Development Network (MDN)</dt>
+        <dd>Courses covering various web development topics, including HTML, CSS & JavaScript.</dd>
+        <dd>
+          Check out MDN's
+          <a href="https://developer.mozilla.org/en-US/" target="_blank">Learn Web Development</a>
+          <img src="images/external_link.png" alt="(external link)" srcset="images/external_link.svg">
+          page, especially if you're interested in learning front-end web development.
+        </dd>
+       </dl>
+
+    </article>
+
+{% endblock %}

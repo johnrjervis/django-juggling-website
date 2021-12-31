@@ -30,7 +30,6 @@ class JugglingWebsiteTest(StaticLiveServerTestCase):
                 time.sleep(1)
                 return search_method(element_identifier)
 
-
 class NewVisitorTest(JugglingWebsiteTest):
 
     def setUp(self):
@@ -185,7 +184,6 @@ class NewVisitorTest(JugglingWebsiteTest):
         self.assertEqual(video_title.text, first_title)
         #time.sleep(24)
 
-
 class LearnPageTest(JugglingWebsiteTest):
 
     def test_learn_page(self):
@@ -198,9 +196,9 @@ class LearnPageTest(JugglingWebsiteTest):
         self.assertEqual(para.text, 'This part of the site is still under construction.')
 
 
-class InfoPageTest(JugglingWebsiteTest):
+class AboutPagesTest(JugglingWebsiteTest):
 
-    def test_learn_page(self):
+    def test_about_pages(self):
 
         # Another visitor accesses the website
         self.browser.get(f'{self.live_server_url}/juggling/')
@@ -208,7 +206,17 @@ class InfoPageTest(JugglingWebsiteTest):
         info_link = self.wait_for_element('About', self.browser.find_element_by_link_text)
         info_link.click()
 
-        # However, this part of the site has not yet been built
         para = self.wait_for_element('p', self.browser.find_element_by_tag_name)
-        self.assertEqual(para.text, 'This part of the site is still under construction.')
+        self.assertEqual(para.text, 'Did I mention that this is my website for showing off my juggling skills?')
+
+        # This page contains liks to information pages
+        about_page_main_section = self.browser.find_element_by_tag_name('main')
+        page_links = about_page_main_section.find_elements_by_tag_name('a')
+        self.assertGreater(len(page_links), 0)
+        # The visitor clicks on a link to the thanks page where JJ acknowledges some useful resources
+        thanks_link = self.browser.find_element_by_link_text('Thanks')
+        thanks_link.click()
+        # There is a mention for the testing goat!
+        thanks_page_main = self.wait_for_element('main', self.browser.find_element_by_tag_name)
+        self.assertIn('Testing Goat', thanks_page_main.text)
 

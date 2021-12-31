@@ -46,3 +46,8 @@ def about(request):
     return render(request, 'vlog/about.html', {
         'selected': 'About',
     })
+
+def thanks(request):
+    return render(request, 'vlog/thanks.html', {
+        'selected': 'About',
+    })

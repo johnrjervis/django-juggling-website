@@ -321,20 +321,50 @@ class AboutViewTest(JugglingVideoSiteTest):
 
         self.assertTemplateUsed(response, 'vlog/about.html')
 
-    def test_learn_page_under_construction(self):
+    def test_about_page_links_to_info_pages(self):
         """
-        Test that the About page displays a message that explains it has not yet been built
+        Test that the About page links to pages that provide extra information about the site
         """
         response = self.client.get(reverse('vlog:about'))
 
-        self.assertContains(response, 'This part of the site is still under construction.')
+        self.assertContains(response, reverse('vlog:thanks'))
 
-    def test_context_dict_contains_correct_selected_item_for_learn_view(self):
+    def test_context_dict_contains_correct_selected_item_for_about_view(self):
         """
-        The context dict for the learn view should contain 'selected': 'About'
+        The context dict for the about view should contain 'selected': 'About'
         The selected class should appear on the About page
         """
         self.check_context_dict_contains_correct_selected_item_for_view('vlog:about', 'About')
+
+
+class ThanksViewTest(JugglingVideoSiteTest):
+    """
+    Tests for the Acknowledgements page
+    """
+
+    def test_thanks_view_uses_correct_template(self):
+        """
+        Test that this view uses the correct template
+        """
+        response = self.client.get(reverse('vlog:thanks'))
+
+        self.assertTemplateUsed(response, 'vlog/thanks.html')
+
+    def test_thanks_page_links_to_external_pages(self):
+        """
+        Test that the Thanks page links to external pages
+        """
+        response = self.client.get(reverse('vlog:thanks'))
+
+        self.assertContains(response, 'https://www.')
+
+
+    def test_context_dict_contains_correct_selected_item_for_about_view(self):
+        """
+        The context dict for the thanks view should contain 'selected': 'About' (it's in the 'About' section)
+        The selected class should appear on the Thanks page
+        """
+        self.check_context_dict_contains_correct_selected_item_for_view('vlog:thanks', 'About')
 
 
 class VideoModelTest(TestCase):

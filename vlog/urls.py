@@ -24,4 +24,5 @@ urlpatterns = [
     path('videos/<int:jugglingvideo_id>/', views.video_detail, name='detail'),
     path('learn/', views.learn, name='learn'),
     path('about/', views.about, name='about'),
+    path('about/thanks', views.thanks, name='thanks'),
 ]
