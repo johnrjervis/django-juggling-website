@@ -328,6 +328,7 @@ class AboutViewTest(JugglingVideoSiteTest):
         response = self.client.get(reverse('vlog:about'))
 
         self.assertContains(response, reverse('vlog:thanks'))
+        self.assertContains(response, reverse('vlog:history'))
 
     def test_context_dict_contains_correct_selected_item_for_about_view(self):
         """
@@ -358,13 +359,41 @@ class ThanksViewTest(JugglingVideoSiteTest):
 
         self.assertContains(response, 'https://www.')
 
-
-    def test_context_dict_contains_correct_selected_item_for_about_view(self):
+    def test_context_dict_contains_correct_selected_item_for_thanks_view(self):
         """
         The context dict for the thanks view should contain 'selected': 'About' (it's in the 'About' section)
         The selected class should appear on the Thanks page
         """
         self.check_context_dict_contains_correct_selected_item_for_view('vlog:thanks', 'About')
+
+
+class HistoryViewTest(JugglingVideoSiteTest):
+    """
+    Tests for the History page
+    """
+
+    def test_history_view_uses_correct_template(self):
+        """
+        Test that this view uses the correct template
+        """
+        response = self.client.get(reverse('vlog:history'))
+
+        self.assertTemplateUsed(response, 'vlog/history.html')
+
+    def test_history_page_shows_site_info(self):
+        """
+        Test that the History page provides some information about the site's history
+        """
+        response = self.client.get(reverse('vlog:history'))
+
+        self.assertContains(response, 'The history of this site')
+
+    def test_context_dict_contains_correct_selected_item_for_history_view(self):
+        """
+        The context dict for the history view should contain 'selected': 'About' (it's in the 'About' section)
+        The selected class should appear on the History page
+        """
+        self.check_context_dict_contains_correct_selected_item_for_view('vlog:history', 'About')
 
 
 class VideoModelTest(TestCase):

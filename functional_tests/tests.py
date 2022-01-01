@@ -219,4 +219,12 @@ class AboutPagesTest(JugglingWebsiteTest):
         # There is a mention for the testing goat!
         thanks_page_main = self.wait_for_element('main', self.browser.find_element_by_tag_name)
         self.assertIn('Testing Goat', thanks_page_main.text)
+        # The user goes back to the about page
+        self.browser.back()
+        # There is also a link to the history of the site on the About page
+        history_link = self.wait_for_element('History', self.browser.find_element_by_link_text)
+        history_link.click()
+        history_page_main = self.wait_for_element('main', self.browser.find_element_by_tag_name)
+        self.assertIn('a series of juggling videos', history_page_main.text)
+
 

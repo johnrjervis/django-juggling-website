@@ -51,3 +51,8 @@ def thanks(request):
     return render(request, 'vlog/thanks.html', {
         'selected': 'About',
     })
+
+def history(request):
+    return render(request, 'vlog/history.html', {
+        'selected': 'About',
+    })

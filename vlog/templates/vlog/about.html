@@ -5,11 +5,19 @@
 {% block main_content %}
 
     <article>
+      <h2>About this website</h2>
+
       <p>Did I mention that this is my website for showing off my juggling skills?</p>
 
       <p>Find out more through the following links:</p>
 
       <dl>
+        <dt>
+          <a href="{% url 'vlog:history' %}">History</a>
+        </dt>
+        <dd>
+          A short history of how this site came into existence.
+        <dd>
         <dt>
           <a href="{% url 'vlog:thanks' %}">Thanks</a>
         </dt>
