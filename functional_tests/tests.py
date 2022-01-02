@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import WebDriverException
 import time
 import tkinter as tk
@@ -29,6 +30,7 @@ class JugglingWebsiteTest(StaticLiveServerTestCase):
             else:
                 time.sleep(1)
                 return search_method(element_identifier)
+
 
 class NewVisitorTest(JugglingWebsiteTest):
 
@@ -184,6 +186,7 @@ class NewVisitorTest(JugglingWebsiteTest):
         self.assertEqual(video_title.text, first_title)
         #time.sleep(24)
 
+
 class LearnPageTest(JugglingWebsiteTest):
 
     def test_learn_page(self):
@@ -227,4 +230,13 @@ class AboutPagesTest(JugglingWebsiteTest):
         history_page_main = self.wait_for_element('main', self.browser.find_element_by_tag_name)
         self.assertIn('a series of juggling videos', history_page_main.text)
 
+        # The user realises that the history and thanks pages can also be accessed from a flyout menu on the about tab
+        info_link = self.browser.find_element_by_link_text('About')
+        flyout = self.browser.find_element_by_class_name('flyout')
+        # The flyout menu is hidden by default
+        self.assertEqual(flyout.value_of_css_property('visibility'), 'hidden')
+        # But the flyout is displayed when the user hovers over the 'About' tab
+        hover = ActionChains(self.browser).move_to_element(info_link)
+        hover.perform()
+        self.assertEqual(flyout.value_of_css_property('visibility'), 'visible')
 

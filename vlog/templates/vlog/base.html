@@ -31,7 +31,17 @@
           <a href="{% url 'vlog:learn' %}">Learn</a>
         </li>
         <li class="navlink {% if selected == 'About' %}selected{% endif %}">
-          <a href="/juggling/about/">About</a>
+          <a href="{% url 'vlog:about' %}">About</a>
+          <div class="flyout">
+            <ul>
+              <li>
+                <a href="{% url 'vlog:history' %}">History</a>
+              </li>
+              <li>
+                <a href="{% url 'vlog:thanks' %}">Thanks</a>
+              </li>
+            </ul>
+          </div>
         </li>
       </ul>
     </nav>
@@ -49,5 +59,7 @@
   </footer>
 
   </body>
+
+  <script src="{% static 'vlog/scripts/flyout.js' %}"></script>
 
 </html>
