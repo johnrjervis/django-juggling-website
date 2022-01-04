@@ -190,6 +190,17 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         self.check_context_dict_contains_correct_selected_item_for_view('vlog:detail', 'Videos', arguments = [first_video.id])
 
+    def test_detail_view_can_save_a_POST_request(self):
+        """
+        Test that comments posted to a video are saved to the detail page
+        """
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:detail', args = [first_video.id]), data = {'comment_text': 'Nice video!'})
+
+        self.assertContains(response, 'Nice video!')
+        self.assertTemplateUsed(response, 'vlog/detail.html')
+
 
 class VideosListViewTest(JugglingVideoSiteTest):
     """

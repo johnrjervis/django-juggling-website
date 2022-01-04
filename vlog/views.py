@@ -34,7 +34,8 @@ def video_detail(request, jugglingvideo_id):
 
     return render(request, 'vlog/detail.html', {
         'selected': 'Videos',
-        'video' : video,
+        'video': video,
+        'new_comment_text': request.POST.get('comment_text', ''),
     })
 
 def learn(request):

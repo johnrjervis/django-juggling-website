@@ -9,6 +9,7 @@ import time
 import tkinter as tk
 import datetime as dt
 
+
 class JugglingWebsiteTest(StaticLiveServerTestCase):
     MAX_WAIT = 10
 
@@ -62,6 +63,12 @@ class NewVisitorTest(JugglingWebsiteTest):
         hours, minutes = time.split(':')
         datelist = [int(elem) for elem in [year, month, day, hours, minutes]]
         return dt.datetime(*datelist, tzinfo = dt.timezone.utc)
+
+    def check_for_comment_in_comments_table(self, comment_text):
+        comment_table = self.wait_for_element('user_comments', self.browser.find_element_by_class_name)
+        comment_rows = comment_table.find_elements_by_tag_name('tr')
+
+        self.assertIn(comment_text, [comment_row.text for comment_row in comment_rows])
 
     def test_homepage_and_video_archive(self):
 
@@ -147,9 +154,26 @@ class NewVisitorTest(JugglingWebsiteTest):
         displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         displayed_pub_date = self.datestring_to_datetime(displayed_date_field.text)
         #self.assertIn(first_pub_date, displayed_date.text) # Replaced by assertAlmostEqual statement below
-        self.assertAlmostEqual(first_pub_date, displayed_pub_date, delta = dt.timedelta(minutes = 1))
+        self.assertAlmostEqual(first_pub_date, displayed_pub_date, delta = dt.timedelta(seconds = 62))
         # The format of the further info link is the base url + videos/ + a number with at least one digit
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
+
+        # The user also sees an input field for posting comments
+        comment_field = self.browser.find_element_by_tag_name('input')
+        self.assertEqual(comment_field.get_attribute('placeholder'), 'Enter a comment')
+        # The user enters a comment
+        comment_field.send_keys('Nice video!')
+        comment_field.send_keys(Keys.ENTER)
+        # The comment appears on the page
+        self.check_for_comment_in_comments_table('Nice video!')
+        # The user enters another comment
+        comment_field = self.browser.find_element_by_tag_name('input')
+        comment_field.send_keys('Great juggling skills!')
+        comment_field.send_keys(Keys.ENTER)
+        # Both comments are now visible on the page
+        self.check_for_comment_in_comments_table('Nice video!')
+        self.check_for_comment_in_comments_table('Great juggling skills!')
+
         # The user returns to the homepage
         homepage_link = self.browser.find_element_by_link_text('Home')
         homepage_link.click()

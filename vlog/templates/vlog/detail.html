@@ -18,6 +18,17 @@
         </div>
 
         <p class="video_pub_date">Published on {{ video.pub_date|date:'Y/m/d \a\t H:i' }}</p>
+
+        <form method="POST">
+          <input name="comment_text" class="comments_box" placeholder="Enter a comment"/>
+          {% csrf_token %}
+        </form>
+
+        <table class="user_comments">
+          <tr>
+            <td>{{ new_comment_text }}</td>
+          </tr>
+        </table>
       {% else %}
         <p id="id_error_message">No videos are available!</p>
       {% endif %}
