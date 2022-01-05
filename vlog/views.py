@@ -1,6 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-#from django.http import HttpResponse
-from vlog.models import JugglingVideo
+from django.shortcuts import render, redirect, reverse, get_object_or_404 
+from vlog.models import JugglingVideo, VideoComment
 from django.utils import timezone
 
 # Create your views here.
@@ -32,10 +31,16 @@ def videos_list(request):
 def video_detail(request, jugglingvideo_id):
     video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
 
+    if request.method == 'POST':
+        VideoComment.objects.create(text = request.POST['comment_text'])
+        return redirect(reverse('vlog:detail', args = [video.id]))
+
+    comments = VideoComment.objects.all()
+
     return render(request, 'vlog/detail.html', {
         'selected': 'Videos',
         'video': video,
-        'new_comment_text': request.POST.get('comment_text', ''),
+        'comments': comments,
     })
 
 def learn(request):

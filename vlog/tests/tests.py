@@ -1,7 +1,7 @@
 from django.test import TestCase
-from django.urls import resolve, reverse
+from django.urls import reverse
 from django.utils import timezone
-from vlog.models import JugglingVideo
+from vlog.models import JugglingVideo, VideoComment
 from datetime import timedelta
 
 class JugglingVideoSiteTest(TestCase):
@@ -196,10 +196,45 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.post(reverse('vlog:detail', args = [first_video.id]), data = {'comment_text': 'Nice video!'})
+        response = self.client.post(reverse('vlog:detail', args = [first_video.id]), data = {'comment_text': 'First comment!'})
+        first_comment = VideoComment.objects.first()
 
+        self.assertEqual(VideoComment.objects.count(), 1)
+        self.assertEqual(first_comment.text, 'First comment!')
+
+    def test_detail_view_redirects_after_a_POST_request(self):
+        """
+        Test that the detail view redirects to itself after a POST request is used to submit a comment
+        """
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:detail', args = [first_video.id]), data = {'comment_text': 'First comment!'})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], reverse('vlog:detail', args = [first_video.id]))
+
+    def test_video_detail_view_only_saves_items_when_required(self):
+        """
+        Tests that the video detail view does not save blank comments when the page is visited
+        """
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
+
+        self.assertEqual(VideoComment.objects.count(), 0)
+
+    def test_video_detail_view_displays_all_comments(self):
+        """
+        Test that the video detail view displays all comments
+        """
+        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        VideoComment.objects.create(text = 'First comment!')
+        VideoComment.objects.create(text = 'Nice video!')
+
+        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
+
+        self.assertContains(response, 'First comment!')
         self.assertContains(response, 'Nice video!')
-        self.assertTemplateUsed(response, 'vlog/detail.html')
 
 
 class VideosListViewTest(JugglingVideoSiteTest):
@@ -409,7 +444,7 @@ class HistoryViewTest(JugglingVideoSiteTest):
 
 class VideoModelTest(TestCase):
     """
-    Tests for the database)
+    Tests for the juggling video database
     """
 
     def test_saving_and_retrieving_videos(self):
@@ -425,4 +460,26 @@ class VideoModelTest(TestCase):
         self.assertEqual(first_video.filename, first_saved_video.filename)
         self.assertEqual(first_video.title, first_saved_video.title)
         self.assertEqual(first_video.pub_date, first_saved_video.pub_date)
+
+
+class VideoCommentModelTest(TestCase):
+    """
+    Tests for the video comments database
+    """
+
+    def test_saving_and_retrieving_comments(self):
+        first_comment = VideoComment()
+        first_comment.text = 'First comment!'
+        first_comment.save()
+
+        second_comment = VideoComment()
+        second_comment.text = 'Nice video!'
+        second_comment.save()
+
+        saved_comments = VideoComment.objects.all()
+
+        self.assertEqual(saved_comments.count(), 2)
+        self.assertEqual(saved_comments[0].text, 'First comment!')
+        self.assertEqual(saved_comments[1].text, 'Nice video!')
+
 

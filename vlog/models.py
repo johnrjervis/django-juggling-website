@@ -3,6 +3,7 @@ from django.utils import timezone
 
 # Create your models here.
 
+
 class JugglingVideo(models.Model):
     filename = models.CharField(max_length = 60, default = '')
     title = models.CharField(max_length = 50, default = '')
@@ -13,3 +14,8 @@ class JugglingVideo(models.Model):
 
     def __repr__(self):
         return f'{self.__class__}: {self.filename}'
+
+
+class VideoComment(models.Model):
+    text = models.TextField(default = '')
+

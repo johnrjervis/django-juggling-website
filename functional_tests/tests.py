@@ -154,7 +154,7 @@ class NewVisitorTest(JugglingWebsiteTest):
         displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         displayed_pub_date = self.datestring_to_datetime(displayed_date_field.text)
         #self.assertIn(first_pub_date, displayed_date.text) # Replaced by assertAlmostEqual statement below
-        self.assertAlmostEqual(first_pub_date, displayed_pub_date, delta = dt.timedelta(seconds = 62))
+        self.assertAlmostEqual(first_pub_date, displayed_pub_date, delta = dt.timedelta(seconds = 65))
         # The format of the further info link is the base url + videos/ + a number with at least one digit
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
 

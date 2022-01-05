@@ -25,9 +25,11 @@
         </form>
 
         <table class="user_comments">
-          <tr>
-            <td>{{ new_comment_text }}</td>
-          </tr>
+          {% for comment in comments %}
+            <tr>
+              <td>{{ comment.text }}</td>
+            </tr>
+          {% endfor %}
         </table>
       {% else %}
         <p id="id_error_message">No videos are available!</p>
