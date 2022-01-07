@@ -9,6 +9,7 @@ import time
 import tkinter as tk
 import datetime as dt
 
+from unittest import skip
 ## Tests are run in alphabetical order of class, hence T01, T02, etc.
 
 class JugglingWebsiteTest(StaticLiveServerTestCase):
@@ -57,7 +58,7 @@ class T01HomePageAndAdminSiteTest(JugglingWebsiteTest):
     def make_superuser(self):
         User.objects.create_superuser(username='admin_user', email='admin@jjs_juggling_site.com', password='secret_password')
 
-    def test_homepage_and_video_archive(self):
+    def test_homepage_and_admin_site(self):
 
         # A net user stumbles across a cool juggling site
         visitor_browser = self.browser
@@ -139,11 +140,11 @@ class T01HomePageAndAdminSiteTest(JugglingWebsiteTest):
         title_field.send_keys(second_video_title)
         title_field.send_keys(Keys.ENTER)
 
-        # The net user returns to the juggling site hoping to watch the first video again
+        # The net user returns to the juggling site to see the latest video
         time.sleep(1)
         self.browser = visitor_browser
         self.browser.refresh()
-        # However, the original video is no longer on the homepage
+        # The original video is no longer on the homepage
         time.sleep(1)
         videos = self.wait_for_element('video', self.browser.find_elements_by_tag_name)
         self.assertEqual(len(videos), 1)
@@ -283,14 +284,15 @@ class T02VideoArchiveAndDetailViewTest(JugglingWebsiteTest):
         self.assertAlmostEqual(first_pub_date, older_displayed_pub_date, delta = dt.timedelta(seconds = 65))
 
         # The visitor is surprised to see that no-one has commented on this video yet
-        comments = self.wait_for_element('comment', self.browser.find_element_by_class_name)
-        self.assertNotIn('First post!', comments.text)
+        comments = self.wait_for_element('comment', self.browser.find_elements_by_class_name)
+        self.assertNotIn('First post!', [comment.text for comment in comments])
         self.assertEqual(len(comments), 0)
 
         # The user enters another comment
         comment_field = self.browser.find_element_by_tag_name('input')
         comment_field.send_keys('Great juggling skills!')
         comment_field.send_keys(Keys.ENTER)
+        time.sleep(1)
         # Feeling that they have missed an opportunity, the visitor adds another comment
         comment_field = self.browser.find_element_by_tag_name('input')
         comment_field.send_keys('Second post!')

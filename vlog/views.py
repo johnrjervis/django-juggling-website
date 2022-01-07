@@ -29,17 +29,17 @@ def videos_list(request):
     })
 
 def video_detail(request, jugglingvideo_id):
-    video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
+    juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
 
     if request.method == 'POST':
-        VideoComment.objects.create(text = request.POST['comment_text'])
-        return redirect(reverse('vlog:detail', args = [video.id]))
+        VideoComment.objects.create(text = request.POST['comment_text'], video = juggling_video)
+        return redirect(reverse('vlog:detail', args = [juggling_video.id]))
 
-    comments = VideoComment.objects.all()
+    comments = VideoComment.objects.filter(video = juggling_video)
 
     return render(request, 'vlog/detail.html', {
         'selected': 'Videos',
-        'video': video,
+        'video': juggling_video,
         'comments': comments,
     })
 

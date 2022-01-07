@@ -210,8 +210,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         response = self.client.post(reverse('vlog:detail', args = [first_video.id]), data = {'comment_text': 'First comment!'})
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], reverse('vlog:detail', args = [first_video.id]))
+        self.assertRedirects(response, reverse('vlog:detail', args = [first_video.id]))
 
     def test_video_detail_view_only_saves_items_when_required(self):
         """
@@ -223,18 +222,23 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         self.assertEqual(VideoComment.objects.count(), 0)
 
-    def test_video_detail_view_displays_all_comments(self):
+    def test_video_detail_view_only_displays_comments_for_the_correct_video(self):
         """
-        Test that the video detail view displays all comments
+        Test that the video detail view only displays comments that relate to the specified video
         """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
-        VideoComment.objects.create(text = 'First comment!')
-        VideoComment.objects.create(text = 'Nice video!')
+        correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        VideoComment.objects.create(text = 'First comment!', video = correct_video)
+        VideoComment.objects.create(text = 'Nice video!', video = correct_video)
+        other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        VideoComment.objects.create(text = 'Other video comment #1', video = other_video)
+        VideoComment.objects.create(text = 'Other video comment #2', video = other_video)
 
-        response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
+        response = self.client.get(reverse('vlog:detail', args = [correct_video.id]))
 
         self.assertContains(response, 'First comment!')
         self.assertContains(response, 'Nice video!')
+        self.assertNotContains(response, 'Other comment #1')
+        self.assertNotContains(response, 'Other comment #2')
 
 
 class VideosListViewTest(JugglingVideoSiteTest):
@@ -462,24 +466,30 @@ class VideoModelTest(TestCase):
         self.assertEqual(first_video.pub_date, first_saved_video.pub_date)
 
 
-class VideoCommentModelTest(TestCase):
+class VideoAndCommentModelTest(TestCase):
     """
     Tests for the video comments database
     """
 
     def test_saving_and_retrieving_comments(self):
+        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now())
         first_comment = VideoComment()
         first_comment.text = 'First comment!'
+        first_comment.video = juggling_video
         first_comment.save()
-
         second_comment = VideoComment()
         second_comment.text = 'Nice video!'
+        second_comment.video = juggling_video
         second_comment.save()
 
         saved_comments = VideoComment.objects.all()
+        first_saved_comment = saved_comments[0]
+        second_saved_comment = saved_comments[1]
 
         self.assertEqual(saved_comments.count(), 2)
-        self.assertEqual(saved_comments[0].text, 'First comment!')
-        self.assertEqual(saved_comments[1].text, 'Nice video!')
+        self.assertEqual(first_saved_comment.text, 'First comment!')
+        self.assertEqual(first_saved_comment.video, juggling_video)
+        self.assertEqual(second_saved_comment.text, 'Nice video!')
+        self.assertEqual(second_saved_comment.video, juggling_video)
 
 

@@ -18,4 +18,11 @@ class JugglingVideo(models.Model):
 
 class VideoComment(models.Model):
     text = models.TextField(default = '')
+    video = models.ForeignKey(JugglingVideo, default = None, on_delete = models.SET_DEFAULT)
+
+    def __str__(self):
+        return f'Comment: {self.text}'
+
+    def __repr__(self):
+        return f'{self.__class__}: {self.text}'
 
