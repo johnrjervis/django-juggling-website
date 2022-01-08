@@ -14,7 +14,7 @@ class JugglingVideoSiteTest(TestCase):
         # Note the name of this method cannot include test, because it is not intended to be run 'as is'
         # Create a test method in a sub-class and call this method from that test
         response = self.client.get(reverse(view_name, args = arguments))
-        selected = response.context[-1].get('selected')
+        selected = response.context['selected']
 
         self.assertEqual(selected, desired_selected_value)
         self.assertContains(response, '<li class="navlink selected">')
@@ -120,6 +120,17 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         self.assertTemplateUsed(response, 'vlog/detail.html')
 
+    def test_video_detail_view_passes_correct_video_to_template(self):
+        """
+        Tests that the video detail view passes the correct view in the context dictionary
+        """
+        correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+
+        response = self.client.get(reverse('vlog:detail', args = [correct_video.id]))
+
+        self.assertEqual(response.context['video'], correct_video)
+
     def test_detail_view_displays_video(self):
         """
         The detail page for a juggling video object should display the correct video
@@ -190,28 +201,6 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         self.check_context_dict_contains_correct_selected_item_for_view('vlog:detail', 'Videos', arguments = [first_video.id])
 
-    def test_detail_view_can_save_a_POST_request(self):
-        """
-        Test that comments posted to a video are saved to the detail page
-        """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
-
-        response = self.client.post(reverse('vlog:detail', args = [first_video.id]), data = {'comment_text': 'First comment!'})
-        first_comment = VideoComment.objects.first()
-
-        self.assertEqual(VideoComment.objects.count(), 1)
-        self.assertEqual(first_comment.text, 'First comment!')
-
-    def test_detail_view_redirects_after_a_POST_request(self):
-        """
-        Test that the detail view redirects to itself after a POST request is used to submit a comment
-        """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
-
-        response = self.client.post(reverse('vlog:detail', args = [first_video.id]), data = {'comment_text': 'First comment!'})
-
-        self.assertRedirects(response, reverse('vlog:detail', args = [first_video.id]))
-
     def test_video_detail_view_only_saves_items_when_required(self):
         """
         Tests that the video detail view does not save blank comments when the page is visited
@@ -239,6 +228,37 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         self.assertContains(response, 'Nice video!')
         self.assertNotContains(response, 'Other comment #1')
         self.assertNotContains(response, 'Other comment #2')
+
+
+class AddCommentTest(TestCase):
+    """
+    Tests for the URL and view for adding comments'
+    """
+
+    def test_can_save_a_POST_request_for_an_existing_video(self):
+        """
+        Test that a POST request to the new comment URL causes the comment to be saved to the database
+        """
+        correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+
+        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'comment_text': 'First comment on correct video!'})
+        first_comment = VideoComment.objects.first()
+
+        self.assertEqual(VideoComment.objects.count(), 1)
+        self.assertEqual(first_comment.text, 'First comment on correct video!')
+        self.assertEqual(first_comment.video, correct_video)
+
+    def test_new_comment_POST_redirects_to_video_detail_page(self):
+        """
+        Test that when a comment is posted for a video, the browser is redirected to the detail page for the same video
+        """
+        correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+
+        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'comment_text': 'First comment on correct video!'})
+
+        self.assertRedirects(response, reverse('vlog:detail', args = [correct_video.id]))
 
 
 class VideosListViewTest(JugglingVideoSiteTest):

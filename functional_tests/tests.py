@@ -9,7 +9,6 @@ import time
 import tkinter as tk
 import datetime as dt
 
-from unittest import skip
 ## Tests are run in alphabetical order of class, hence T01, T02, etc.
 
 class JugglingWebsiteTest(StaticLiveServerTestCase):

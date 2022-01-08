@@ -16,6 +16,7 @@ def index(request):
         'videos_list' : videos_list,
     })
 
+
 def videos_list(request):
     videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
     videos_list = ''
@@ -28,35 +29,41 @@ def videos_list(request):
         'videos_list': videos_list
     })
 
+
 def video_detail(request, jugglingvideo_id):
     juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
-
-    if request.method == 'POST':
-        VideoComment.objects.create(text = request.POST['comment_text'], video = juggling_video)
-        return redirect(reverse('vlog:detail', args = [juggling_video.id]))
-
-    comments = VideoComment.objects.filter(video = juggling_video)
 
     return render(request, 'vlog/detail.html', {
         'selected': 'Videos',
         'video': juggling_video,
-        'comments': comments,
     })
+
+
+def add_comment(request, jugglingvideo_id):
+    juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
+
+    VideoComment.objects.create(text = request.POST['comment_text'], video = juggling_video)
+
+    return redirect(reverse('vlog:detail', args = [juggling_video.id]))
+
 
 def learn(request):
     return render(request, 'vlog/learn.html', {
         'selected': 'Learn',
     })
 
+
 def about(request):
     return render(request, 'vlog/about.html', {
         'selected': 'About',
     })
 
+
 def thanks(request):
     return render(request, 'vlog/thanks.html', {
         'selected': 'About',
     })
+
 
 def history(request):
     return render(request, 'vlog/history.html', {

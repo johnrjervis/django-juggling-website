@@ -19,13 +19,13 @@
 
         <p class="video_pub_date">Published on {{ video.pub_date|date:'Y/m/d \a\t H:i' }}</p>
 
-        <form method="POST">
+        <form method="POST" action="{% url 'vlog:add_comment' video.id %}">
           <input name="comment_text" class="comments_box" placeholder="Enter a comment"/>
           {% csrf_token %}
         </form>
 
         <table class="user_comments">
-          {% for comment in comments %}
+          {% for comment in video.videocomment_set.all %}
             <tr>
               <td class="comment">{{ comment.text }}</td>
             </tr>
