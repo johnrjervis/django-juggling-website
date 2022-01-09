@@ -64,7 +64,7 @@ class T01HomePageAndAdminSiteTest(JugglingWebsiteTest):
         self.addCleanup(lambda: self.quit_if_possible(visitor_browser))
         self.browser.set_window_size(self.browser_width, self.browser_height)
         self.browser.set_window_position(0, 0)
-        self.browser.get(f'{self.live_server_url}/juggling/')
+        self.browser.get(self.live_server_url)
 
         # On inspecting the site's title, the net user realises that this is none other than JJ's juggling site
         self.assertEqual("JJ's juggling site", self.browser.title)

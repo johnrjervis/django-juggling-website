@@ -33,6 +33,14 @@ class IndexViewTest(JugglingVideoSiteTest):
 
         self.assertTemplateUsed(response, 'vlog/index.html')
 
+    def test_root_url_redirects_to_homepage(self):
+        """
+        Test that a request to the root URL redirects to the homepage
+        """
+        response = self.client.get('/')
+
+        self.assertRedirects(response, reverse('vlog:index'))
+
     def test_home_page_displays_error_if_no_videos_in_database(self):
         """
         The home page should display an error message if there are no video objects in the database 

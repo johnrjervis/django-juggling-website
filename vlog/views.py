@@ -17,6 +17,10 @@ def index(request):
     })
 
 
+def index_redirect(request):
+    return redirect(reverse('vlog:index'))
+
+
 def videos_list(request):
     videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
     videos_list = ''
