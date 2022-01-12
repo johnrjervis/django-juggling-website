@@ -33,10 +33,11 @@ class JugglingWebsiteTest(StaticLiveServerTestCase):
                 time.sleep(1)
                 return search_method(element_identifier)
 
-class AdminAndSiteUserTest(JugglingWebsiteTest):
+class AdminAndSiteVisitorTest(JugglingWebsiteTest):
 
     def setUp(self):
-        self.visitor_browser = webdriver.Firefox()
+        ## self.browser is the main browser (i.e. the site visitor), self.jj_browser is the admin browser
+        self.browser = webdriver.Firefox()
         self.jj_browser = webdriver.Firefox()
 
         root = tk.Tk()
@@ -50,46 +51,46 @@ class AdminAndSiteUserTest(JugglingWebsiteTest):
 
         User.objects.create_superuser(username='admin_user', email='admin@jjs_juggling_site.com', password='secret_password')
 
-        self.visitor_browser.set_window_size(browser_width, browser_height)
+        self.browser.set_window_size(browser_width, browser_height)
         self.jj_browser.set_window_size(browser_width, browser_height)
-        self.visitor_browser.set_window_position(0, 0)
+        self.browser.set_window_position(0, 0)
         self.jj_browser.set_window_position(browser_width + (gap * 2), 0)
 
     def tearDown(self):
         self.jj_browser.quit()
-        self.visitor_browser.quit()
+        self.browser.quit()
 
 
-class T01HomePageAndAdminSiteTest(AdminAndSiteUserTest):
+class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
 
     def test_homepage_and_admin_site(self):
 
         # A net user stumbles across a cool juggling site
-        self.visitor_browser.get(self.live_server_url)
+        self.browser.get(self.live_server_url)
 
         # On inspecting the site's title, the net user realises that this is none other than JJ's juggling site
-        self.assertEqual("JJ's juggling site", self.visitor_browser.title)
+        self.assertEqual("JJ's juggling site", self.browser.title)
 
         # The site's title element confirms it
-        h1_text = self.visitor_browser.find_element_by_tag_name('h1').text
+        h1_text = self.browser.find_element_by_tag_name('h1').text
         self.assertEqual("JJ's juggling videos", h1_text)
 
         # The site has a distinctive green colour scheme
         ## This section tests that the CSS has been applied
-        site_header = self.visitor_browser.find_element_by_tag_name('header')
+        site_header = self.browser.find_element_by_tag_name('header')
         site_header_colour = site_header.value_of_css_property('background-color')
         self.assertEqual(site_header_colour, 'rgb(100, 246, 100)')
         # And the home tab stands out in the navigation menu (because it has the 'selected' class applied)
-        index_tab = self.visitor_browser.find_element_by_class_name('selected')
+        index_tab = self.browser.find_element_by_class_name('selected')
         self.assertEqual(index_tab.text, 'Home')
 
         # However, the site has only just been launched, and no videos have been uploaded yet
-        error_message = self.visitor_browser.find_element_by_id('id_error_message').text
+        error_message = self.browser.find_element_by_id('id_error_message').text
         self.assertEqual('No videos are available!', error_message)
-        videos = self.visitor_browser.find_elements_by_tag_name('video')
+        videos = self.browser.find_elements_by_tag_name('video')
         self.assertEqual(len(videos), 0)
         # There are also no links for further information on any videos
-        further_info_links = self.wait_for_element('info_link', self.visitor_browser.find_elements_by_class_name)
+        further_info_links = self.wait_for_element('info_link', self.browser.find_elements_by_class_name)
         self.assertEqual(len(further_info_links), 0)
 
         # JJ logs in to the admin site and uploads the first video
@@ -113,9 +114,9 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteUserTest):
         title_field.send_keys(Keys.ENTER)
 
         # On returning to the page after the update, the net user sees a new video on the site
-        self.visitor_browser.refresh()
+        self.browser.refresh()
         time.sleep(1)
-        videos = self.wait_for_element('video', self.visitor_browser.find_elements_by_tag_name)
+        videos = self.wait_for_element('video', self.browser.find_elements_by_tag_name)
         self.assertEqual(len(videos), 1)
         self.assertIn(first_video_filename, videos[0].get_attribute('innerHTML'))
 
@@ -134,23 +135,23 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteUserTest):
 
         # The site visitor returns to the juggling site to see the latest video
         time.sleep(1)
-        self.visitor_browser.refresh()
+        self.browser.refresh()
         # The original video is no longer on the homepage
         time.sleep(1)
-        videos = self.wait_for_element('video', self.visitor_browser.find_elements_by_tag_name)
+        videos = self.wait_for_element('video', self.browser.find_elements_by_tag_name)
         self.assertEqual(len(videos), 1)
         self.assertNotIn(first_video_filename, videos[0].get_attribute('innerHTML'))
         # The newer video appears in its place
         self.assertIn(second_video_filename, videos[0].get_attribute('innerHTML'))
 
 
-class T02VideoArchiveAndDetailViewTest(AdminAndSiteUserTest):
+class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
-    def check_for_comment_in_comments_table(self, comment_text):
-        comment_table = self.wait_for_element('user_comments', self.visitor_browser.find_element_by_class_name)
-        comment_rows = comment_table.find_elements_by_tag_name('tr')
+    def check_for_comment_in_comments_section(self, comment_text):
+        comments_section = self.wait_for_element('comments', self.browser.find_element_by_class_name)
+        comments = comments_section.find_elements_by_class_name('comment')
 
-        self.assertIn(comment_text, [comment_row.text for comment_row in comment_rows])
+        self.assertIn(comment_text, [comment.text for comment in comments])
 
     def datestring_to_datetime(self, datestring):
         """Converts the pub date (as it appears on the page) into a datetime object"""
@@ -196,71 +197,74 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteUserTest):
         title_field.send_keys(Keys.ENTER)
 
         # A site visitor goes to the homepage
-        self.visitor_browser.get(f'{self.live_server_url}/juggling/')
+        self.browser.get(f'{self.live_server_url}/juggling/')
 
-        # The visitor notices that there is a link for more information about the video
-        video_comment_link = self.wait_for_element('comment_link', self.visitor_browser.find_element_by_class_name)
+        # The visitor notices that there is a link for commenting on the video
+        video_comment_link = self.wait_for_element('comment_link', self.browser.find_element_by_class_name)
         self.assertIn('Comment on this video', video_comment_link.text)
         # The user clicks the link
         video_comment_link.click()
         # The title of the video is displayed
-        video_title = self.wait_for_element('detail_heading', self.visitor_browser.find_element_by_class_name)
+        video_title = self.wait_for_element('detail_heading', self.browser.find_element_by_class_name)
         self.assertEqual(video_title.text, second_video_title)
         # The video's publication date is also displayed
-        displayed_date_field = self.visitor_browser.find_element_by_class_name('video_pub_date')
+        displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         displayed_pub_date = self.datestring_to_datetime(displayed_date_field.text)
         #self.assertIn(first_pub_date, displayed_date.text) # Replaced by assertAlmostEqual statement below
         self.assertAlmostEqual(second_pub_date, displayed_pub_date, delta = dt.timedelta(seconds = 65))
         # The format of the further info link is the base url + videos/ + a number with at least one digit
-        self.assertRegex(self.visitor_browser.current_url, r'/videos/\d+')
+        self.assertRegex(self.browser.current_url, r'/videos/\d+')
 
-        # The visitor also sees an input field for posting comments
-        comment_field = self.visitor_browser.find_element_by_tag_name('input')
+        # The visitor sees an input field for posting comments
+        comment_field = self.browser.find_element_by_tag_name('textarea')
         self.assertEqual(comment_field.get_attribute('placeholder'), 'Enter a comment')
-        # The visitor enters a comment
+        # The visitor enters a comment and clicks the 'Post comment' button
         comment_field.send_keys('First post!')
-        comment_field.send_keys(Keys.ENTER)
+        submit_button = self.browser.find_element_by_tag_name('button')
+        submit_button.click()
         # The comment appears on the page
-        self.check_for_comment_in_comments_table('First post!')
+        self.check_for_comment_in_comments_section('First post!')
 
         # Intrigued to see what other videos are available, the visitor clicks the archive link
-        video_archive_link = self.visitor_browser.find_element_by_link_text('Videos')
+        video_archive_link = self.browser.find_element_by_link_text('Videos')
         video_archive_link.click()
         # The latest video is not in the archive, but there is another video (which was posted about a week ago)
-        videos = self.wait_for_element('video', self.visitor_browser.find_elements_by_tag_name)
+        videos = self.wait_for_element('video', self.browser.find_elements_by_tag_name)
         self.assertEqual(len(videos), 1)
         self.assertNotIn(second_video_filename, videos[0].get_attribute('innerHTML'))
         self.assertIn(first_video_filename, videos[0].get_attribute('innerHTML'))
 
-        # Once again, there is a link for further information
-        archive_video_comment_link = self.wait_for_element('comment_link', self.visitor_browser.find_element_by_class_name)
+        # Once again, there is a link for comments
+        archive_video_comment_link = self.wait_for_element('comment_link', self.browser.find_element_by_class_name)
         # The user clicks the link
         archive_video_comment_link.click()
         # The title of this video is displayed
-        video_title = self.wait_for_element('detail_heading', self.visitor_browser.find_element_by_class_name)
+        video_title = self.wait_for_element('detail_heading', self.browser.find_element_by_class_name)
         self.assertEqual(video_title.text, first_video_title)
         # The video's publication date is also displayed - it is about a week old
-        older_displayed_date_field = self.visitor_browser.find_element_by_class_name('video_pub_date')
+        older_displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         older_displayed_pub_date = self.datestring_to_datetime(older_displayed_date_field.text)
         self.assertAlmostEqual(first_pub_date, older_displayed_pub_date, delta = dt.timedelta(seconds = 65))
 
         # The visitor is surprised to see that no-one has commented on this video yet
-        comments = self.wait_for_element('comment', self.visitor_browser.find_elements_by_class_name)
+        comments = self.wait_for_element('comment', self.browser.find_elements_by_class_name)
         self.assertNotIn('First post!', [comment.text for comment in comments])
         self.assertEqual(len(comments), 0)
 
         # The user enters another comment
-        comment_field = self.visitor_browser.find_element_by_tag_name('input')
+        comment_field = self.browser.find_element_by_tag_name('textarea')
         comment_field.send_keys('Great juggling skills!')
-        comment_field.send_keys(Keys.ENTER)
+        submit_button = self.browser.find_element_by_tag_name('button')
+        submit_button.click()
         time.sleep(1)
         # Feeling that they have missed an opportunity, the visitor adds another comment
-        comment_field = self.visitor_browser.find_element_by_tag_name('input')
+        comment_field = self.browser.find_element_by_tag_name('textarea')
         comment_field.send_keys('Second post!')
-        comment_field.send_keys(Keys.ENTER)
+        submit_button = self.browser.find_element_by_tag_name('button')
+        submit_button.click()
         # Both comments are now visible on the page
-        self.check_for_comment_in_comments_table('Great juggling skills!')
-        self.check_for_comment_in_comments_table('Second post!')
+        self.check_for_comment_in_comments_section('Great juggling skills!')
+        self.check_for_comment_in_comments_section('Second post!')
 
 
 class T03LearnPageTest(JugglingWebsiteTest):
