@@ -90,6 +90,15 @@ a {
   color: green;
 }
 
+a[href^="http"] {
+  padding-right: 2rem;
+  background: transparent url('../images/external_link.png') 100% 0;
+  background-image: linear-gradient(transparent, transparent), url('../images/external_link.svg');
+  background-repeat: no-repeat;
+  background-position: 100% 0;
+  background-size: 1.6rem;
+}
+
 a:visited {
   color: black;
 }
@@ -196,8 +205,7 @@ section.comments {
 }
 
 form,
-p.comment,
-p.video_pub_date {
+.comments > p {
   margin: 0.5rem;
   width: 80%;
   min-width: 10rem;
@@ -296,5 +304,5 @@ button:hover {
 
   .flyout ul li:last-child a {
     border-radius: 0px 0px 15px 15px;
-  } 
+  }
 }
