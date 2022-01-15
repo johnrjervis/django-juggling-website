@@ -13,29 +13,27 @@ class T04AboutPagesTest(JugglingWebsiteTest):
         # Another visitor accesses the website
         self.browser.get(f'{self.live_server_url}/juggling/')
         # The visitor clicks on the info link to find out more about the juggling site
-        info_link = self.wait_for_element('About', self.browser.find_element_by_link_text)
+        info_link = self.wait_for(lambda: self.browser.find_element_by_link_text('About'))
         info_link.click()
-
-        para = self.wait_for_element('p', self.browser.find_element_by_tag_name)
-        self.assertEqual(para.text, 'Did I mention that this is my website for showing off my juggling skills?')
-
-        # This page contains liks to information pages
+        # This page invites the visitor to find out more
+        self.wait_for(lambda: self.assertIn('Find out more', self.browser.find_element_by_tag_name('main').text))
+        # The further information is provided in links to pages in the main section of the page
+        ## I've selected the main section so that the links in the navigation menu are ignored
         about_page_main_section = self.browser.find_element_by_tag_name('main')
         page_links = about_page_main_section.find_elements_by_tag_name('a')
         self.assertGreater(len(page_links), 0)
+
         # The visitor clicks on a link to the thanks page where JJ acknowledges some useful resources
         thanks_link = self.browser.find_element_by_link_text('Thanks')
         thanks_link.click()
         # There is a mention for the testing goat!
-        thanks_page_main = self.wait_for_element('main', self.browser.find_element_by_tag_name)
-        self.assertIn('Testing Goat', thanks_page_main.text)
+        self.wait_for(lambda: self.assertIn('Testing Goat', self.browser.find_element_by_tag_name('main').text))
         # The user goes back to the about page
         self.browser.back()
         # There is also a link to the history of the site on the About page
-        history_link = self.wait_for_element('History', self.browser.find_element_by_link_text)
+        history_link = self.wait_for(lambda: self.browser.find_element_by_link_text('History'))
         history_link.click()
-        history_page_main = self.wait_for_element('main', self.browser.find_element_by_tag_name)
-        self.assertIn('a series of juggling videos', history_page_main.text)
+        self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_tag_name('h2').text, 'The history of this site'))
 
         # The user realises that the history and thanks pages can also be accessed from a flyout menu on the about tab
         info_link = self.browser.find_element_by_link_text('About')

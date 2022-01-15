@@ -9,7 +9,7 @@ import datetime as dt
 class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
     def check_for_comment_in_comments_section(self, comment_text):
-        comments_section = self.wait_for_element('comments', self.browser.find_element_by_class_name)
+        comments_section = self.wait_for(lambda: self.browser.find_element_by_class_name('comments'))
         comments = comments_section.find_elements_by_class_name('comment')
 
         self.assertIn(comment_text, [comment.text for comment in comments])
@@ -31,11 +31,11 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         password_field = self.jj_browser.find_element_by_id('id_password')
         password_field.send_keys('secret_password')
         password_field.send_keys(Keys.ENTER)
-        application_div = self.wait_for_element('app-vlog', self.jj_browser.find_element_by_class_name)
-        self.assertIn('Juggling videos', application_div.text)
+        application_div = self.wait_for(lambda: self.jj_browser.find_element_by_class_name('app-vlog'))
+        #self.assertIn('Juggling videos', application_div.text)
         add_video_link = application_div.find_element_by_link_text('Add')
         add_video_link.click()
-        new_video_field = self.wait_for_element('id_filename', self.jj_browser.find_element_by_id)
+        new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
         ## Need to find a way to send times to the date field in the admin site if I want to adjust pub dates
         first_pub_date = timezone.now()
         first_video_filename = 'five_ball_juggle_50_catches.mp4'
@@ -44,9 +44,9 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         first_video_title = 'Five ball juggle 50 catches'
         title_field.send_keys(first_video_title)
         title_field.send_keys(Keys.ENTER)
-        add_new_video_link = self.wait_for_element('ADD JUGGLING VIDEO', self.jj_browser.find_element_by_link_text)
+        add_new_video_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('ADD JUGGLING VIDEO'))
         add_new_video_link.click()
-        new_video_field = self.wait_for_element('id_filename', self.jj_browser.find_element_by_id)
+        new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
         # A second video was added just now
         second_pub_date = timezone.now()
         self.assertGreaterEqual(second_pub_date, first_pub_date)
@@ -61,7 +61,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.browser.get(f'{self.live_server_url}/juggling/')
 
         # The visitor notices that there is a link for commenting on the video
-        video_comment_link = self.wait_for_element('comment_link', self.browser.find_element_by_class_name)
+        video_comment_link = self.wait_for(lambda: self.browser.find_element_by_class_name('comment_link'))
         self.assertIn('Comment on this video', video_comment_link.text)
         # The user clicks the link
         video_comment_link.click()
@@ -106,8 +106,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The user clicks the link
         archive_video_comment_link.click()
         # The title of this video is displayed
-        video_title = self.wait_for_element('detail_heading', self.browser.find_element_by_class_name)
-        self.assertEqual(video_title.text, first_video_title)
+        self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, first_video_title))
         # The video's publication date is also displayed - it is about a week old
         older_displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         older_displayed_pub_date = self.datestring_to_datetime(older_displayed_date_field.text)

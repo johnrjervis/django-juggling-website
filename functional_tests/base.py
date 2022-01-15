@@ -31,6 +31,17 @@ class JugglingWebsiteTest(StaticLiveServerTestCase):
                 time.sleep(1)
                 return search_method(element_identifier)
 
+    def wait_for(self, fn):
+        start_time = time.time()
+        while True:
+            try:
+                return fn()
+            except (AssertionError, WebDriverException) as e:
+                if time.time() - start_time > self.MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+
+
 class AdminAndSiteVisitorTest(JugglingWebsiteTest):
 
     def setUp(self):
