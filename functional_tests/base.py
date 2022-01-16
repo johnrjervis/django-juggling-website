@@ -18,19 +18,6 @@ class JugglingWebsiteTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def wait_for_element(self, element_identifier, search_method):
-        start_time = time.time()
-        while True:
-            try:
-                element = search_method(element_identifier)
-            except WebDriverException as e:
-                if time.time() > start_time + self.MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-            else:
-                time.sleep(1)
-                return search_method(element_identifier)
-
     def wait_for(self, fn):
         start_time = time.time()
         while True:

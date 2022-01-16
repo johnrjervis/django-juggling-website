@@ -66,8 +66,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The user clicks the link
         video_comment_link.click()
         # The title of the video is displayed
-        video_title = self.wait_for_element('detail_heading', self.browser.find_element_by_class_name)
-        self.assertEqual(video_title.text, second_video_title)
+        self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, second_video_title))
         # The video's publication date is also displayed
         displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         displayed_pub_date = self.datestring_to_datetime(displayed_date_field.text)
@@ -89,20 +88,20 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         #submit_button = self.browser.find_element_by_tag_name('button')
         #submit_button.click()
         # The page refreshes and displays a warning to say that the blank comment could not be submitted
-        #comment_warning = self.wait_for_element('comment_warning', self.browser.find_element_by_class_name)
-        #self.assertEqual(comment_warning.text, 'Could not submit blank comment')
+        #self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('comment_warning').text, 'Could not submit blank comment'))
 
         # Intrigued to see what other videos are available, the visitor clicks the archive link
         video_archive_link = self.browser.find_element_by_link_text('Videos')
         video_archive_link.click()
-        # The latest video is not in the archive, but there is another video (which was posted about a week ago)
-        videos = self.wait_for_element('video', self.browser.find_elements_by_tag_name)
+        # The first video posted to the site is in the archive
+        self.wait_for(lambda: self.assertIn(first_video_filename, self.browser.find_element_by_tag_name('video').get_attribute('innerHTML')))
+        # This is the only video in the archive, as the video on the home page has not been moved to the archive yet 
+        videos = self.browser.find_elements_by_tag_name('video')
         self.assertEqual(len(videos), 1)
         self.assertNotIn(second_video_filename, videos[0].get_attribute('innerHTML'))
-        self.assertIn(first_video_filename, videos[0].get_attribute('innerHTML'))
 
         # Once again, there is a link for comments
-        archive_video_comment_link = self.wait_for_element('comment_link', self.browser.find_element_by_class_name)
+        archive_video_comment_link = self.wait_for(lambda: self.browser.find_element_by_class_name('comment_link'))
         # The user clicks the link
         archive_video_comment_link.click()
         # The title of this video is displayed
@@ -112,23 +111,24 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         older_displayed_pub_date = self.datestring_to_datetime(older_displayed_date_field.text)
         self.assertAlmostEqual(first_pub_date, older_displayed_pub_date, delta = dt.timedelta(seconds = 65))
 
-        # The visitor is surprised to see that no-one has commented on this video yet
-        comments = self.wait_for_element('comment', self.browser.find_elements_by_class_name)
-        self.assertNotIn('First post!', [comment.text for comment in comments])
-        self.assertEqual(len(comments), 0)
-
-        # The user enters another comment
+        # The user enters a comment for this video
         comment_field = self.browser.find_element_by_tag_name('textarea')
         comment_field.send_keys('Great juggling skills!')
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
-        time.sleep(1)
+        # The comment appears on the page
+        self.wait_for(lambda: self.check_for_comment_in_comments_section('Great juggling skills!'))
+        # There is no sign of the 'First post!' comment from the other video's page
+        comments = self.browser.find_elements_by_class_name('comment')
+        self.assertNotIn('First post!', [comment.text for comment in comments])
+        self.assertEqual(len(comments), 1)
+
         # Feeling that they have missed an opportunity, the visitor adds another comment
         comment_field = self.browser.find_element_by_tag_name('textarea')
         comment_field.send_keys('Second post!')
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         # Both comments are now visible on the page
+        self.wait_for(lambda: self.check_for_comment_in_comments_section('Second post!'))
         self.check_for_comment_in_comments_section('Great juggling skills!')
-        self.check_for_comment_in_comments_section('Second post!')
 
