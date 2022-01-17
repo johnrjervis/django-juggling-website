@@ -20,12 +20,16 @@ class JugglingWebsiteTest(StaticLiveServerTestCase):
 
     def wait_for(self, fn):
         start_time = time.time()
+        refresh_available = True
         while True:
             try:
                 return fn()
             except (AssertionError, WebDriverException) as e:
                 if time.time() - start_time > self.MAX_WAIT:
                     raise e
+                elif time.time() - start_time > 0.5 * self.MAX_WAIT and refresh_available:
+                    self.browser.refresh()
+                    refresh_available = False
                 time.sleep(0.5)
 
 
