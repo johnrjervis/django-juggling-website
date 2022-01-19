@@ -76,14 +76,28 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
 
         # The visitor sees an input field for posting comments
-        comment_field = self.browser.find_element_by_tag_name('textarea')
-        self.assertEqual(comment_field.get_attribute('placeholder'), 'Enter a comment')
+        comment_field = self.browser.find_element_by_class_name('comments_box')
+        self.assertEqual(comment_field.get_attribute('placeholder'), 'Enter your comment')
+        # There is also a field for entering a name to go with the comment
+        name_field = self.browser.find_element_by_class_name('commenter_name')
+        self.assertEqual(comment_field.get_attribute('placeholder'), 'Enter your name (optional)')
         # The visitor enters a comment and clicks the 'Post comment' button
         comment_field.send_keys('First post!')
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         # The comment appears on the page
         self.check_for_comment_in_comments_section('First post!')
+        # Because the visitor did not enter a name, the comment is listed as being posted by anonymous
+        self.check_for_comment_in_comments_section('Posted by anonymous')
+        # The visitor decides to add another comment, this time they do add a name for the comment
+        name_field = self.browser.find_element_by_class_name('commenter_name')
+        comment_field = self.browser.find_element_by_class_name('comments_box')
+        name_field.send_keys('Site visitor')
+        comment_field.send_keys('Great juggling skills!')
+        self.check_for_comment_in_comments_section('Great juggling skills!')
+        self.check_for_comment_in_comments_section('Posted by Site visitor')
+
+        ## Not ready to implement this section yet
         # The visitor then accidentally clicks the submit button while the comment field is empty
         #submit_button = self.browser.find_element_by_tag_name('button')
         #submit_button.click()
@@ -106,29 +120,21 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         archive_video_comment_link.click()
         # The title of this video is displayed
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, first_video_title))
-        # The video's publication date is also displayed - it is about a week old
+        # The video's publication date is also displayed
         older_displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         older_displayed_pub_date = self.datestring_to_datetime(older_displayed_date_field.text)
         self.assertAlmostEqual(first_pub_date, older_displayed_pub_date, delta = dt.timedelta(seconds = 65))
 
         # The user enters a comment for this video
         comment_field = self.browser.find_element_by_tag_name('textarea')
-        comment_field.send_keys('Great juggling skills!')
+        comment_field.send_keys('Impressive!')
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         # The comment appears on the page
-        self.wait_for(lambda: self.check_for_comment_in_comments_section('Great juggling skills!'))
-        # There is no sign of the 'First post!' comment from the other video's page
+        self.wait_for(lambda: self.check_for_comment_in_comments_section('Impressive!'))
+        # There is no sign of the comments from the other video's page
         comments = self.browser.find_elements_by_class_name('comment')
-        self.assertNotIn('First post!', [comment.text for comment in comments])
         self.assertEqual(len(comments), 1)
-
-        # Feeling that they have missed an opportunity, the visitor adds another comment
-        comment_field = self.browser.find_element_by_tag_name('textarea')
-        comment_field.send_keys('Second post!')
-        submit_button = self.browser.find_element_by_tag_name('button')
-        submit_button.click()
-        # Both comments are now visible on the page
-        self.wait_for(lambda: self.check_for_comment_in_comments_section('Second post!'))
-        self.check_for_comment_in_comments_section('Great juggling skills!')
+        self.assertNotIn('First post!', comments[0].text)
+        self.assertNotIn('Great juggling skills!', comments[0].text)
 
