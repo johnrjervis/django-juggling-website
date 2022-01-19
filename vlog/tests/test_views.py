@@ -238,20 +238,45 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         self.assertNotContains(response, 'Other comment #1')
         self.assertNotContains(response, 'Other comment #2')
 
+    def test_video_detail_view_displays_poster_as_anonymous_if_no_name_supplied(self):
+        """
+        If no name is entered, the comment should include 'Posted by anonymous'
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        VideoComment.objects.create(text = 'First comment!', video = juggling_video)
+
+        response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
+
+        self.assertContains(response, 'First comment!')
+        self.assertContains(response, 'Posted by anonymous')
+
+
+    def test_video_detail_view_displays_poster_name_if_supplied(self):
+        """
+        If a name is supplied for a comment then it should be displayed with the comment'
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        VideoComment.objects.create(text = 'First comment!', author = 'A juggling fan', video = juggling_video)
+
+        response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
+
+        self.assertContains(response, 'First comment!')
+        self.assertContains(response, 'Posted by A juggling fan')
+
 
 class AddCommentTest(TestCase):
     """
     Tests for the URL and view for adding comments'
     """
 
-    def test_can_save_a_POST_request_for_an_existing_video(self):
+    def test_can_save_a_comment_from_a_POST_request_for_an_existing_video(self):
         """
         Test that a POST request to the new comment URL causes the comment to be saved to the database
         """
         correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
         other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
 
-        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'comment_text': 'First comment on correct video!'})
+        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'comment_text': 'First comment on correct video!', 'commenter_name': ''})
         first_comment = VideoComment.objects.first()
 
         self.assertEqual(VideoComment.objects.count(), 1)
@@ -265,9 +290,33 @@ class AddCommentTest(TestCase):
         correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
         other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
 
-        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'comment_text': 'First comment on correct video!'})
+        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'comment_text': 'First comment on correct video!', 'commenter_name': ''})
 
         self.assertRedirects(response, reverse('vlog:detail', args = [correct_video.id]))
+
+    def test_comment_POST_can_save_the_comment_authors_name(self):
+        """
+        Test that a comment author's name is saved to the database
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:add_comment', args = [juggling_video.id]), data = {'comment_text': 'First comment!', 'commenter_name': 'A juggling fan'})
+        comment = VideoComment.objects.first()
+
+        self.assertEqual(comment.text, 'First comment!')
+        self.assertEqual(comment.author, 'A juggling fan')
+
+    def test_comment_author_is_anonymous_if_POST_does_not_include_name(self):
+        """
+        Test that a comment author's name is saved to the database
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:add_comment', args = [juggling_video.id]), data = {'comment_text': 'First comment!', 'commenter_name': ''})
+        comment = VideoComment.objects.first()
+
+        self.assertEqual(comment.text, 'First comment!')
+        self.assertEqual(comment.author, 'anonymous')
 
 
 class VideosListViewTest(JugglingVideoSiteTest):

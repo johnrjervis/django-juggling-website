@@ -23,11 +23,14 @@
 
           {% for comment in video.videocomment_set.all %}
             <p class="comment">{{ comment.text }}</p>
+            <hr>
+            <p class="comment_author">Posted by {{ comment.author }}<p>
           {% endfor %}
 
           <form method="POST" action="{% url 'vlog:add_comment' video.id %}">
             {% csrf_token %}
-            <textarea name="comment_text" class="comments_box" placeholder="Enter a comment"></textarea>
+            <input name="commenter_name" class="commenter_name" placeholder="Enter your name (optional)"/>
+            <textarea name="comment_text" class="comments_box" placeholder="Enter your comment"></textarea>
             <button type="submit">Post comment</button>
          </form>
 

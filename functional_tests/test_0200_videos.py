@@ -13,6 +13,15 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         comments = comments_section.find_elements_by_class_name('comment')
 
         self.assertIn(comment_text, [comment.text for comment in comments])
+        
+    def check_for_text_in_comments_section(self, text, not_in = False):
+        comments_section = self.browser.find_element_by_class_name('comments')
+        comments_text = comments_section.get_attribute('innerHTML')
+
+        if not_in:
+            self.assertNotIn(text, comments_text)
+        else:
+            self.assertIn(text, comments_text)
 
     def datestring_to_datetime(self, datestring):
         """Converts the pub date (as it appears on the page) into a datetime object"""
@@ -32,7 +41,6 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         password_field.send_keys('secret_password')
         password_field.send_keys(Keys.ENTER)
         application_div = self.wait_for(lambda: self.jj_browser.find_element_by_class_name('app-vlog'))
-        #self.assertIn('Juggling videos', application_div.text)
         add_video_link = application_div.find_element_by_link_text('Add')
         add_video_link.click()
         new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
@@ -80,22 +88,25 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.assertEqual(comment_field.get_attribute('placeholder'), 'Enter your comment')
         # There is also a field for entering a name to go with the comment
         name_field = self.browser.find_element_by_class_name('commenter_name')
-        self.assertEqual(comment_field.get_attribute('placeholder'), 'Enter your name (optional)')
+        self.assertEqual(name_field.get_attribute('placeholder'), 'Enter your name (optional)')
         # The visitor enters a comment and clicks the 'Post comment' button
         comment_field.send_keys('First post!')
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         # The comment appears on the page
-        self.check_for_comment_in_comments_section('First post!')
+        self.wait_for(lambda: self.check_for_text_in_comments_section('First post!'))
         # Because the visitor did not enter a name, the comment is listed as being posted by anonymous
-        self.check_for_comment_in_comments_section('Posted by anonymous')
+        self.wait_for(lambda: self.check_for_text_in_comments_section('Posted by anonymous'))
         # The visitor decides to add another comment, this time they do add a name for the comment
         name_field = self.browser.find_element_by_class_name('commenter_name')
         comment_field = self.browser.find_element_by_class_name('comments_box')
         name_field.send_keys('Site visitor')
         comment_field.send_keys('Great juggling skills!')
+        submit_button = self.browser.find_element_by_tag_name('button')
+        submit_button.click()
+        #self.wait_for(lambda: self.check_for_text_in_comments_section('Great juggling skills!'))
         self.check_for_comment_in_comments_section('Great juggling skills!')
-        self.check_for_comment_in_comments_section('Posted by Site visitor')
+        self.check_for_text_in_comments_section('Posted by Site visitor')
 
         ## Not ready to implement this section yet
         # The visitor then accidentally clicks the submit button while the comment field is empty

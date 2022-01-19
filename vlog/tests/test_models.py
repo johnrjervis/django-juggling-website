@@ -36,6 +36,7 @@ class VideoAndCommentModelTest(TestCase):
         first_comment.save()
         second_comment = VideoComment()
         second_comment.text = 'Nice video!'
+        second_comment.author = 'Site visitor'
         second_comment.video = juggling_video
         second_comment.save()
 
@@ -45,8 +46,10 @@ class VideoAndCommentModelTest(TestCase):
 
         self.assertEqual(saved_comments.count(), 2)
         self.assertEqual(first_saved_comment.text, 'First comment!')
+        self.assertEqual(first_saved_comment.author, 'anonymous')
         self.assertEqual(first_saved_comment.video, juggling_video)
         self.assertEqual(second_saved_comment.text, 'Nice video!')
+        self.assertEqual(second_saved_comment.author, 'Site visitor')
         self.assertEqual(second_saved_comment.video, juggling_video)
 
 

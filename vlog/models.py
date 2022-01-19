@@ -18,6 +18,7 @@ class JugglingVideo(models.Model):
 
 class VideoComment(models.Model):
     text = models.TextField(default = '')
+    author = models.TextField(default = 'anonymous')
     video = models.ForeignKey(JugglingVideo, default = None, on_delete = models.SET_DEFAULT)
 
     def __str__(self):

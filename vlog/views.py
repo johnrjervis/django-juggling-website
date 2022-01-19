@@ -46,7 +46,12 @@ def video_detail(request, jugglingvideo_id):
 def add_comment(request, jugglingvideo_id):
     juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
 
-    VideoComment.objects.create(text = request.POST['comment_text'], video = juggling_video)
+    if request.POST['commenter_name']:
+        VideoComment.objects.create(text = request.POST['comment_text'],
+                                    author = request.POST['commenter_name'], 
+                                    video = juggling_video)
+    else:
+        VideoComment.objects.create(text = request.POST['comment_text'], video = juggling_video)
 
     return redirect(reverse('vlog:detail', args = [juggling_video.id]))
 

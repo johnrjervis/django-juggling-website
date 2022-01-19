@@ -152,6 +152,7 @@ nav a {
 nav a,
 a.comment_link,
 p.comment,
+.commenter_name,
 textarea,
 button {
   border: 5px solid darkgreen;
@@ -211,10 +212,15 @@ form,
   min-width: 10rem;
 }
 
+.commenter_name,
 textarea {
   width: 100%;
   color: darkgreen;
   background-color: #9ff99f;
+}
+
+.commenter_name {
+  margin-bottom: 0.5rem;
 }
 
 button {
