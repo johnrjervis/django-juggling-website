@@ -22,23 +22,23 @@
     <nav>
       <ul class="navlinks">
         <li class="navlink {% if selected == 'Home' %}selected{% endif %}">
-          <a href="{% url 'vlog:index' %}">Home</a>
+          <a href="{% url 'vlog:index' %}" class="green_border">Home</a>
         </li> 
         <li class="navlink {% if selected == 'Videos' %}selected{% endif %}">
-          <a href="{% url 'vlog:videos' %}">Videos</a>
+          <a href="{% url 'vlog:videos' %}" class="green_border">Videos</a>
         </li>
         <li class="navlink {% if selected == 'Learn' %}selected{% endif %}">
-          <a href="{% url 'vlog:learn' %}">Learn</a>
+          <a href="{% url 'vlog:learn' %}" class="green_border">Learn</a>
         </li>
         <li class="navlink {% if selected == 'About' %}selected{% endif %}">
-          <a href="{% url 'vlog:about' %}">About</a>
+          <a href="{% url 'vlog:about' %}" class="green_border">About</a>
           <div class="flyout">
             <ul>
               <li>
-                <a href="{% url 'vlog:history' %}">History</a>
+                <a href="{% url 'vlog:history' %}" class="green_border">History</a>
               </li>
               <li>
-                <a href="{% url 'vlog:thanks' %}">Thanks</a>
+                <a href="{% url 'vlog:thanks' %}" class="green_border">Thanks</a>
               </li>
             </ul>
           </div>

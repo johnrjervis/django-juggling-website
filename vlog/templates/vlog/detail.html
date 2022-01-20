@@ -22,16 +22,19 @@
           <p class="video_pub_date">Published on {{ video.pub_date|date:'Y/m/d \a\t H:i' }}</p>
 
           {% for comment in video.videocomment_set.all %}
-            <p class="comment">{{ comment.text }}</p>
-            <hr>
-            <p class="comment_author">Posted by {{ comment.author }}<p>
+            <div class="comment green_border">
+              <p class="comment_text">{{ comment.text }}</p>
+              <hr>
+              <p class="comment_author">Posted by <span class="author_name">{{ comment.author }}</span></p>
+            </div>
           {% endfor %}
 
           <form method="POST" action="{% url 'vlog:add_comment' video.id %}">
             {% csrf_token %}
-            <input name="commenter_name" class="commenter_name" placeholder="Enter your name (optional)"/>
-            <textarea name="comment_text" class="comments_box" placeholder="Enter your comment"></textarea>
-            <button type="submit">Post comment</button>
+            <input name="commenter_name" class="commenter_name green_border" placeholder="Enter your name (optional)"/>
+            <textarea name="comment_text" class="comments_box green_border" placeholder="Enter your comment">
+            </textarea>
+            <button type="submit" class="green_border">Post comment</button>
          </form>
 
         </section>
