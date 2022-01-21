@@ -66,7 +66,7 @@ p,
 dl,
 form {
   margin-left: 2rem;
-  font-size: 1.8rem;
+  font-size: 2rem;
   line-height: 1.4;
 }
 
@@ -159,7 +159,8 @@ nav a {
 
 a.comment_link,
 .comment,
-textarea {
+.commenter_name,
+.comments_box {
   padding: 0.2rem 0.6rem;
 }
 

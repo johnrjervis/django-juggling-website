@@ -14,7 +14,12 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
         self.assertIn(text, [element.text for element in class_list])
 
-    def datestring_to_datetime(self, datestring):
+    def generate_pubdate_string(self, days_diff):
+        """Generate a text string that can be entered into a datefield (e.g. in the Django admin site)"""
+        date = timezone.now() + dt.timedelta(days = days_diff)
+        return f'{date.year}-{date.month:02}-{date.day:02}'
+
+    def convert_datestring_to_datetime(self, datestring):
         """Converts the pub date (as it appears on the page) into a datetime object"""
         date, time = datestring.strip('Published on ').split(' at ')
         year, month, day = date.split('/')
@@ -35,20 +40,29 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         add_video_link = application_div.find_element_by_link_text('Add')
         add_video_link.click()
         new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
-        ## Need to find a way to send times to the date field in the admin site if I want to adjust pub dates
-        first_pub_date = timezone.now()
         first_video_filename = 'five_ball_juggle_50_catches.mp4'
         new_video_field.send_keys(first_video_filename)
         title_field = self.jj_browser.find_element_by_id('id_title')
         first_video_title = 'Five ball juggle 50 catches'
         title_field.send_keys(first_video_title)
+        # The first video was published about a week ago
+        new_video_pub_date_field = self.jj_browser.find_element_by_id('id_pub_date_0')
+        first_pub_date = self.generate_pubdate_string(-7)
+        new_video_pub_date_field.click()
+        for i in range(10):
+            new_video_pub_date_field.send_keys(Keys.BACKSPACE)
+        new_video_pub_date_field.send_keys(first_pub_date)
+        new_video_pub_time_field = self.jj_browser.find_element_by_id('id_pub_date_1')
+        new_video_pub_time_field.click()
+        for i in range(8):
+            new_video_pub_time_field.send_keys(Keys.BACKSPACE)
+        new_video_pub_time_field.send_keys('00:00:00')
         title_field.send_keys(Keys.ENTER)
         add_new_video_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('ADD JUGGLING VIDEO'))
         add_new_video_link.click()
         new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
         # A second video was added just now
-        second_pub_date = timezone.now()
-        self.assertGreaterEqual(second_pub_date, first_pub_date)
+        ## The default for pubdate is timezone.now, so no need to add pub date data for this video
         second_video_filename = 'behind_the_back_juggle.mp4'
         new_video_field.send_keys(second_video_filename)
         title_field = self.jj_browser.find_element_by_id('id_title')
@@ -68,9 +82,8 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, second_video_title))
         # The video's publication date is also displayed
         displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
-        displayed_pub_date = self.datestring_to_datetime(displayed_date_field.text)
-        #self.assertIn(first_pub_date, displayed_date.text) # Replaced by assertAlmostEqual statement below
-        self.assertAlmostEqual(second_pub_date, displayed_pub_date, delta = dt.timedelta(seconds = 65))
+        displayed_pub_date = self.convert_datestring_to_datetime(displayed_date_field.text)
+        self.assertAlmostEqual(timezone.now(), displayed_pub_date, delta = dt.timedelta(minutes = 2))
         # The format of the further info link is the base url + videos/ + a number with at least one digit
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
 
@@ -95,7 +108,6 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         comment_field.send_keys('Great juggling skills!')
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
-        #self.wait_for(lambda: self.check_for_text_in_comments_section('Great juggling skills!'))
         self.wait_for(lambda: self.check_for_text_in_css_class_list('Great juggling skills!', 'comment_text'))
         self.check_for_text_in_css_class_list('Posted by Site visitor', 'comment_author')
 
@@ -124,8 +136,8 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, first_video_title))
         # The video's publication date is also displayed
         older_displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
-        older_displayed_pub_date = self.datestring_to_datetime(older_displayed_date_field.text)
-        self.assertAlmostEqual(first_pub_date, older_displayed_pub_date, delta = dt.timedelta(seconds = 65))
+        older_displayed_pub_date = self.convert_datestring_to_datetime(older_displayed_date_field.text)
+        self.assertGreater(timezone.now() - older_displayed_pub_date, dt.timedelta(days = 7))
 
         # The user enters a comment for this video
         comment_field = self.browser.find_element_by_tag_name('textarea')
