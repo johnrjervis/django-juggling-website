@@ -8,20 +8,11 @@ import datetime as dt
 
 class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
-    def check_for_comment_in_comments_section(self, comment_text):
-        comments_section = self.wait_for(lambda: self.browser.find_element_by_class_name('comments'))
-        comments = comments_section.find_elements_by_class_name('comment')
+    def check_for_text_in_css_class_list(self, text, css_class):
+        """Finds a list of elements with a given CSS class and checks for the presence of the text in that list"""
+        class_list = self.browser.find_elements_by_class_name(css_class)
 
-        self.assertIn(comment_text, [comment.text for comment in comments])
-        
-    def check_for_text_in_comments_section(self, text, not_in = False):
-        comments_section = self.browser.find_element_by_class_name('comments')
-        comments_text = comments_section.get_attribute('innerHTML')
-
-        if not_in:
-            self.assertNotIn(text, comments_text)
-        else:
-            self.assertIn(text, comments_text)
+        self.assertIn(text, [element.text for element in class_list])
 
     def datestring_to_datetime(self, datestring):
         """Converts the pub date (as it appears on the page) into a datetime object"""
@@ -94,9 +85,9 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         # The comment appears on the page
-        self.wait_for(lambda: self.check_for_text_in_comments_section('First post!'))
+        self.wait_for(lambda: self.check_for_text_in_css_class_list('First post!', 'comment_text'))
         # Because the visitor did not enter a name, the comment is listed as being posted by anonymous
-        self.wait_for(lambda: self.check_for_text_in_comments_section('Posted by anonymous'))
+        self.check_for_text_in_css_class_list('Posted by anonymous', 'comment_author')
         # The visitor decides to add another comment, this time they do add a name for the comment
         name_field = self.browser.find_element_by_class_name('commenter_name')
         comment_field = self.browser.find_element_by_class_name('comments_box')
@@ -105,8 +96,8 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         #self.wait_for(lambda: self.check_for_text_in_comments_section('Great juggling skills!'))
-        self.check_for_comment_in_comments_section('Great juggling skills!')
-        self.check_for_text_in_comments_section('Posted by Site visitor')
+        self.wait_for(lambda: self.check_for_text_in_css_class_list('Great juggling skills!', 'comment_text'))
+        self.check_for_text_in_css_class_list('Posted by Site visitor', 'comment_author')
 
         ## Not ready to implement this section yet
         # The visitor then accidentally clicks the submit button while the comment field is empty
@@ -142,9 +133,9 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         # The comment appears on the page
-        self.wait_for(lambda: self.check_for_comment_in_comments_section('Impressive!'))
+        self.wait_for(lambda: self.check_for_text_in_css_class_list('Impressive!', 'comment_text'))
         # There is no sign of the comments from the other video's page
-        comments = self.browser.find_elements_by_class_name('comment')
+        comments = self.browser.find_elements_by_class_name('comment_text')
         self.assertEqual(len(comments), 1)
         self.assertNotIn('First post!', comments[0].text)
         self.assertNotIn('Great juggling skills!', comments[0].text)

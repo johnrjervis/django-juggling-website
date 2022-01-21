@@ -240,7 +240,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
     def test_video_detail_view_displays_poster_as_anonymous_if_no_name_supplied(self):
         """
-        If no name is entered, the comment should include 'Posted by anonymous'
+        If no name is entered, the comment should include 'anonymous'
         """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
         VideoComment.objects.create(text = 'First comment!', video = juggling_video)
@@ -248,7 +248,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
 
         self.assertContains(response, 'First comment!')
-        self.assertContains(response, 'Posted by anonymous')
+        self.assertContains(response, 'Posted by <span class="author_name">anonymous</span>')
 
 
     def test_video_detail_view_displays_poster_name_if_supplied(self):
@@ -261,7 +261,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
 
         self.assertContains(response, 'First comment!')
-        self.assertContains(response, 'Posted by A juggling fan')
+        self.assertContains(response, 'Posted by <span class="author_name">A juggling fan</span>')
 
 
 class AddCommentTest(TestCase):
@@ -276,7 +276,7 @@ class AddCommentTest(TestCase):
         correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
         other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
 
-        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'comment_text': 'First comment on correct video!', 'commenter_name': ''})
+        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'new_comment': 'First comment on correct video!', 'commenter_name': ''})
         first_comment = VideoComment.objects.first()
 
         self.assertEqual(VideoComment.objects.count(), 1)
@@ -290,7 +290,7 @@ class AddCommentTest(TestCase):
         correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
         other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
 
-        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'comment_text': 'First comment on correct video!', 'commenter_name': ''})
+        response = self.client.post(reverse('vlog:add_comment', args = [correct_video.id]), data = {'new_comment': 'First comment on correct video!', 'commenter_name': ''})
 
         self.assertRedirects(response, reverse('vlog:detail', args = [correct_video.id]))
 
@@ -300,7 +300,7 @@ class AddCommentTest(TestCase):
         """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.post(reverse('vlog:add_comment', args = [juggling_video.id]), data = {'comment_text': 'First comment!', 'commenter_name': 'A juggling fan'})
+        response = self.client.post(reverse('vlog:add_comment', args = [juggling_video.id]), data = {'new_comment': 'First comment!', 'commenter_name': 'A juggling fan'})
         comment = VideoComment.objects.first()
 
         self.assertEqual(comment.text, 'First comment!')
@@ -312,7 +312,7 @@ class AddCommentTest(TestCase):
         """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.post(reverse('vlog:add_comment', args = [juggling_video.id]), data = {'comment_text': 'First comment!', 'commenter_name': ''})
+        response = self.client.post(reverse('vlog:add_comment', args = [juggling_video.id]), data = {'new_comment': 'First comment!', 'commenter_name': ''})
         comment = VideoComment.objects.first()
 
         self.assertEqual(comment.text, 'First comment!')

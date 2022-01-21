@@ -36,12 +36,15 @@ class T04AboutPagesTest(JugglingWebsiteTest):
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_tag_name('h2').text, 'The history of this site'))
 
         # The user realises that the history and thanks pages can also be accessed from a flyout menu on the about tab
+        home_link = self.browser.find_element_by_link_text('Home')
         info_link = self.browser.find_element_by_link_text('About')
         flyout = self.browser.find_element_by_class_name('flyout')
         # The flyout menu is hidden by default
-        self.assertEqual(flyout.value_of_css_property('visibility'), 'hidden')
+        hover1 = ActionChains(self.browser).move_to_element(home_link)
+        hover1.perform()
+        self.wait_for(lambda: self.assertEqual(flyout.value_of_css_property('visibility'), 'hidden'))
         # But the flyout is displayed when the user hovers over the 'About' tab
-        hover = ActionChains(self.browser).move_to_element(info_link)
-        hover.perform()
-        self.assertEqual(flyout.value_of_css_property('visibility'), 'visible')
+        hover2 = ActionChains(self.browser).move_to_element(info_link)
+        hover2.perform()
+        self.wait_for(lambda: self.assertEqual(flyout.value_of_css_property('visibility'), 'visible'))
 
