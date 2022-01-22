@@ -97,10 +97,16 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         comment_field.send_keys('First post!')
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
+        submit_date = timezone.now()
         # The comment appears on the page
         self.wait_for(lambda: self.check_for_text_in_css_class_list('First post!', 'comment_text'))
         # Because the visitor did not enter a name, the comment is listed as being posted by anonymous
         self.check_for_text_in_css_class_list('Posted by anonymous', 'comment_author')
+        # The time of the comment is also displayed
+        displayed_comment_date = self.wait_for(lambda: self.browser.find_element_by_class_name('comment_date').text)
+        self.assertRegex(displayed_comment_date, r'on \d+/\d+/\+ at \d+:\d+:\d+')
+        comment_date = self.convert_datestring_to_datetime(displayed_comment_date)
+        self.assertAlmostEqual(submit_date, comment_date, delta = dt.timedelta(minutes = 2))
         # The visitor decides to add another comment, this time they do add a name for the comment
         name_field = self.browser.find_element_by_class_name('commenter_name')
         comment_field = self.browser.find_element_by_class_name('comments_box')

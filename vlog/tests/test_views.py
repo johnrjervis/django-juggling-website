@@ -263,10 +263,26 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         self.assertContains(response, 'First comment!')
         self.assertContains(response, 'Posted by <span class="author_name">A juggling fan</span>')
 
+    def test_video_detail_view_displays_comment_date(self):
+        """
+        Tests that the date and time that a comment was posted appear alongside the comment text
+        """
+        # Give the video an arbitrary pub date in the past so that this does not match the comment's date
+        video_pub_date = timezone.now() - timedelta(days = 7, hours = 4, minutes = 30)
+        now = timezone.now()
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches', pub_date = video_pub_date)
+        VideoComment.objects.create(text = 'First comment!', author = 'A juggling fan', video = juggling_video)
+
+        response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
+        date_string = f'{now.day:02}/{now.month:02}/{now.year} at {now.hour:02}:{now.minute:02}'
+
+        self.assertContains(response, 'First comment!')
+        self.assertContains(response, date_string)
+
 
 class AddCommentTest(TestCase):
     """
-    Tests for the URL and view for adding comments'
+    Tests for the URL and view for adding comments
     """
 
     def test_can_save_a_comment_from_a_POST_request_for_an_existing_video(self):
