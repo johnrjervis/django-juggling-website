@@ -184,7 +184,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
-        time_string = pub_time.strftime(format = '%Y/%m/%d at %H:%M')
+        time_string = pub_time.strftime(format = '%d/%m/%Y at %H:%M')
         #print(response.content.decode())
 
         self.assertContains(response, time_string)
@@ -248,7 +248,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
 
         self.assertContains(response, 'First comment!')
-        self.assertContains(response, 'Posted by <span class="author_name">anonymous</span>')
+        self.assertContains(response, 'Posted by anonymous')
 
 
     def test_video_detail_view_displays_poster_name_if_supplied(self):
@@ -261,7 +261,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
 
         self.assertContains(response, 'First comment!')
-        self.assertContains(response, 'Posted by <span class="author_name">A juggling fan</span>')
+        self.assertContains(response, 'Posted by A juggling fan')
 
     def test_video_detail_view_displays_comment_date(self):
         """
@@ -274,7 +274,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         VideoComment.objects.create(text = 'First comment!', author = 'A juggling fan', video = juggling_video)
 
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
-        date_string = f'{now.day:02}/{now.month:02}/{now.year} at {now.hour:02}:{now.minute:02}'
+        date_string = now.strftime(format = '%d/%m/%Y at %H:%M')
 
         self.assertContains(response, 'First comment!')
         self.assertContains(response, date_string)

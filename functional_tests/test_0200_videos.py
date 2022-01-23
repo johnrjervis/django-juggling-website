@@ -22,10 +22,10 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
     def convert_datestring_to_datetime(self, datestring):
         """Converts the pub date (as it appears on the page) into a datetime object"""
         date, time = datestring.strip('Published on ').split(' at ')
-        year, month, day = date.split('/')
+        day, month, year = date.split('/')
         hours, minutes = time.split(':')
         datelist = [int(elem) for elem in [year, month, day, hours, minutes]]
-        return dt.datetime(*datelist, tzinfo = dt.timezone.utc)
+        return dt.datetime(*datelist, tzinfo = timezone.utc)
 
     def test_detail_views_and_video_archive(self):
 
@@ -101,10 +101,10 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The comment appears on the page
         self.wait_for(lambda: self.check_for_text_in_css_class_list('First post!', 'comment_text'))
         # Because the visitor did not enter a name, the comment is listed as being posted by anonymous
-        self.check_for_text_in_css_class_list('Posted by anonymous', 'comment_author')
+        self.check_for_text_in_css_class_list('Posted by anonymous', 'author_name')
         # The time of the comment is also displayed
         displayed_comment_date = self.wait_for(lambda: self.browser.find_element_by_class_name('comment_date').text)
-        self.assertRegex(displayed_comment_date, r'on \d+/\d+/\+ at \d+:\d+:\d+')
+        self.assertRegex(displayed_comment_date, r'on \d+/\d+/\d+ at \d+:\d+')
         comment_date = self.convert_datestring_to_datetime(displayed_comment_date)
         self.assertAlmostEqual(submit_date, comment_date, delta = dt.timedelta(minutes = 2))
         # The visitor decides to add another comment, this time they do add a name for the comment
@@ -115,7 +115,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         self.wait_for(lambda: self.check_for_text_in_css_class_list('Great juggling skills!', 'comment_text'))
-        self.check_for_text_in_css_class_list('Posted by Site visitor', 'comment_author')
+        self.check_for_text_in_css_class_list('Posted by Site visitor', 'author_name')
 
         ## Not ready to implement this section yet
         # The visitor then accidentally clicks the submit button while the comment field is empty

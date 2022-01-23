@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 from vlog.models import JugglingVideo, VideoComment
+from datetime import timedelta
 
 
 class VideoModelTest(TestCase):
@@ -29,10 +30,12 @@ class VideoAndCommentModelTest(TestCase):
     """
 
     def test_saving_and_retrieving_comments(self):
-        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now())
+        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now() - timedelta(days = 1))
         first_comment = VideoComment()
         first_comment.text = 'First comment!'
         first_comment.video = juggling_video
+        comment_date = timezone.now()
+        first_comment.date = comment_date
         first_comment.save()
         second_comment = VideoComment()
         second_comment.text = 'Nice video!'
@@ -48,6 +51,7 @@ class VideoAndCommentModelTest(TestCase):
         self.assertEqual(first_saved_comment.text, 'First comment!')
         self.assertEqual(first_saved_comment.author, 'anonymous')
         self.assertEqual(first_saved_comment.video, juggling_video)
+        self.assertEqual(first_saved_comment.date, comment_date)
         self.assertEqual(second_saved_comment.text, 'Nice video!')
         self.assertEqual(second_saved_comment.author, 'Site visitor')
         self.assertEqual(second_saved_comment.video, juggling_video)

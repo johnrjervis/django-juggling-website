@@ -20,6 +20,7 @@ class VideoComment(models.Model):
     text = models.TextField(default = '')
     author = models.TextField(default = 'anonymous')
     video = models.ForeignKey(JugglingVideo, default = None, on_delete = models.SET_DEFAULT)
+    date = models.DateTimeField(default = timezone.now)
 
     def __str__(self):
         return f'Comment: {self.text}'
