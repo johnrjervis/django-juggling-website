@@ -269,12 +269,12 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         # Give the video an arbitrary pub date in the past so that this does not match the comment's date
         video_pub_date = timezone.now() - timedelta(days = 7, hours = 4, minutes = 30)
-        now = timezone.now()
+        comment_post_date = timezone.now()
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches', pub_date = video_pub_date)
-        VideoComment.objects.create(text = 'First comment!', author = 'A juggling fan', video = juggling_video)
+        VideoComment.objects.create(text = 'First comment!', author = 'A juggling fan', video = juggling_video, date = comment_post_date)
 
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
-        date_string = now.strftime(format = '%d/%m/%Y at %H:%M')
+        date_string = comment_post_date.strftime(format = '%d/%m/%Y at %H:%M')
 
         self.assertContains(response, 'First comment!')
         self.assertContains(response, date_string)

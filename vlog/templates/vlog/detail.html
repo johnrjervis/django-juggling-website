@@ -25,7 +25,7 @@
             <div class="comment green_border">
               <p class="comment_text">{{ comment.text }}</p>
               <hr>
-              <p class="comment_author"><span class="author_name">Posted by {{ comment.author }}</span> <span class="comment_date">on {{ comment.date|date:'d/m/Y \a\t H:i' }}</span></p>
+              <p class="comment_details"><span class="comment_author">Posted by {{ comment.author }}</span> <span class="comment_date">on {{ comment.date|date:'d/m/Y \a\t H:i' }}</span></p>
             </div>
           {% endfor %}
 

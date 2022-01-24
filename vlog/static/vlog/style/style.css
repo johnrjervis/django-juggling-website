@@ -219,7 +219,7 @@ textarea {
 }
 
 .comment_text,
-.comment_author,
+.comment_details,
 hr {
   margin: 0.1rem;
 }

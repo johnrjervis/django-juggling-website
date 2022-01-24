@@ -3,7 +3,7 @@ from django.utils import timezone
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import time
-import datetime as dt
+from datetime import datetime, timedelta
 
 
 class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
@@ -16,7 +16,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
     def generate_pubdate_string(self, days_diff):
         """Generate a text string that can be entered into a datefield (e.g. in the Django admin site)"""
-        date = timezone.now() + dt.timedelta(days = days_diff)
+        date = timezone.now() + timedelta(days = days_diff)
         return f'{date.year}-{date.month:02}-{date.day:02}'
 
     def convert_datestring_to_datetime(self, datestring):
@@ -25,7 +25,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         day, month, year = date.split('/')
         hours, minutes = time.split(':')
         datelist = [int(elem) for elem in [year, month, day, hours, minutes]]
-        return dt.datetime(*datelist, tzinfo = timezone.utc)
+        return datetime(*datelist, tzinfo = timezone.utc)
 
     def test_detail_views_and_video_archive(self):
 
@@ -83,7 +83,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The video's publication date is also displayed
         displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         displayed_pub_date = self.convert_datestring_to_datetime(displayed_date_field.text)
-        self.assertAlmostEqual(timezone.now(), displayed_pub_date, delta = dt.timedelta(minutes = 2))
+        self.assertAlmostEqual(timezone.now(), displayed_pub_date, delta = timedelta(minutes = 2))
         # The format of the further info link is the base url + videos/ + a number with at least one digit
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
 
@@ -101,12 +101,11 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The comment appears on the page
         self.wait_for(lambda: self.check_for_text_in_css_class_list('First post!', 'comment_text'))
         # Because the visitor did not enter a name, the comment is listed as being posted by anonymous
-        self.check_for_text_in_css_class_list('Posted by anonymous', 'author_name')
+        self.check_for_text_in_css_class_list('Posted by anonymous', 'comment_author')
         # The time of the comment is also displayed
         displayed_comment_date = self.wait_for(lambda: self.browser.find_element_by_class_name('comment_date').text)
-        self.assertRegex(displayed_comment_date, r'on \d+/\d+/\d+ at \d+:\d+')
         comment_date = self.convert_datestring_to_datetime(displayed_comment_date)
-        self.assertAlmostEqual(submit_date, comment_date, delta = dt.timedelta(minutes = 2))
+        self.assertAlmostEqual(submit_date, comment_date, delta = timedelta(minutes = 2))
         # The visitor decides to add another comment, this time they do add a name for the comment
         name_field = self.browser.find_element_by_class_name('commenter_name')
         comment_field = self.browser.find_element_by_class_name('comments_box')
@@ -115,7 +114,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         self.wait_for(lambda: self.check_for_text_in_css_class_list('Great juggling skills!', 'comment_text'))
-        self.check_for_text_in_css_class_list('Posted by Site visitor', 'author_name')
+        self.check_for_text_in_css_class_list('Posted by Site visitor', 'comment_author')
 
         ## Not ready to implement this section yet
         # The visitor then accidentally clicks the submit button while the comment field is empty
@@ -143,7 +142,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The video's publication date is also displayed
         older_displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         older_displayed_pub_date = self.convert_datestring_to_datetime(older_displayed_date_field.text)
-        self.assertGreater(timezone.now() - older_displayed_pub_date, dt.timedelta(days = 7))
+        self.assertGreater(timezone.now() - older_displayed_pub_date, timedelta(days = 7))
 
         # The user enters a comment for this video
         comment_field = self.browser.find_element_by_tag_name('textarea')
