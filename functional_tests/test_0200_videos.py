@@ -7,11 +7,14 @@ from datetime import datetime, timedelta
 
 class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
-    def check_for_text_in_css_class_list(self, text, css_class):
+    def check_for_text_in_css_class_list(self, text, css_class, not_in = False):
         """Finds a list of elements with a given CSS class and checks for the presence of the text in that list"""
         class_list = self.browser.find_elements_by_class_name(css_class)
 
-        self.assertIn(text, [element.text for element in class_list])
+        if not_in:
+            self.assertNotIn(text, [element.text for element in class_list])
+        else:
+            self.assertIn(text, [element.text for element in class_list])
 
     def generate_pubdate_string(self, days_diff):
         """Generate a text string that can be entered into a datefield (e.g. in the Django admin site)"""
@@ -150,11 +153,27 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.post_video_comment('Impressive!')
         self.wait_for(lambda: self.check_for_text_in_css_class_list('Impressive!', 'comment_text'))
         # There is no sign of the comments from the other video's page
+        self.check_for_text_in_css_class_list('First post!', 'comment_text', not_in = True)
+        self.check_for_text_in_css_class_list('Great juggling skills!', 'comment_text', not_in = True)
         comments = self.browser.find_elements_by_class_name('comment_text')
         self.assertEqual(len(comments), 1)
-        self.assertNotIn('First post!', comments[0].text)
-        self.assertNotIn('Great juggling skills!', comments[0].text)
 
-        # The user decides to enter a silly comment
+        # The user enters a silly comment
         self.post_video_comment('I can has a cheezburger?', comment_author = 'Lolzcat')
+
+        # JJ removes this comment from the website
+        comment_admin_link = self.jj_browser.find_element_by_link_text('Video comments')
+        comment_admin_link.click()
+        silly_comment_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('Comment: I can has a cheezburger?'))
+        silly_comment_link.click()
+        enable_checkbox = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_is_approved'))
+        enable_checkbox.click()
+        save_comment_update = self.jj_browser.find_element_by_name('_save')
+        save_comment_update.click()
+
+        # The comment no longer appears on the relevant video's detail page
+        self.browser.refresh()
+        self.wait_for(lambda: self.check_for_text_in_css_class_list('I can has a cheezburger?', 'comment_text', not_in = True))
+        # The first comment is still there, however
+        self.check_for_text_in_css_class_list('Impressive!', 'comment_text')
 

@@ -279,6 +279,20 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         self.assertContains(response, 'First comment!')
         self.assertContains(response, date_string)
 
+    def test_video_detail_view_only_displays_approved_comments(self):
+        """
+        Comments should only appear on a video's detail page if their is_approved attribute is True
+        """
+        # Give the video an arbitrary pub date in the past so that this does not match the comment's date
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        approved_comment = VideoComment.objects.create(text = 'First comment!', video = juggling_video, is_approved = True)
+        not_approved_comment = VideoComment.objects.create(text = 'Inappropriate comment', video = juggling_video, is_approved = False)
+
+        response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
+
+        self.assertContains(response, 'First comment!')
+        self.assertNotContains(response, 'Inappropriate comment')
+
 
 class AddCommentTest(TestCase):
     """

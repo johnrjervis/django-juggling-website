@@ -21,6 +21,7 @@ class VideoComment(models.Model):
     author = models.TextField(default = 'anonymous')
     video = models.ForeignKey(JugglingVideo, default = None, on_delete = models.SET_DEFAULT)
     date = models.DateTimeField(default = timezone.now)
+    is_approved = models.BooleanField(default = True)
 
     def __str__(self):
         return f'Comment: {self.text}'

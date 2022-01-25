@@ -41,6 +41,7 @@ class VideoAndCommentModelTest(TestCase):
         second_comment.text = 'Nice video!'
         second_comment.author = 'Site visitor'
         second_comment.video = juggling_video
+        second_comment.is_approved = False
         second_comment.save()
 
         saved_comments = VideoComment.objects.all()
@@ -52,8 +53,9 @@ class VideoAndCommentModelTest(TestCase):
         self.assertEqual(first_saved_comment.author, 'anonymous')
         self.assertEqual(first_saved_comment.video, juggling_video)
         self.assertEqual(first_saved_comment.date, comment_date)
+        self.assertEqual(first_saved_comment.is_approved, True)
         self.assertEqual(second_saved_comment.text, 'Nice video!')
         self.assertEqual(second_saved_comment.author, 'Site visitor')
         self.assertEqual(second_saved_comment.video, juggling_video)
-
+        self.assertEqual(second_saved_comment.is_approved, False)
 
