@@ -2,8 +2,6 @@ from .base import AdminAndSiteVisitorTest
 from django.utils import timezone
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-import time
-import datetime as dt
 
 
 class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):

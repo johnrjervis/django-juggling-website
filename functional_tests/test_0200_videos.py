@@ -2,7 +2,6 @@ from .base import AdminAndSiteVisitorTest
 from django.utils import timezone
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-import time
 from datetime import datetime, timedelta
 
 
@@ -26,6 +25,16 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         hours, minutes = time.split(':')
         datelist = [int(elem) for elem in [year, month, day, hours, minutes]]
         return datetime(*datelist, tzinfo = timezone.utc)
+
+    def post_video_comment(self, text, comment_author = None):
+        """Posts a comment via the form on a video detail page"""
+        comment_field = self.browser.find_element_by_class_name('comments_box')
+        comment_field.send_keys(text)
+        if comment_author:
+            name_field = self.browser.find_element_by_class_name('commenter_name')
+            name_field.send_keys(comment_author)
+        submit_button = self.browser.find_element_by_tag_name('button')
+        submit_button.click()
 
     def test_detail_views_and_video_archive(self):
 
@@ -94,9 +103,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         name_field = self.browser.find_element_by_class_name('commenter_name')
         self.assertEqual(name_field.get_attribute('placeholder'), 'Enter your name (optional)')
         # The visitor enters a comment and clicks the 'Post comment' button
-        comment_field.send_keys('First post!')
-        submit_button = self.browser.find_element_by_tag_name('button')
-        submit_button.click()
+        self.post_video_comment('First post!')
         submit_date = timezone.now()
         # The comment appears on the page
         self.wait_for(lambda: self.check_for_text_in_css_class_list('First post!', 'comment_text'))
@@ -106,13 +113,8 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         displayed_comment_date = self.wait_for(lambda: self.browser.find_element_by_class_name('comment_date').text)
         comment_date = self.convert_datestring_to_datetime(displayed_comment_date)
         self.assertAlmostEqual(submit_date, comment_date, delta = timedelta(minutes = 2))
+        self.post_video_comment('Great juggling skills!', comment_author = 'Site visitor')
         # The visitor decides to add another comment, this time they do add a name for the comment
-        name_field = self.browser.find_element_by_class_name('commenter_name')
-        comment_field = self.browser.find_element_by_class_name('comments_box')
-        name_field.send_keys('Site visitor')
-        comment_field.send_keys('Great juggling skills!')
-        submit_button = self.browser.find_element_by_tag_name('button')
-        submit_button.click()
         self.wait_for(lambda: self.check_for_text_in_css_class_list('Great juggling skills!', 'comment_text'))
         self.check_for_text_in_css_class_list('Posted by Site visitor', 'comment_author')
 
@@ -145,15 +147,14 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.assertGreater(timezone.now() - older_displayed_pub_date, timedelta(days = 7))
 
         # The user enters a comment for this video
-        comment_field = self.browser.find_element_by_tag_name('textarea')
-        comment_field.send_keys('Impressive!')
-        submit_button = self.browser.find_element_by_tag_name('button')
-        submit_button.click()
-        # The comment appears on the page
+        self.post_video_comment('Impressive!')
         self.wait_for(lambda: self.check_for_text_in_css_class_list('Impressive!', 'comment_text'))
         # There is no sign of the comments from the other video's page
         comments = self.browser.find_elements_by_class_name('comment_text')
         self.assertEqual(len(comments), 1)
         self.assertNotIn('First post!', comments[0].text)
         self.assertNotIn('Great juggling skills!', comments[0].text)
+
+        # The user decides to enter a silly comment
+        self.post_video_comment('I can has a cheezburger?', comment_author = 'Lolzcat')
 
