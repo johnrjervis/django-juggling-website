@@ -16,7 +16,7 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
 
         # The site's title element confirms it
         h1_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertEqual("JJ's juggling videos", h1_text)
+        self.assertEqual("JJ's Juggling Videos", h1_text)
 
         # The site has a distinctive green colour scheme
         ## This section tests that the CSS has been applied
