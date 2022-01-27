@@ -55,6 +55,13 @@ class AdminAndSiteVisitorTest(JugglingWebsiteTest):
         self.jj_browser.set_window_size(browser_width, browser_height)
         self.browser.set_window_position(0, 0)
         self.jj_browser.set_window_position(browser_width + (gap * 2), 0)
+        ## If there's going to be an admin browswer, we might as well log in during the set up
+        self.jj_browser.get(f'{self.live_server_url}/admin/')
+        username_field = self.jj_browser.find_element_by_id('id_username')
+        username_field.send_keys('admin_user')
+        password_field = self.jj_browser.find_element_by_id('id_password')
+        password_field.send_keys('secret_password')
+        password_field.send_keys(Keys.ENTER)
 
     def tearDown(self):
         self.jj_browser.quit()

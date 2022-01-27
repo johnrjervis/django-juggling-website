@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404 
-from vlog.models import JugglingVideo, VideoComment
+from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 from django.utils import timezone
 
 # Create your views here.
@@ -69,7 +69,10 @@ def about(request):
 
 
 def thanks(request):
+    acknowledgements = Acknowledgement.objects.all()
+
     return render(request, 'vlog/thanks.html', {
+        'acknowledgements': acknowledgements,
         'selected': 'About',
     })
 

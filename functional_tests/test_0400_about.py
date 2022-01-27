@@ -1,14 +1,30 @@
-from .base import JugglingWebsiteTest
+from .base import AdminAndSiteVisitorTest
 from selenium.webdriver.common.action_chains import ActionChains
 
-
-class T04AboutPagesTest(JugglingWebsiteTest):
+class T04AboutPagesTest(AdminAndSiteVisitorTest):
     """
     Tests for the about pages
     (Includes the History and Thanks pages)
     """
 
     def test_about_pages(self):
+
+        # JJ has added some acknowledgements via the admin site
+        acks_admin_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('Acknowledgements'))
+        acks_admin_link.click()
+        add_ack_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('ADD ACKNOWLEDGEMENT'))
+        add_ack_link.click()
+        ack_name_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_name'))
+        first_ack_name = 'Obey the Testing Goat!'
+        ack_name_field.send_keys(first_ack_name)
+        link_field = self.jj_browser.find_element_by_id('id_link')
+        first_ack_link = 'https://www.obeythetestinggoat.com/'
+        link_field.send_keys(first_ack_link)
+        description_field = self.jj_browser.find_element_by_id('id_description')
+        first_ack_description = "I started out creating my juggling site by following the examples in Harry Percival's excellent book \"Test-Driven Development with Python\". I'd recommend buying a print copy if you're interested in web development with Python."
+        description_field.send_keys(first_ack_description)
+        save_ack_update = self.jj_browser.find_element_by_name('_save')
+        save_ack_update.click()
 
         # Another visitor accesses the website
         self.browser.get(f'{self.live_server_url}/juggling/')

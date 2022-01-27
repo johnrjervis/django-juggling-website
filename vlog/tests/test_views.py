@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from vlog.models import JugglingVideo, VideoComment
+from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 from datetime import timedelta
 
 
@@ -513,6 +513,8 @@ class ThanksViewTest(JugglingVideoSiteTest):
         """
         Test that the Thanks page links to external pages
         """
+        first_acknowledgement = Acknowledgement.objects.create(name ='Django', link ='https://www.djangoproject.com/', description = 'This site was built using the Django framework.')
+
         response = self.client.get(reverse('vlog:thanks'))
 
         self.assertContains(response, 'https://www.')

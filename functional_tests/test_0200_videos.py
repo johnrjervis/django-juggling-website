@@ -42,14 +42,9 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
     def test_detail_views_and_video_archive(self):
 
         # JJ has already uploaded a couple of videos to the site
-        self.jj_browser.get(f'{self.live_server_url}/admin/')
-        username_field = self.jj_browser.find_element_by_id('id_username')
-        username_field.send_keys('admin_user')
-        password_field = self.jj_browser.find_element_by_id('id_password')
-        password_field.send_keys('secret_password')
-        password_field.send_keys(Keys.ENTER)
-        application_div = self.wait_for(lambda: self.jj_browser.find_element_by_class_name('app-vlog'))
-        add_video_link = application_div.find_element_by_link_text('Add')
+        video_admin_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('Juggling videos'))
+        video_admin_link.click()
+        add_video_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('ADD JUGGLING VIDEO'))
         add_video_link.click()
         new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
         first_video_filename = 'five_ball_juggle_50_catches.mp4'

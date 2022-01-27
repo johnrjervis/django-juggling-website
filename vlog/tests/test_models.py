@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
-from vlog.models import JugglingVideo, VideoComment
+from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 from datetime import timedelta
 
 
@@ -30,6 +30,9 @@ class VideoAndCommentModelTest(TestCase):
     """
 
     def test_saving_and_retrieving_comments(self):
+        """
+        The attributes of a comment object should match those that it was saved with 
+        """
         juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now() - timedelta(days = 1))
         first_comment = VideoComment()
         first_comment.text = 'First comment!'
@@ -58,4 +61,29 @@ class VideoAndCommentModelTest(TestCase):
         self.assertEqual(second_saved_comment.author, 'Site visitor')
         self.assertEqual(second_saved_comment.video, juggling_video)
         self.assertEqual(second_saved_comment.is_approved, False)
+
+class AcknowledgementsModelTest(TestCase):
+    """
+    Tests for the acknowledgements database
+    """
+
+    def test_saving_and_retrieving_acknowledgements(self):
+        """
+        The attributes of an acknowledgement object should match those that it was saved with 
+        """
+        first_acknowledgement = Acknowledgement.objects.create(name ='Django', link ='https://www.djangoproject.com/', description = 'This site was built using the Django framework.')
+        second_acknowledgement = Acknowledgement.objects.create(name ='The Mozilla Development Network (MDN)', link = 'https://developer.mozilla.org/en-US/', description = 'MDN provide courses covering various web development topics, including HTML, CSS & JavaScript.')
+
+        saved_acknowledgements = Acknowledgement.objects.all()
+        first_saved_acknowledgement = saved_acknowledgements[0]
+        second_saved_acknowledgement = saved_acknowledgements[1]
+
+        self.assertEqual(saved_acknowledgements.count(), 2)
+        self.assertEqual(first_saved_acknowledgement.name, 'Django')
+        self.assertEqual(first_saved_acknowledgement.link, 'https://www.djangoproject.com/')
+        self.assertEqual(first_saved_acknowledgement.description, 'This site was built using the Django framework.')
+        self.assertEqual(second_saved_acknowledgement.name, 'The Mozilla Development Network (MDN)')
+        self.assertEqual(second_saved_acknowledgement.link, 'https://developer.mozilla.org/en-US/')
+        self.assertEqual(second_saved_acknowledgement.description, 'MDN provide courses covering various web development topics, including HTML, CSS & JavaScript.')
+
 

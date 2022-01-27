@@ -36,16 +36,10 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
         self.wait_for(lambda: self.assertEqual(len(self.browser.find_elements_by_class_name('info_link')), 0))
 
         # JJ logs in to the admin site and uploads the first video
-        self.jj_browser.get(f'{self.live_server_url}/admin/')
-        username_field = self.jj_browser.find_element_by_id('id_username')
-        username_field.send_keys('admin_user')
-        password_field = self.jj_browser.find_element_by_id('id_password')
-        password_field.send_keys('secret_password')
-        password_field.send_keys(Keys.ENTER)
-        application_div = self.wait_for(lambda: self.jj_browser.find_element_by_class_name('app-vlog'))
-        self.assertIn('Juggling videos', application_div.text)
-        add_link = application_div.find_element_by_link_text('Add')
-        add_link.click()
+        video_admin_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('Juggling videos'))
+        video_admin_link.click()
+        add_video_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('ADD JUGGLING VIDEO'))
+        add_video_link.click()
         new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
         first_pub_date = timezone.now()
         first_video_filename = 'five_ball_juggle_50_catches.mp4'

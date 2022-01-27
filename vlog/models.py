@@ -29,3 +29,8 @@ class VideoComment(models.Model):
     def __repr__(self):
         return f'{self.__class__}: {self.text}'
 
+
+class Acknowledgement(models.Model):
+    name = models.TextField(default = '')
+    link = models.TextField(default = '')
+    description = models.TextField(default = '')
