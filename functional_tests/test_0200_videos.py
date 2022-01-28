@@ -42,40 +42,23 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
     def test_detail_views_and_video_archive(self):
 
         # JJ has already uploaded a couple of videos to the site
-        video_admin_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('Juggling videos'))
-        video_admin_link.click()
-        add_video_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('ADD JUGGLING VIDEO'))
-        add_video_link.click()
-        new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
-        first_video_filename = 'five_ball_juggle_50_catches.mp4'
-        new_video_field.send_keys(first_video_filename)
-        title_field = self.jj_browser.find_element_by_id('id_title')
-        first_video_title = 'Five ball juggle 50 catches'
-        title_field.send_keys(first_video_title)
         # The first video was published about a week ago
-        new_video_pub_date_field = self.jj_browser.find_element_by_id('id_pub_date_0')
         first_pub_date = self.generate_pubdate_string(-7)
-        new_video_pub_date_field.click()
-        for i in range(10):
-            new_video_pub_date_field.send_keys(Keys.BACKSPACE)
-        new_video_pub_date_field.send_keys(first_pub_date)
-        new_video_pub_time_field = self.jj_browser.find_element_by_id('id_pub_date_1')
-        new_video_pub_time_field.click()
-        for i in range(8):
-            new_video_pub_time_field.send_keys(Keys.BACKSPACE)
-        new_video_pub_time_field.send_keys('00:00:00')
-        title_field.send_keys(Keys.ENTER)
-        add_new_video_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('ADD JUGGLING VIDEO'))
-        add_new_video_link.click()
-        new_video_field = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_filename'))
+        first_video_details =   {
+                                'filename': 'five_ball_juggle_50_catches.mp4',
+                                'title': 'Five ball juggle 50 catches',
+                                'pub_date_0': first_pub_date,
+                                'pub_date_1': '00:00:00',
+                                }
+        self.create_database_object('Juggling video', first_video_details)
+
         # A second video was added just now
         ## The default for pubdate is timezone.now, so no need to add pub date data for this video
-        second_video_filename = 'behind_the_back_juggle.mp4'
-        new_video_field.send_keys(second_video_filename)
-        title_field = self.jj_browser.find_element_by_id('id_title')
-        second_video_title = 'Behind the back juggle'
-        title_field.send_keys(second_video_title)
-        title_field.send_keys(Keys.ENTER)
+        second_video_details =   {
+                                'filename': 'behind_the_back_juggle.mp4',
+                                'title': 'Behind the back juggle',
+                                }
+        self.create_database_object('Juggling video', second_video_details)
 
         # A site visitor goes to the homepage
         self.browser.get(f'{self.live_server_url}/juggling/')
@@ -86,7 +69,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The user clicks the link
         video_comment_link.click()
         # The title of the video is displayed
-        self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, second_video_title))
+        self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, second_video_details['title']))
         # The video's publication date is also displayed
         displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         displayed_pub_date = self.convert_datestring_to_datetime(displayed_date_field.text)
@@ -127,18 +110,18 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         video_archive_link = self.browser.find_element_by_link_text('Videos')
         video_archive_link.click()
         # The first video posted to the site is in the archive
-        self.wait_for(lambda: self.assertIn(first_video_filename, self.browser.find_element_by_tag_name('video').get_attribute('innerHTML')))
+        self.wait_for(lambda: self.assertIn(first_video_details['filename'], self.browser.find_element_by_tag_name('video').get_attribute('innerHTML')))
         # This is the only video in the archive, as the video on the home page has not been moved to the archive yet 
         videos = self.browser.find_elements_by_tag_name('video')
         self.assertEqual(len(videos), 1)
-        self.assertNotIn(second_video_filename, videos[0].get_attribute('innerHTML'))
+        self.assertNotIn(second_video_details['filename'], videos[0].get_attribute('innerHTML'))
 
         # Once again, there is a link for comments
         archive_video_comment_link = self.wait_for(lambda: self.browser.find_element_by_class_name('comment_link'))
         # The user clicks the link
         archive_video_comment_link.click()
         # The title of this video is displayed
-        self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, first_video_title))
+        self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, first_video_details['title']))
         # The video's publication date is also displayed
         older_displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
         older_displayed_pub_date = self.convert_datestring_to_datetime(older_displayed_date_field.text)

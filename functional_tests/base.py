@@ -55,7 +55,7 @@ class AdminAndSiteVisitorTest(JugglingWebsiteTest):
         self.jj_browser.set_window_size(browser_width, browser_height)
         self.browser.set_window_position(0, 0)
         self.jj_browser.set_window_position(browser_width + (gap * 2), 0)
-        ## If there's going to be an admin browswer, we might as well log in during the set up
+        ## If there's going to be an admin browser, the admin user may as well log in during the set up
         self.jj_browser.get(f'{self.live_server_url}/admin/')
         username_field = self.jj_browser.find_element_by_id('id_username')
         username_field.send_keys('admin_user')
@@ -67,4 +67,28 @@ class AdminAndSiteVisitorTest(JugglingWebsiteTest):
         self.jj_browser.quit()
         self.browser.quit()
 
+    def create_database_object(self, model_class, attribute_dict):
+        """
+        Creates a new database object by:
+        -Navigating to the correct admin page
+        -Uses the dict to fill in the form data
+        -Clicking the save button
+        """
+        model_admin_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text(f'{model_class}s'))
+        model_admin_link.click()
+        add_object_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text(f'ADD {model_class.upper()}'))
+        add_object_link.click()
+
+        for key in attribute_dict.keys():
+            # The key should match the id of the field to which the data will be sent (without the 'id_' prefix)
+            attribute_field = self.wait_for(lambda: self.jj_browser.find_element_by_id(f'id_{key}'))
+            # Need to delete default data from date fields
+            data_to_send = attribute_dict[key]
+            if 'date' in key:
+                for i in range(12):
+                    attribute_field.send_keys(Keys.BACKSPACE)
+            attribute_field.send_keys(data_to_send)
+
+        save_button = self.jj_browser.find_element_by_name('_save')
+        save_button.click()
 
