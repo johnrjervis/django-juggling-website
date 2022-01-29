@@ -11,7 +11,7 @@
       <p>The following resources have all been invaluable in getting this site up and running. Note that all of the sites listed here provide at least some of their services for free.</p>
 
       {% for ack in acknowledgements %}
-      <p><a href="{{ ack.link }}" target="_blank">{{ ack.name }}</a>{{ ack.description }}</p>
+      <div class="acknowledgement"><p><a href="{{ ack.link }}" target="_blank" class="green_border">{{ ack.name }}</a></p><p>{{ ack.description }}</p></div>
 
       {% endfor %}
 

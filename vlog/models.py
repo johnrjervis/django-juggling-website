@@ -34,3 +34,10 @@ class Acknowledgement(models.Model):
     name = models.TextField(default = '')
     link = models.TextField(default = '')
     description = models.TextField(default = '')
+
+    def __str__(self):
+        return f'Acknowledgement: {self.name}'
+
+    def __repr__(self):
+        return f'{self.__class__}: {self.name}'
+

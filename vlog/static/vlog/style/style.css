@@ -96,15 +96,6 @@ a {
   color: green;
 }
 
-a[href^="http"] {
-  padding-right: 2rem;
-  background: transparent url('../images/external_link.png');
-  background-image: linear-gradient(transparent, transparent), url('../images/external_link.svg');
-  background-repeat: no-repeat;
-  background-position: 100% 40%;
-  background-size: 1.6rem;
-}
-
 a:visited {
   color: black;
 }
@@ -112,6 +103,16 @@ a:visited {
 dt img {
   width: 1.5rem;
   height: 1.5rem;
+}
+/* ---------------- Classes that can be applied to any elements ---------------- */
+
+.green_border {
+  border: 5px solid darkgreen;
+  border-radius: 10px 10px;
+  color: darkgreen;
+  font-size: 2rem;
+  text-decoration: none;
+  padding: 0.2rem 0.6rem;
 }
 
 /* ---------------- Formatting for combined title-navigation bar and footer elements ---------------- */
@@ -153,22 +154,6 @@ nav a {
   width: 80%;
   margin: 0.2rem 0;
   background-color: #9ff99f;
-}
-
-.green_border {
-  border: 5px solid darkgreen;
-  border-radius: 10px 10px;
-  color: darkgreen;
-  font-size: 2rem;
-  text-decoration: none;
-}
-
-a.comment_link,
-.comment,
-.commenter_name,
-.comments_box,
-dt {
-  padding: 0.2rem 0.6rem;
 }
 
 nav a:visited,
@@ -239,6 +224,44 @@ button[type="submit"] {
 button:hover {
   color: #9ff99f;
   cursor: pointer;
+}
+
+/* ---------------- Acknowledgements ---------------- */
+
+.acknowledgement {
+  display: flex;
+}
+
+.acknowledgement p:first-child {
+  white-space: nowrap;
+  margin-top: 1.5rem;
+}
+
+.acknowledgement p:last-child {
+  margin: 1.5rem 0 0 0.5rem;
+}
+
+a[href^="http"] {
+  padding-right: 2.5rem;
+  background: transparent url('../images/external_link.png');
+  background-image: linear-gradient(transparent, transparent), url('../images/external_link.svg');
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.5rem) 40%;
+  background-size: 1.6rem;
+}
+
+a[href^="http"]:hover {
+  padding-right: 2.5rem;
+  color: #e9e9e9;
+  background: darkgreen url('../images/external_link_hover.png');
+  background-image: linear-gradient(transparent, transparent), url('../images/external_link_hover.svg');
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.5rem) 40%;
+  background-size: 1.6rem;
+}
+
+a[href^="http"].green_border {
+  margin-right: 0.5rem;
 }
 
 /* ---------------- Flyout menus ---------------- */
