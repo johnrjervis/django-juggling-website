@@ -8,12 +8,16 @@
 
       <h2>Thanks!</h2>
 
-      <p>The following resources have all been invaluable in getting this site up and running. Note that all of the sites listed here provide at least some of their services for free.</p>
+      <p>The following resources have all been invaluable in getting this site up and running. All of the sites listed here provide at least some of their services for free.</p>
 
+      <ul class=link_list>
       {% for ack in acknowledgements %}
-      <div class="acknowledgement"><p><a href="{{ ack.link }}" target="_blank" class="green_border">{{ ack.name }}</a></p><p>{{ ack.description }}</p></div>
-
+        <li class="link_item acknowledgement">
+          <a href="{{ ack.link }}" target="_blank" class="green_border">{{ ack.name }}</a>
+          <p>{{ ack.description }}</p>
+        </li>
       {% endfor %}
+      </ul>
 
     </article>
 

@@ -11,20 +11,17 @@
 
       <p>Find out more through the following links:</p>
 
-      <dl>
-        <dt>
-          <a href="{% url 'vlog:history' %}">History</a>
-        </dt>
-        <dd>
-          A short history of how this site came into existence.
-        <dd>
-        <dt>
-          <a href="{% url 'vlog:thanks' %}">Thanks</a>
-        </dt>
-        <dd>
-          Some websites and organisations that I found helpful when getting this site up and running.
-        <dd>
-      <dl>
+      <ul class="link_list">
+        <li class="link_item">
+          <a href="{% url 'vlog:history' %}" class="green_border">History</a>
+          <p>A short history of how this site came into existence.</p>
+        </li>
+        <li class="link_item">
+          <a href="{% url 'vlog:thanks' %}" class="green_border">Thanks</a>
+          <p>Some websites and organisations that I found helpful when getting this site up and running.</p>
+        </li>
+      <ul>
+
     </article>
 
 {% endblock %}
