@@ -7,7 +7,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import WebDriverException
 import time
 import tkinter as tk
-import datetime as dt
 
 class JugglingWebsiteTest(StaticLiveServerTestCase):
     MAX_WAIT = 10
@@ -67,11 +66,15 @@ class AdminAndSiteVisitorTest(JugglingWebsiteTest):
         self.jj_browser.quit()
         self.browser.quit()
 
+    def format_datetime_obj_for_admin_page(self, obj):
+        """Generate text strings that can be entered into the date & time fields of the admin site"""
+        return f'{obj.year}-{obj.month:02}-{obj.day:02}', f'{obj.hour:02}:{obj.minute:02}:{obj.second:02}'
+
     def create_database_object(self, model_class, attribute_dict):
         """
         Creates a new database object by:
         -Navigating to the correct admin page
-        -Uses the dict to fill in the form data
+        -Using the dict to fill in the form data
         -Clicking the save button
         """
         model_admin_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text(f'{model_class}s'))

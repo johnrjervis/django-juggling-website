@@ -1,8 +1,8 @@
 from .base import AdminAndSiteVisitorTest
 from django.utils import timezone
+from datetime import datetime, timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-from datetime import datetime, timedelta
 
 
 class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
@@ -15,11 +15,6 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
             self.assertNotIn(text, [element.text for element in class_list])
         else:
             self.assertIn(text, [element.text for element in class_list])
-
-    def generate_pubdate_string(self, days_diff):
-        """Generate a text string that can be entered into a datefield (e.g. in the Django admin site)"""
-        date = timezone.now() + timedelta(days = days_diff)
-        return f'{date.year}-{date.month:02}-{date.day:02}'
 
     def convert_datestring_to_datetime(self, datestring):
         """Converts the pub date (as it appears on the page) into a datetime object"""
@@ -39,24 +34,32 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
 
+    def format_datetime_obj_for_comparison_with_website(self, obj):
+        """Converts a datetime object into the string format displayed on the site"""
+        return f'Published on {obj.day:02}/{obj.month:02}/{obj.year} at {obj.hour}:{obj.minute:02}'
+
     def test_detail_views_and_video_archive(self):
 
         # JJ has already uploaded a couple of videos to the site
-        # The first video was published about a week ago
-        first_pub_date = self.generate_pubdate_string(-7)
+        # The first video was published about a week ago (time also changed to differentiate from 2nd pub time)
+        date_for_first_video = timezone.now() - timedelta(days = 7, hours = 1, minutes = 14)
+        first_video_pub_date, first_video_pub_time = self.format_datetime_obj_for_admin_page(date_for_first_video)
         first_video_details =   {
                                 'filename': 'five_ball_juggle_50_catches.mp4',
                                 'title': 'Five ball juggle 50 catches',
-                                'pub_date_0': first_pub_date,
-                                'pub_date_1': '00:00:00',
+                                'pub_date_0': first_video_pub_date,
+                                'pub_date_1': first_video_pub_time,
                                 }
         self.create_database_object('Juggling video', first_video_details)
 
-        # A second video was added just now
-        ## The default for pubdate is timezone.now, so no need to add pub date data for this video
+        # A second video was added at midnight today
+        date_for_second_video = timezone.now()
+        second_video_pub_date, second_video_pub_time = self.format_datetime_obj_for_admin_page(date_for_second_video)
         second_video_details =   {
                                 'filename': 'behind_the_back_juggle.mp4',
                                 'title': 'Behind the back juggle',
+                                'pub_date_0': second_video_pub_date,
+                                'pub_date_1': second_video_pub_time,
                                 }
         self.create_database_object('Juggling video', second_video_details)
 
@@ -71,9 +74,9 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The title of the video is displayed
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, second_video_details['title']))
         # The video's publication date is also displayed
-        displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
-        displayed_pub_date = self.convert_datestring_to_datetime(displayed_date_field.text)
-        self.assertAlmostEqual(timezone.now(), displayed_pub_date, delta = timedelta(minutes = 2))
+        displayed_home_date = self.browser.find_element_by_class_name('video_pub_date').text
+        expected_home_date = self.format_datetime_obj_for_comparison_with_website(date_for_second_video)
+        self.assertEqual(displayed_home_date, expected_home_date)
         # The format of the further info link is the base url + videos/ + a number with at least one digit
         self.assertRegex(self.browser.current_url, r'/videos/\d+')
 
@@ -122,10 +125,10 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         archive_video_comment_link.click()
         # The title of this video is displayed
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, first_video_details['title']))
-        # The video's publication date is also displayed
-        older_displayed_date_field = self.browser.find_element_by_class_name('video_pub_date')
-        older_displayed_pub_date = self.convert_datestring_to_datetime(older_displayed_date_field.text)
-        self.assertGreater(timezone.now() - older_displayed_pub_date, timedelta(days = 7))
+        # The archive video's publication date is also displayed
+        displayed_archive_date = self.browser.find_element_by_class_name('video_pub_date').text
+        expected_archive_date = self.format_datetime_obj_for_comparison_with_website(date_for_first_video)
+        self.assertEqual(displayed_archive_date, expected_archive_date)
 
         # The user enters a comment for this video
         self.post_video_comment('Impressive!')

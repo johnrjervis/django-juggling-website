@@ -63,9 +63,12 @@ article:last-child {
   padding-bottom: 4rem;
 }
 
+p {
+  margin: 2rem;
+}
+
 p,
 form {
-  margin-left: 2rem;
   font-size: 2rem;
   line-height: 1.4;
 }
@@ -337,11 +340,10 @@ a[href^="http"]:hover {
   .link_item {
     display: flex;
     align-items: center;
-    margin: 0 0 2rem 2rem;
+    margin: 0 2rem 2rem 2rem;
   }
 
   .link_item a {
-    display: inline;
     float: left;
     white-space: nowrap;
     margin-bottom: 0;

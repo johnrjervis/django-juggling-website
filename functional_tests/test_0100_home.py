@@ -1,5 +1,6 @@
 from .base import AdminAndSiteVisitorTest
 from django.utils import timezone
+from datetime import timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -36,12 +37,15 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
         self.wait_for(lambda: self.assertEqual(len(self.browser.find_elements_by_class_name('info_link')), 0))
 
         # JJ logs in to the admin site and uploads the first video
+        ## Setting the date to a couple of days ago ensures that its pub date will be older than the second video
+        date_for_first_video = timezone.now() - timedelta(days = 2)
+        first_video_pub_date, _ = self.format_datetime_obj_for_admin_page(date_for_first_video)
         first_video_details =   {
                                 'filename': 'five_ball_juggle_50_catches.mp4',
                                 'title': 'Five ball juggle 50 catches',
+                                'pub_date_0': first_video_pub_date,
                                 }
         self.create_database_object('Juggling video', first_video_details)
-        first_pub_date = timezone.now()
 
         # On returning to the page after the update, the net user sees a new video on the site
         self.browser.refresh()
@@ -50,13 +54,12 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
         self.assertIn(first_video_details['filename'], video.get_attribute('innerHTML'))
 
         # Later on, JJ uploads another juggling video
+        ## If no date info is submitted, then the pub date defaults to the current time
         second_video_details =   {
                                 'filename': 'behind_the_back_juggle.mp4',
                                 'title': 'Behind the back juggle',
                                 }
         self.create_database_object('Juggling video', second_video_details)
-        second_pub_date = timezone.now()
-        self.assertGreaterEqual(second_pub_date, first_pub_date)
 
         # The site visitor returns to the juggling site's home page to see the latest video
         self.browser.refresh()
