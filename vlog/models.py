@@ -8,6 +8,7 @@ class JugglingVideo(models.Model):
     filename = models.CharField(max_length = 60, default = '')
     title = models.CharField(max_length = 50, default = '')
     pub_date = models.DateTimeField(default = timezone.now)
+    author_comment = models.TextField(default = '')
 
     def __str__(self):
         return f'Juggling video: {self.filename}'

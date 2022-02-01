@@ -44,6 +44,7 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
                                 'filename': 'five_ball_juggle_50_catches.mp4',
                                 'title': 'Five ball juggle 50 catches',
                                 'pub_date_0': first_video_pub_date,
+                                'author_comment': 'This was the video that started it all!',
                                 }
         self.create_database_object('Juggling video', first_video_details)
 
@@ -58,6 +59,7 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
         second_video_details =   {
                                 'filename': 'behind_the_back_juggle.mp4',
                                 'title': 'Behind the back juggle',
+                                'author_comment': 'This video was recorded in hotel quarantine',
                                 }
         self.create_database_object('Juggling video', second_video_details)
 

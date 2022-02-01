@@ -13,7 +13,7 @@ class VideoModelTest(TestCase):
         """
         The attributes of a video object should match those that it was saved with 
         """
-        first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now())
+        first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now(), author_comment = 'This video was recorded in hotel quarantine')
 
         saved_videos = JugglingVideo.objects.all()
         first_saved_video = saved_videos[0]
@@ -22,7 +22,7 @@ class VideoModelTest(TestCase):
         self.assertEqual(first_video.filename, first_saved_video.filename)
         self.assertEqual(first_video.title, first_saved_video.title)
         self.assertEqual(first_video.pub_date, first_saved_video.pub_date)
-
+        self.assertEqual(first_video.author_comment, first_saved_video.author_comment)
 
 class VideoAndCommentModelTest(TestCase):
     """

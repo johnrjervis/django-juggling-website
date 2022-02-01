@@ -369,6 +369,17 @@ class AddCommentTest(TestCase):
 
         self.assertNotContains(response, 'There are no comments for this video yet. Use the form below to post the first comment!')
 
+    def test_author_comment_is_displayed_in_video_detail_view(self):
+        """
+        Test that comments by the video author (JJ) are displayed in the video detail view
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches', author_comment = 'This is the video that started it all!')
+        VideoComment.objects.create(text = 'First comment!', video = juggling_video)
+
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]))
+
+        self.assertContains(response, 'This is the video that started it all!')
+
 
 class VideosListViewTest(JugglingVideoSiteTest):
     """

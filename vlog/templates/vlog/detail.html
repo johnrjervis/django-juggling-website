@@ -19,7 +19,13 @@
 
         <section class="comments">
 
-          <p class="video_pub_date">Published on {{ video.pub_date|date:'d/m/Y \a\t H:i' }}</p>
+          <div class="comment green_border lightgreen">
+            <p class="video_pub_date">Published on {{ video.pub_date|date:'d/m/Y \a\t H:i' }}</p>
+            {% if video.author_comment %}
+            <hr>
+            <p><strong>JJ says: </strong><span class="author_comment">{{ video.author_comment }}</span></p>
+            {% endif %}
+          </div>
 
           {% if video.videocomment_set.all %}
             {% for comment in video.videocomment_set.all %}

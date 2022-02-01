@@ -100,6 +100,10 @@ a:visited {
   padding: 0.2rem 0.6rem;
 }
 
+.lightgreen {
+  background-color: #64f664;
+}
+
 .link_list,
 .navlinks {
   list-style-type: none;
@@ -130,8 +134,7 @@ a:visited {
 
 header,
 nav,
-footer,
-a.comment_link {
+footer {
   background-color: #64f664;
 }
 
@@ -201,8 +204,7 @@ section.comments {
 }
 
 form,
-.comment,
-.video_pub_date {
+.comment {
   margin: 0.5rem;
   width: 80%;
   min-width: 10rem;

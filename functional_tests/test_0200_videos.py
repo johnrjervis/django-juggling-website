@@ -49,6 +49,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
                                 'title': 'Five ball juggle 50 catches',
                                 'pub_date_0': first_video_pub_date,
                                 'pub_date_1': first_video_pub_time,
+                                'author_comment': 'This was the video that started it all!',
                                 }
         self.create_database_object('Juggling video', first_video_details)
 
@@ -60,6 +61,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
                                 'title': 'Behind the back juggle',
                                 'pub_date_0': second_video_pub_date,
                                 'pub_date_1': second_video_pub_time,
+                                'author_comment': 'This video was recorded in hotel quarantine',
                                 }
         self.create_database_object('Juggling video', second_video_details)
 
@@ -73,6 +75,8 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         video_comment_link.click()
         # The title of the video is displayed
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('detail_heading').text, second_video_details['title']))
+        # JJ's comments on the video are displayed
+        self.check_for_text_in_css_class_list('This video was recorded in hotel quarantine', 'author_comment')
         # The video's publication date is also displayed
         displayed_home_date = self.browser.find_element_by_class_name('video_pub_date').text
         expected_home_date = self.format_datetime_obj_for_comparison_with_website(date_for_second_video)
@@ -133,6 +137,8 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         displayed_archive_date = self.browser.find_element_by_class_name('video_pub_date').text
         expected_archive_date = self.format_datetime_obj_for_comparison_with_website(date_for_first_video)
         self.assertEqual(displayed_archive_date, expected_archive_date)
+        # Again, JJ's comments on the video are also displayed
+        self.check_for_text_in_css_class_list('This was the video that started it all!', 'author_comment')
 
         # The user enters a comment for this video
         self.post_video_comment('Impressive!')
