@@ -208,6 +208,10 @@ form,
   min-width: 10rem;
 }
 
+form *::placeholder {
+  color: black;
+}
+
 .commenter_name,
 textarea {
   width: 100%;
@@ -216,9 +220,7 @@ textarea {
   margin-bottom: 0.5rem;
 }
 
-.comment_text,
-.comment_details,
-hr {
+.comment > * {
   margin: 0.1rem;
 }
 

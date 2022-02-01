@@ -21,15 +21,22 @@
 
           <p class="video_pub_date">Published on {{ video.pub_date|date:'d/m/Y \a\t H:i' }}</p>
 
-          {% for comment in video.videocomment_set.all %}
-            {% if comment.is_approved %}
-              <div class="comment green_border">
-                <p class="comment_text">{{ comment.text }}</p>
-                <hr>
-                <p class="comment_details"><span class="comment_author">Posted by {{ comment.author }}</span> <span class="comment_date">on {{ comment.date|date:'d/m/Y \a\t H:i' }}</span></p>
-              </div>
-            {% endif %}
-          {% endfor %}
+          {% if video.videocomment_set.all %}
+            {% for comment in video.videocomment_set.all %}
+              {% if comment.is_approved %}
+          <div class="comment green_border">
+            <p class="comment_text">{{ comment.text }}</p>
+            <hr>
+            <p class="comment_details"><span class="comment_author">Posted by {{ comment.author }}</span> <span class="comment_date">on {{ comment.date|date:'d/m/Y \a\t H:i' }}</span></p>
+          </div>
+              {% endif %}
+            {% endfor %}
+
+          {% else %}
+          <div class="comment green_border">
+            <p class="comment_invite">There are no comments for this video yet. Use the form below to post the first comment!</p>
+          </div>
+          {% endif %}
 
           <form method="POST" action="{% url 'vlog:add_comment' video.id %}">
             {% csrf_token %}

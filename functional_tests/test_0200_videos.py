@@ -86,6 +86,8 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # There is also a field for entering a name to go with the comment
         name_field = self.browser.find_element_by_class_name('commenter_name')
         self.assertEqual(name_field.get_attribute('placeholder'), 'Enter your name (optional)')
+        # No comments have been posted  on this video yet, and there is an invite to post the first comment
+        self.check_for_text_in_css_class_list('There are no comments for this video yet. Use the form below to post the first comment!', 'comment_invite')
         # The visitor enters a comment and clicks the 'Post comment' button
         self.post_video_comment('First post!')
         submit_date = timezone.now()
@@ -97,8 +99,10 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         displayed_comment_date = self.wait_for(lambda: self.browser.find_element_by_class_name('comment_date').text)
         comment_date = self.convert_datestring_to_datetime(displayed_comment_date)
         self.assertAlmostEqual(submit_date, comment_date, delta = timedelta(minutes = 2))
-        self.post_video_comment('Great juggling skills!', comment_author = 'Site visitor')
+        # The invite to post the first comment has disappeared
+        self.check_for_text_in_css_class_list('There are no comments for this video yet. Use the form below to post the first comment!',  'comment_invite', not_in = True)
         # The visitor decides to add another comment, this time they do add a name for the comment
+        self.post_video_comment('Great juggling skills!', comment_author = 'Site visitor')
         self.wait_for(lambda: self.check_for_text_in_css_class_list('Great juggling skills!', 'comment_text'))
         self.check_for_text_in_css_class_list('Posted by Site visitor', 'comment_author')
 

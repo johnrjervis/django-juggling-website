@@ -348,6 +348,27 @@ class AddCommentTest(TestCase):
         self.assertEqual(comment.text, 'First comment!')
         self.assertEqual(comment.author, 'anonymous')
 
+    def test_comment_invite_is_displayed_if_video_has_no_comments(self):
+        """
+        Test that an invite is shown if no comments have been posted
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]))
+
+        self.assertContains(response, 'There are no comments for this video yet. Use the form below to post the first comment!')
+
+    def test_comment_invite_is_not_displayed_if_a_comment_has_been_posted_for_a_video(self):
+        """
+        Test that the invite is not shown if a comment has been posted
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        VideoComment.objects.create(text = 'First comment!', video = juggling_video)
+
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]))
+
+        self.assertNotContains(response, 'There are no comments for this video yet. Use the form below to post the first comment!')
+
 
 class VideosListViewTest(JugglingVideoSiteTest):
     """
