@@ -380,6 +380,19 @@ class AddCommentTest(TestCase):
 
         self.assertContains(response, 'This is the video that started it all!')
 
+    def test_validation_errors_are_sent_back_to_detail_template(self):
+        """
+        Test that if a blank comment is posted, an error is shown on the detail page
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:add_comment', args = [juggling_video.id]), data = {'new_comment': '', 'commenter_name': ''})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'vlog/detail.html')
+        expected_error = 'Blank comment was not submitted!'
+        self.assertContains(response, expected_error)
+
 
 class VideosListViewTest(JugglingVideoSiteTest):
     """

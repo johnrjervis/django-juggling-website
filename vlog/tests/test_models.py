@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 from datetime import timedelta
 
@@ -33,7 +34,7 @@ class VideoAndCommentModelTest(TestCase):
         """
         The attributes of a comment object should match those that it was saved with 
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now() - timedelta(days = 1))
+        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
         first_comment = VideoComment()
         first_comment.text = 'First comment!'
         first_comment.video = juggling_video
@@ -61,6 +62,18 @@ class VideoAndCommentModelTest(TestCase):
         self.assertEqual(second_saved_comment.author, 'Site visitor')
         self.assertEqual(second_saved_comment.video, juggling_video)
         self.assertEqual(second_saved_comment.is_approved, False)
+
+    def test_cannot_save_a_blank_comment(self):
+        """
+        Tests that an attempt to save a blank comment raises an exception
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        comment = VideoComment(video = juggling_video, text = '')
+
+        with self.assertRaises(ValidationError):
+            comment.save()
+            comment.full_clean()
+
 
 class AcknowledgementsModelTest(TestCase):
     """

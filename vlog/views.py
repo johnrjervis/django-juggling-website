@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404 
-from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 
 # Create your views here.
 
@@ -38,21 +39,31 @@ def video_detail(request, jugglingvideo_id):
     juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
 
     return render(request, 'vlog/detail.html', {
-        'selected': 'Videos',
-        'video': juggling_video,
-    })
+                                                'selected': 'Videos',
+                                                'video': juggling_video,
+                                                })
 
 
 def add_comment(request, jugglingvideo_id):
     juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
 
     if request.POST['commenter_name']:
-        VideoComment.objects.create(text = request.POST['new_comment'],
-                                    author = request.POST['commenter_name'], 
-                                    video = juggling_video)
+        comment = VideoComment(text = request.POST['new_comment'],
+                                              author = request.POST['commenter_name'], 
+                                              video = juggling_video)
     else:
-        VideoComment.objects.create(text = request.POST['new_comment'], video = juggling_video)
+        comment = VideoComment(text = request.POST['new_comment'], video = juggling_video)
 
+    try:
+        comment.full_clean()
+        comment.save()
+    except ValidationError:
+        error = 'Blank comment was not submitted!'
+        return render(request, 'vlog/detail.html', {
+                                                    'selected': 'Videos',
+                                                    'video': juggling_video,
+                                                    'error': error,
+                                                    })
     return redirect(reverse('vlog:detail', args = [juggling_video.id]))
 
 

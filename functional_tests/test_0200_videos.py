@@ -110,13 +110,6 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.wait_for(lambda: self.check_for_text_in_css_class_list('Great juggling skills!', 'comment_text'))
         self.check_for_text_in_css_class_list('Posted by Site visitor', 'comment_author')
 
-        ## Not ready to implement this section yet
-        # The visitor then accidentally clicks the submit button while the comment field is empty
-        #submit_button = self.browser.find_element_by_tag_name('button')
-        #submit_button.click()
-        # The page refreshes and displays a warning to say that the blank comment could not be submitted
-        #self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_class_name('comment_warning').text, 'Could not submit blank comment'))
-
         # Intrigued to see what other videos are available, the visitor clicks the archive link
         video_archive_link = self.browser.find_element_by_link_text('Videos')
         video_archive_link.click()
@@ -167,4 +160,11 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.wait_for(lambda: self.check_for_text_in_css_class_list('I can has a cheezburger?', 'comment_text', not_in = True))
         # The first comment is still there, however
         self.check_for_text_in_css_class_list('Impressive!', 'comment_text')
+
+        # The visitor then accidentally clicks the submit button while the comment field is empty
+        submit_button = self.browser.find_element_by_tag_name('button')
+        submit_button.click()
+        # The page refreshes and displays a warning to say that the blank comment could not be submitted
+        self.wait_for(lambda: self.check_for_text_in_css_class_list('Blank comment was not submitted!', 'comment_warning'))
+
 
