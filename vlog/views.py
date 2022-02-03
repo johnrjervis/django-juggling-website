@@ -49,8 +49,8 @@ def add_comment(request, jugglingvideo_id):
 
     if request.POST['commenter_name']:
         comment = VideoComment(text = request.POST['new_comment'],
-                                              author = request.POST['commenter_name'], 
-                                              video = juggling_video)
+                              author = request.POST['commenter_name'], 
+                              video = juggling_video)
     else:
         comment = VideoComment(text = request.POST['new_comment'], video = juggling_video)
 

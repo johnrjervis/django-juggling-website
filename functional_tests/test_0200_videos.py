@@ -36,7 +36,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
     def format_datetime_obj_for_comparison_with_website(self, obj):
         """Converts a datetime object into the string format displayed on the site"""
-        return f'Published on {obj.day:02}/{obj.month:02}/{obj.year} at {obj.hour}:{obj.minute:02}'
+        return f'Published on {obj.day:02}/{obj.month:02}/{obj.year} at {obj.hour:02}:{obj.minute:02}'
 
     def test_detail_views_and_video_archive(self):
 

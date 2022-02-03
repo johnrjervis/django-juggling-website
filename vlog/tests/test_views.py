@@ -393,6 +393,16 @@ class AddCommentTest(TestCase):
         expected_error = 'Blank comment was not submitted!'
         self.assertContains(response, expected_error)
 
+    def test_empty_comments_are_not_saved(self):
+        """
+        Test that a comment is not saved to the database if it is empty
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:add_comment', args = [juggling_video.id]), data = {'new_comment': '', 'commenter_name': ''})
+
+        self.assertEqual(VideoComment.objects.count(), 0)
+
 
 class VideosListViewTest(JugglingVideoSiteTest):
     """
