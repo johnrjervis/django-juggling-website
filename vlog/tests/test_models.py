@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
@@ -24,6 +25,15 @@ class VideoModelTest(TestCase):
         self.assertEqual(first_video.title, first_saved_video.title)
         self.assertEqual(first_video.pub_date, first_saved_video.pub_date)
         self.assertEqual(first_video.author_comment, first_saved_video.author_comment)
+
+    def test_get_absolute_url(self):
+        """
+        Tests the absolute URL retrieval for the JugglingVideo model
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+
+        self.assertEqual(juggling_video.get_absolute_url(), reverse('vlog:detail', args = [juggling_video.id]))
+
 
 class VideoAndCommentModelTest(TestCase):
     """

@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
 # Create your models here.
@@ -9,6 +10,9 @@ class JugglingVideo(models.Model):
     title = models.CharField(max_length = 50, default = '')
     pub_date = models.DateTimeField(default = timezone.now)
     author_comment = models.TextField(default = '')
+
+    def get_absolute_url(self):
+        return reverse('vlog:detail', args = [self.id])
 
     def __str__(self):
         return f'Juggling video: {self.filename}'

@@ -51,7 +51,7 @@ def video_detail(request, jugglingvideo_id):
         try:
             comment.full_clean()
             comment.save()
-            return redirect(reverse('vlog:detail', args = [juggling_video.id]))
+            return redirect(juggling_video)
 
         except ValidationError:
             error = 'Blank comment was not submitted!'
