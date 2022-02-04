@@ -37,34 +37,30 @@ def videos_list(request):
 
 def video_detail(request, jugglingvideo_id):
     juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
+    error = None
+
+    if request.method == 'POST':
+
+        if request.POST['commenter_name']:
+            comment = VideoComment(text = request.POST['new_comment'],
+                                    author = request.POST['commenter_name'],
+                                    video = juggling_video)
+        else:
+            comment = VideoComment(text = request.POST['new_comment'], video = juggling_video)
+
+        try:
+            comment.full_clean()
+            comment.save()
+            return redirect(reverse('vlog:detail', args = [juggling_video.id]))
+
+        except ValidationError:
+            error = 'Blank comment was not submitted!'
 
     return render(request, 'vlog/detail.html', {
                                                 'selected': 'Videos',
                                                 'video': juggling_video,
+                                                'error': error,
                                                 })
-
-
-def add_comment(request, jugglingvideo_id):
-    juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
-
-    if request.POST['commenter_name']:
-        comment = VideoComment(text = request.POST['new_comment'],
-                              author = request.POST['commenter_name'], 
-                              video = juggling_video)
-    else:
-        comment = VideoComment(text = request.POST['new_comment'], video = juggling_video)
-
-    try:
-        comment.full_clean()
-        comment.save()
-    except ValidationError:
-        error = 'Blank comment was not submitted!'
-        return render(request, 'vlog/detail.html', {
-                                                    'selected': 'Videos',
-                                                    'video': juggling_video,
-                                                    'error': error,
-                                                    })
-    return redirect(reverse('vlog:detail', args = [juggling_video.id]))
 
 
 def learn(request):

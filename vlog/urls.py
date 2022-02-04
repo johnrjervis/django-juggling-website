@@ -22,7 +22,6 @@ urlpatterns = [
     path('', views.index, name = 'index'),
     path('videos/', views.videos_list, name = 'videos'),
     path('videos/<int:jugglingvideo_id>/', views.video_detail, name = 'detail'),
-    path('videos/<int:jugglingvideo_id>/add_comment', views.add_comment, name = 'add_comment'),
     path('learn/', views.learn, name = 'learn'),
     path('about/', views.about, name = 'about'),
     path('about/thanks/', views.thanks, name = 'thanks'),

@@ -44,7 +44,7 @@
           </div>
           {% endif %}
 
-          <form method="POST" action="{% url 'vlog:add_comment' video.id %}">
+          <form method="POST" action="{% url 'vlog:detail' video.id %}">
             {% csrf_token %}
             <input name="commenter_name" class="commenter_name green_border" placeholder="Enter your name (optional)"/>
             <textarea name="new_comment" class="comments_box green_border" placeholder="Enter your comment"></textarea>
