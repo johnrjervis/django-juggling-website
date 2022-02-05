@@ -44,16 +44,17 @@
           </div>
           {% endif %}
 
+          {% if error %}
+          <div class="comment error green_border">
+            <p class="comment_warning">{{ error }}</p>
+          </div>
+          {% endif %}
+
           <form method="POST" action="{% url 'vlog:detail' video.id %}">
             {% csrf_token %}
             <input name="commenter_name" class="commenter_name green_border" placeholder="Enter your name (optional)"/>
             <textarea name="new_comment" class="comments_box green_border" placeholder="Enter your comment"></textarea>
             <button type="submit" class="green_border">Post comment</button>
-          {% if error %}
-            <div class="error">
-              <span class="comment_warning">{{ error }}</span>
-            </div>
-          {% endif %}
           </form>
 
         </section>

@@ -236,6 +236,11 @@ button:hover {
   cursor: pointer;
 }
 
+.comment.error {
+  color: darkred;
+  border-color: darkred;
+}
+
 /* ---------------- External links ---------------- */
 
 a[href^="http"] {
