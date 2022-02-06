@@ -44,25 +44,25 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # The first video was published about a week ago (time also changed to differentiate from 2nd pub time)
         date_for_first_video = timezone.now() - timedelta(days = 7, hours = 1, minutes = 14)
         first_video_pub_date, first_video_pub_time = self.format_datetime_obj_for_admin_page(date_for_first_video)
-        first_video_details =   {
-                                'filename': 'five_ball_juggle_50_catches.mp4',
-                                'title': 'Five ball juggle 50 catches',
-                                'pub_date_0': first_video_pub_date,
-                                'pub_date_1': first_video_pub_time,
-                                'author_comment': 'This was the video that started it all!',
-                                }
+        first_video_details = {
+            'filename': 'five_ball_juggle_50_catches.mp4',
+            'title': 'Five ball juggle 50 catches',
+            'pub_date_0': first_video_pub_date,
+            'pub_date_1': first_video_pub_time,
+            'author_comment': 'This was the video that started it all!',
+        }
         self.create_database_object('Juggling video', first_video_details)
 
         # A second video was added at midnight today
         date_for_second_video = timezone.now()
         second_video_pub_date, second_video_pub_time = self.format_datetime_obj_for_admin_page(date_for_second_video)
-        second_video_details =   {
-                                'filename': 'behind_the_back_juggle.mp4',
-                                'title': 'Behind the back juggle',
-                                'pub_date_0': second_video_pub_date,
-                                'pub_date_1': second_video_pub_time,
-                                'author_comment': 'This video was recorded in hotel quarantine',
-                                }
+        second_video_details = {
+            'filename': 'behind_the_back_juggle.mp4',
+            'title': 'Behind the back juggle',
+            'pub_date_0': second_video_pub_date,
+            'pub_date_1': second_video_pub_time,
+            'author_comment': 'This video was recorded in hotel quarantine',
+        }
         self.create_database_object('Juggling video', second_video_details)
 
         # A site visitor goes to the homepage

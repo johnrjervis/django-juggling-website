@@ -40,12 +40,12 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
         ## Setting the date to a couple of days ago ensures that its pub date will be older than the second video
         date_for_first_video = timezone.now() - timedelta(days = 2)
         first_video_pub_date, _ = self.format_datetime_obj_for_admin_page(date_for_first_video)
-        first_video_details =   {
-                                'filename': 'five_ball_juggle_50_catches.mp4',
-                                'title': 'Five ball juggle 50 catches',
-                                'pub_date_0': first_video_pub_date,
-                                'author_comment': 'This was the video that started it all!',
-                                }
+        first_video_details = {
+            'filename': 'five_ball_juggle_50_catches.mp4',
+            'title': 'Five ball juggle 50 catches',
+            'pub_date_0': first_video_pub_date,
+            'author_comment': 'This was the video that started it all!',
+        }
         self.create_database_object('Juggling video', first_video_details)
 
         # On returning to the page after the update, the net user sees a new video on the site
@@ -56,11 +56,11 @@ class T01HomePageAndAdminSiteTest(AdminAndSiteVisitorTest):
 
         # Later on, JJ uploads another juggling video
         ## If no date info is submitted, then the pub date defaults to the current time
-        second_video_details =   {
-                                'filename': 'behind_the_back_juggle.mp4',
-                                'title': 'Behind the back juggle',
-                                'author_comment': 'This video was recorded in hotel quarantine',
-                                }
+        second_video_details = {
+            'filename': 'behind_the_back_juggle.mp4',
+            'title': 'Behind the back juggle',
+            'author_comment': 'This video was recorded in hotel quarantine',
+        }
         self.create_database_object('Juggling video', second_video_details)
 
         # The site visitor returns to the juggling site's home page to see the latest video

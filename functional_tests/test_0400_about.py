@@ -10,11 +10,11 @@ class T04AboutPagesTest(AdminAndSiteVisitorTest):
     def test_about_pages(self):
 
         # JJ has added some acknowledgements via the admin site
-        first_acknowledgement_details =   {
-                                'name': 'Obey the Testing Goat!',
-                                'link': 'https://www.obeythetestinggoat.com/',
-                                'description': "I started out creating my juggling site by following the examples in Harry Percival's excellent book \"Test-Driven Development with Python\". I'd recommend buying a print copy if you're interested in web development with Python.",
-                                }
+        first_acknowledgement_details = {
+            'name': 'Obey the Testing Goat!',
+            'link': 'https://www.obeythetestinggoat.com/',
+            'description': "I started out creating my juggling site by following the examples in Harry Percival's excellent book \"Test-Driven Development with Python\". I'd recommend buying a print copy if you're interested in web development with Python.",
+        }
         self.create_database_object('Acknowledgement', first_acknowledgement_details)
 
         # Another visitor accesses the website
