@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 
-
 class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
     def check_for_text_in_css_class_list(self, text, css_class, not_in = False):

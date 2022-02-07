@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
+from vlog.forms import CommentForm
 
 # Create your views here.
 
@@ -41,12 +42,14 @@ def video_detail(request, jugglingvideo_id):
 
     if request.method == 'POST':
 
-        if request.POST['commenter_name']:
-            comment = VideoComment(text = request.POST['new_comment'],
-                                    author = request.POST['commenter_name'],
-                                    video = juggling_video)
+        if request.POST['author']:
+            comment = VideoComment(
+                text = request.POST['text'],
+                author = request.POST['author'],
+                video = juggling_video
+            )
         else:
-            comment = VideoComment(text = request.POST['new_comment'], video = juggling_video)
+            comment = VideoComment(text = request.POST['text'], video = juggling_video)
 
         try:
             comment.full_clean()
@@ -56,11 +59,16 @@ def video_detail(request, jugglingvideo_id):
         except ValidationError:
             error = 'Blank comment was not submitted!'
 
-    return render(request, 'vlog/detail.html', {
-                                                'selected': 'Videos',
-                                                'video': juggling_video,
-                                                'error': error,
-                                                })
+    return render(
+        request,
+        'vlog/detail.html', 
+        {
+            'selected': 'Videos',
+            'video': juggling_video,
+            'form': CommentForm(),
+            'error': error,
+        }
+    )
 
 
 def learn(request):

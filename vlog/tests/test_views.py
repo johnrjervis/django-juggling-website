@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
+from vlog.forms import CommentForm
 from datetime import timedelta
 
 
@@ -300,7 +301,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
         other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
 
-        response = self.client.post(reverse('vlog:detail', args = [correct_video.id]), data = {'new_comment': 'First comment on correct video!', 'commenter_name': ''})
+        response = self.client.post(reverse('vlog:detail', args = [correct_video.id]), data = {'text': 'First comment on correct video!', 'author': ''})
         first_comment = VideoComment.objects.first()
 
         self.assertEqual(VideoComment.objects.count(), 1)
@@ -314,7 +315,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
         other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
 
-        response = self.client.post(reverse('vlog:detail', args = [correct_video.id]), data = {'new_comment': 'First comment on correct video!', 'commenter_name': ''})
+        response = self.client.post(reverse('vlog:detail', args = [correct_video.id]), data = {'text': 'First comment on correct video!', 'author': ''})
 
         self.assertRedirects(response, reverse('vlog:detail', args = [correct_video.id]))
 
@@ -324,7 +325,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'new_comment': 'First comment!', 'commenter_name': 'A juggling fan'})
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': 'First comment!', 'author': 'A juggling fan'})
         comment = VideoComment.objects.first()
 
         self.assertEqual(comment.text, 'First comment!')
@@ -336,7 +337,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'new_comment': 'First comment!', 'commenter_name': ''})
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': 'First comment!', 'author': ''})
         comment = VideoComment.objects.first()
 
         self.assertEqual(comment.text, 'First comment!')
@@ -380,7 +381,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'new_comment': '', 'commenter_name': ''})
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': '', 'author': ''})
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'vlog/detail.html')
@@ -393,9 +394,16 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'new_comment': '', 'commenter_name': ''})
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': '', 'author': ''})
 
         self.assertEqual(VideoComment.objects.count(), 0)
+
+    def test_detail_view_uses_comment_form(self):
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        
+        response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
+
+        self.assertIsInstance(response.context['form'], CommentForm)
 
 
 class VideosListViewTest(JugglingVideoSiteTest):
