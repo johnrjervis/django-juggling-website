@@ -164,6 +164,6 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         # The page refreshes and displays a warning to say that the blank comment could not be submitted
-        self.wait_for(lambda: self.check_for_text_in_css_class_list('Blank comment was not submitted!', 'comment_warning'))
+        self.wait_for(lambda: self.check_for_text_in_css_class_list('You cannot submit an empty comment.', 'comment_warning'))
 
 

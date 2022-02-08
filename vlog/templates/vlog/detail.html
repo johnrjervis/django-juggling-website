@@ -44,9 +44,9 @@
           </div>
           {% endif %}
 
-          {% if error %}
+          {% if form.errors %}
           <div class="comment error green_border">
-            <p class="comment_warning">{{ error }}</p>
+            <p class="comment_warning">{{ form.text.errors }}</p>
           </div>
           {% endif %}
 

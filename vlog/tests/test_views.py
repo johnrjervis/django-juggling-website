@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
-from vlog.forms import CommentForm
+from vlog.forms import CommentForm, EMPTY_COMMENT_ERROR
 from datetime import timedelta
 
 
@@ -69,7 +69,7 @@ class IndexViewTest(JugglingVideoSiteTest):
 
         self.assertNotContains(response, 'No videos are available!')
 
-    def test_home_page_shows_video_if_availabe(self):
+    def test_home_page_shows_video_if_available(self):
         """
         The home page should display a video if there is a video object in the database 
         """
@@ -375,9 +375,9 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         self.assertContains(response, 'This is the video that started it all!')
 
-    def test_validation_errors_are_sent_back_to_detail_template(self):
+    def test_invalid_form_is_rendered_with_the_detail_template(self):
         """
-        Test that if a blank comment is posted, an error is shown on the detail page
+        Test that if a blank comment is posted, the response is directed back to the detail view
         """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
 
@@ -385,8 +385,27 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'vlog/detail.html')
-        expected_error = 'Blank comment was not submitted!'
-        self.assertContains(response, expected_error)
+
+    def test_validation_errors_are_shown_in_the_detail_view(self):
+        """
+        Test that the emtpy comment error is passed to the detail template if an empty comment is submitted
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': '', 'author': ''})
+        #print(response.content)
+
+        self.assertContains(response, f'<p class="comment_warning"><ul class="errorlist"><li>{EMPTY_COMMENT_ERROR}')
+
+    def test_comment_form_passed_to_template_after_invalid_input(self):
+        """
+        Test that the comment form is passed to the detail template if an empty comment is submitted
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+
+        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': '', 'author': ''})
+
+        self.assertIsInstance(response.context['form'], CommentForm)
 
     def test_empty_comments_are_not_saved(self):
         """
@@ -398,7 +417,10 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         self.assertEqual(VideoComment.objects.count(), 0)
 
-    def test_detail_view_uses_comment_form(self):
+    def test_detail_view_has_comment_form(self):
+        """
+        A CommentForm object should be in the context dict of the detail view (under the key 'form')
+        """
         juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
         
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))

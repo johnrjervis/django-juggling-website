@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
-from vlog.forms import CommentForm
+from vlog.forms import CommentForm, EMPTY_COMMENT_ERROR
 
 # Create your views here.
 
@@ -37,27 +37,23 @@ def videos_list(request):
 
 
 def video_detail(request, jugglingvideo_id):
-    juggling_video = get_object_or_404(JugglingVideo.objects.filter(pub_date__lte = timezone.now()), id = jugglingvideo_id)
-    error = None
+    juggling_video = get_object_or_404(
+        JugglingVideo.objects.filter(pub_date__lte = timezone.now()),
+        id = jugglingvideo_id
+    )
+    form = CommentForm()
 
     if request.method == 'POST':
 
-        if request.POST['author']:
-            comment = VideoComment(
+        form = CommentForm(data = request.POST)
+        if form.is_valid():
+            comment_author = request.POST['author'] if request.POST['author'] else 'anonymous'
+            VideoComment.objects.create(
                 text = request.POST['text'],
-                author = request.POST['author'],
-                video = juggling_video
+                author = comment_author,
+                video = juggling_video,
             )
-        else:
-            comment = VideoComment(text = request.POST['text'], video = juggling_video)
-
-        try:
-            comment.full_clean()
-            comment.save()
             return redirect(juggling_video)
-
-        except ValidationError:
-            error = 'Blank comment was not submitted!'
 
     return render(
         request,
@@ -65,8 +61,7 @@ def video_detail(request, jugglingvideo_id):
         {
             'selected': 'Videos',
             'video': juggling_video,
-            'form': CommentForm(),
-            'error': error,
+            'form': form,
         }
     )
 
