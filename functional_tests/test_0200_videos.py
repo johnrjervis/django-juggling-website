@@ -48,7 +48,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
             'title': 'Five ball juggle 50 catches',
             'pub_date_0': first_video_pub_date,
             'pub_date_1': first_video_pub_time,
-            'author_comment': 'This was the video that started it all!',
+            'author_comment': 'This is the video that started it all!',
         }
         self.create_database_object('Juggling video', first_video_details)
 
@@ -130,7 +130,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         expected_archive_date = self.format_datetime_obj_for_comparison_with_website(date_for_first_video)
         self.assertEqual(displayed_archive_date, expected_archive_date)
         # Again, JJ's comments on the video are also displayed
-        self.check_for_text_in_css_class_list('This was the video that started it all!', 'author_comment')
+        self.check_for_text_in_css_class_list('This is the video that started it all!', 'author_comment')
 
         # The user enters a comment for this video
         self.post_video_comment('Impressive!')
@@ -164,6 +164,8 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         submit_button = self.browser.find_element_by_tag_name('button')
         submit_button.click()
         # The page refreshes and displays a warning to say that the blank comment could not be submitted
-        self.wait_for(lambda: self.check_for_text_in_css_class_list('You cannot submit an empty comment.', 'comment_warning'))
-
+        self.wait_for(lambda: self.browser.find_element_by_css_selector('#id_text:invalid'))
+        # The warning disappears after the user types some text into the comment field
+        self.browser.find_element_by_css_selector('.comments_box').send_keys('Some text')
+        self.wait_for(lambda: self.browser.find_element_by_css_selector('#id_text:valid'))
 

@@ -21,6 +21,43 @@ class JugglingVideoSiteTest(TestCase):
         self.assertEqual(selected, desired_selected_value)
         self.assertContains(response, '<li class="navlink selected">')
 
+    def post_video(self, video = 'first', pub_date = None):
+        """
+        Create a JugglingVideo objects from one of three videos
+        A pub date can optionally be added via the relevant argument
+        """
+
+        videos = {
+            'first': {
+                'filename': 'five_ball_juggle_50_catches.mp4',
+                'title': 'Five ball juggle 50 catches',
+                'author_comment': 'This is the video that started it all!',
+            },
+            'second': {
+                'filename': 'behind_the_back_juggle.mp4',
+                'title': 'Behind the back juggle',
+            },
+            'third': {
+                'filename': 'under_the_arm.mp4',
+                'title': 'Under the arm juggle',
+            },
+        }
+
+        kwargs = videos[video]
+
+        if pub_date:
+            kwargs['pub_date'] = pub_date
+
+        return JugglingVideo.objects.create(**kwargs)
+
+    def post_comment(self, video, text = '', author = ''):
+        """
+        Returns the response from POSTing a comment to the detail page for the video
+        """
+        data = {'text': text, 'author': author}
+
+        return self.client.post(reverse('vlog:detail', args = [video.id]), data)
+
 
 class IndexViewTest(JugglingVideoSiteTest):
     """
@@ -63,7 +100,7 @@ class IndexViewTest(JugglingVideoSiteTest):
         """
         The home page should not display an error message if there is a video object in the database 
         """
-        first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
+        self.post_video()
 
         response = self.client.get(reverse('vlog:index'))
 
@@ -73,7 +110,7 @@ class IndexViewTest(JugglingVideoSiteTest):
         """
         The home page should display a video if there is a video object in the database 
         """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
+        first_video = self.post_video()
 
         response = self.client.get(reverse('vlog:index'))
 
@@ -85,8 +122,8 @@ class IndexViewTest(JugglingVideoSiteTest):
         """
         older_date = timezone.now() - timedelta(days = 5)
         current_date = timezone.now()
-        older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
-        current_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = current_date)
+        older_video = self.post_video(video = 'first', pub_date = older_date)
+        current_video = self.post_video(video = 'second', pub_date = current_date)
 
         response = self.client.get(reverse('vlog:index'))
 
@@ -97,10 +134,10 @@ class IndexViewTest(JugglingVideoSiteTest):
         """
         Videos with a publication date in the future should not appear on the homepage
         """
-        future_date = timezone.now() + timedelta(days = 5)
         current_date = timezone.now()
-        future_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = future_date)
-        current_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = current_date)
+        future_date = timezone.now() + timedelta(days = 5)
+        current_video = self.post_video(video = 'first', pub_date = current_date)
+        future_video = self.post_video(video = 'second', pub_date = future_date)
 
         response = self.client.get(reverse('vlog:index'))
 
@@ -124,7 +161,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         The correct template should be used when a video's detail page is accessed 
         """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
+        first_video = self.post_video()
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
 
@@ -134,8 +171,8 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Tests that the video detail view passes the correct view in the context dictionary
         """
-        correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
-        other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        correct_video = self.post_video(video = 'first')
+        other_video = self.post_video(video = 'second')
 
         response = self.client.get(reverse('vlog:detail', args = [correct_video.id]))
 
@@ -145,7 +182,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         The detail page for a juggling video object should display the correct video
         """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
+        first_video = self.post_video()
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
 
@@ -156,8 +193,8 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         The detail page for a juggling video object should only display the correct video
         (Other videos in the database should not be displayed)
         """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
-        second_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4')
+        first_video = self.post_video(video = 'first')
+        second_video = self.post_video(video = 'second')
 
         response1 = self.client.get(reverse('vlog:detail', args = [first_video.id]))
         response2 = self.client.get(reverse('vlog:detail', args = [second_video.id]))
@@ -171,7 +208,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         A video's title attribute should be displayed on the video's detail page
         """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        first_video = self.post_video()
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
 
@@ -181,11 +218,11 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         A video's publication date attribute should be displayed on the video's detail page
         """
-        pub_time = timezone.now()
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
+        current_time = timezone.now()
+        first_video = self.post_video(video = 'first', pub_date = current_time)
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
-        time_string = pub_time.strftime(format = '%d/%m/%Y at %H:%M')
+        time_string = current_time.strftime(format = '%d/%m/%Y at %H:%M')
         #print(response.content.decode())
 
         self.assertContains(response, time_string)
@@ -195,7 +232,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         The URL for a video object with a publication date in the future should respond with a 404 error
         """
         future_date = timezone.now() + timedelta(days = 5)
-        future_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = future_date)
+        future_video = self.post_video(pub_date = future_date)
 
         response = self.client.get(reverse('vlog:detail', args = [future_video.id]))
 
@@ -207,7 +244,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         The selected class should appear on the video page
         """
         pub_time = timezone.now()
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = pub_time)
+        first_video = self.post_video(pub_date = pub_time)
 
         self.check_context_dict_contains_correct_selected_item_for_view('vlog:detail', 'Videos', arguments = [first_video.id])
 
@@ -215,7 +252,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Tests that the video detail view does not save blank comments when the page is visited
         """
-        first_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        first_video = self.post_video()
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
 
@@ -225,10 +262,10 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that the video detail view only displays comments that relate to the specified video
         """
-        correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        correct_video = self.post_video(video = 'first')
         VideoComment.objects.create(text = 'First comment!', video = correct_video)
         VideoComment.objects.create(text = 'Nice video!', video = correct_video)
-        other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        other_video = self.post_video(video = 'second')
         VideoComment.objects.create(text = 'Other video comment #1', video = other_video)
         VideoComment.objects.create(text = 'Other video comment #2', video = other_video)
 
@@ -243,7 +280,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         If no name is entered, the comment should include 'anonymous'
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
         VideoComment.objects.create(text = 'First comment!', video = juggling_video)
 
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
@@ -256,7 +293,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         If a name is supplied for a comment then it should be displayed with the comment'
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
         VideoComment.objects.create(text = 'First comment!', author = 'A juggling fan', video = juggling_video)
 
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
@@ -271,7 +308,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         # Give the video an arbitrary pub date in the past so that this does not match the comment's date
         video_pub_date = timezone.now() - timedelta(days = 7, hours = 4, minutes = 30)
         comment_post_date = timezone.now()
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches', pub_date = video_pub_date)
+        juggling_video = self.post_video(pub_date = video_pub_date)
         VideoComment.objects.create(text = 'First comment!', author = 'A juggling fan', video = juggling_video, date = comment_post_date)
 
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
@@ -285,7 +322,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         Comments should only appear on a video's detail page if their is_approved attribute is True
         """
         # Give the video an arbitrary pub date in the past so that this does not match the comment's date
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
         approved_comment = VideoComment.objects.create(text = 'First comment!', video = juggling_video, is_approved = True)
         not_approved_comment = VideoComment.objects.create(text = 'Inappropriate comment', video = juggling_video, is_approved = False)
 
@@ -298,10 +335,10 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that a POST request from the video detail page saves the comment to the database
         """
-        correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
-        other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        correct_video = self.post_video(video = 'first')
+        other_video = self.post_video(video = 'second')
 
-        response = self.client.post(reverse('vlog:detail', args = [correct_video.id]), data = {'text': 'First comment on correct video!', 'author': ''})
+        response = self.post_comment(video = correct_video, text = 'First comment on correct video!')
         first_comment = VideoComment.objects.first()
 
         self.assertEqual(VideoComment.objects.count(), 1)
@@ -312,10 +349,10 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that when a comment is posted for a video, the browser is redirected to the detail page for that video
         """
-        correct_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
-        other_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        correct_video = self.post_video(video = 'first')
+        other_video = self.post_video(video = 'second')
 
-        response = self.client.post(reverse('vlog:detail', args = [correct_video.id]), data = {'text': 'First comment on correct video!', 'author': ''})
+        response = self.post_comment(video = correct_video, text = 'First comment on correct video!')
 
         self.assertRedirects(response, reverse('vlog:detail', args = [correct_video.id]))
 
@@ -323,9 +360,9 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that a comment author's name is saved to the database
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': 'First comment!', 'author': 'A juggling fan'})
+        response = self.post_comment(video = juggling_video, text = 'First comment!', author = 'A juggling fan')
         comment = VideoComment.objects.first()
 
         self.assertEqual(comment.text, 'First comment!')
@@ -335,9 +372,9 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that a comment author's name is saved as anonymous if no name is supplied
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': 'First comment!', 'author': ''})
+        response = self.post_comment(video = juggling_video, text = 'First comment!')
         comment = VideoComment.objects.first()
 
         self.assertEqual(comment.text, 'First comment!')
@@ -347,7 +384,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that an invite is shown if no comments have been posted
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
 
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
 
@@ -357,7 +394,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that the invite is not shown if a comment has been posted
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
         VideoComment.objects.create(text = 'First comment!', video = juggling_video)
 
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
@@ -368,7 +405,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that comments by the video author (JJ) are displayed in the video detail view
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches', author_comment = 'This is the video that started it all!')
+        juggling_video = self.post_video()
         VideoComment.objects.create(text = 'First comment!', video = juggling_video)
 
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
@@ -379,9 +416,9 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that if a blank comment is posted, the response is directed back to the detail view
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': '', 'author': ''})
+        response = self.post_comment(juggling_video, text = '', author = '')
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'vlog/detail.html')
@@ -390,9 +427,9 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that the emtpy comment error is passed to the detail template if an empty comment is submitted
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': '', 'author': ''})
+        response = self.post_comment(juggling_video, text = '', author = '')
         #print(response.content)
 
         self.assertContains(response, f'<p class="comment_warning"><ul class="errorlist"><li>{EMPTY_COMMENT_ERROR}')
@@ -401,9 +438,9 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that the comment form is passed to the detail template if an empty comment is submitted
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': '', 'author': ''})
+        response = self.post_comment(juggling_video, text = '', author = '')
 
         self.assertIsInstance(response.context['form'], CommentForm)
 
@@ -411,9 +448,9 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         Test that a comment is not saved to the database if it is empty
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
 
-        response = self.client.post(reverse('vlog:detail', args = [juggling_video.id]), data = {'text': '', 'author': ''})
+        response = self.post_comment(juggling_video, text = '', author = '')
 
         self.assertEqual(VideoComment.objects.count(), 0)
 
@@ -421,7 +458,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         """
         A CommentForm object should be in the context dict of the detail view (under the key 'form')
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', title = 'Five ball juggle 50 catches')
+        juggling_video = self.post_video()
         
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
 
@@ -448,8 +485,8 @@ class VideosListViewTest(JugglingVideoSiteTest):
         """
         older_date = timezone.now() - timedelta(days = 5)
         newer_date = timezone.now()
-        older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
-        newer_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = newer_date)
+        older_video = self.post_video(video = 'first', pub_date = older_date)
+        newer_video = self.post_video(video = 'second', pub_date = newer_date)
 
         response = self.client.get(reverse('vlog:videos'))
 
@@ -463,9 +500,9 @@ class VideosListViewTest(JugglingVideoSiteTest):
         oldest_date = timezone.now() - timedelta(days = 10)
         older_date = timezone.now() - timedelta(days = 5)
         current_date = timezone.now()
-        oldest_video = JugglingVideo.objects.create(filename = 'under_the_arm.mp4', pub_date = oldest_date)
-        older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
-        current_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = current_date)
+        oldest_video = self.post_video(video = 'first', pub_date = oldest_date)
+        older_video = self.post_video(video = 'second', pub_date = older_date)
+        current_video = self.post_video(video = 'third', pub_date = current_date)
 
         response = self.client.get(reverse('vlog:videos'))
 
@@ -480,9 +517,9 @@ class VideosListViewTest(JugglingVideoSiteTest):
         oldest_date = timezone.now() - timedelta(days = 10)
         older_date = timezone.now() - timedelta(days = 5)
         current_date = timezone.now()
-        oldest_video = JugglingVideo.objects.create(filename = 'under_the_arm.mp4', pub_date = oldest_date)
-        older_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = older_date)
-        current_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = current_date)
+        oldest_video = self.post_video(video = 'first', pub_date = oldest_date)
+        older_video = self.post_video(video = 'second', pub_date = older_date)
+        current_video = self.post_video(video = 'third', pub_date = current_date)
 
         response = self.client.get(reverse('vlog:videos'))
 
@@ -498,9 +535,9 @@ class VideosListViewTest(JugglingVideoSiteTest):
         future_date = timezone.now() + timedelta(days = 5)
         older_date = timezone.now() - timedelta(days = 5)
         current_date = timezone.now()
-        future_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', pub_date = future_date)
-        older_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4', pub_date = older_date)
-        current_video = JugglingVideo.objects.create(filename = 'under_the_arm.mp4', pub_date = current_date)
+        future_video = self.post_video(video = 'first', pub_date = future_date)
+        older_video = self.post_video(video = 'second', pub_date = older_date)
+        current_video = self.post_video(video = 'third', pub_date = current_date)
 
         response = self.client.get(reverse('vlog:videos'))
 
