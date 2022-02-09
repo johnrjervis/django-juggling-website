@@ -30,6 +30,16 @@ class CommentForm(forms.models.ModelForm):
         },
     )
 
+    def save(self, for_video):
+        self.instance.video = for_video
+        super().save()
+
+        if self.instance.author == '':
+            self.instance.author = 'anonymous'
+            self.instance.save()
+
+        return self.instance
+
     class Meta:
         model = VideoComment
         fields = ('author', 'text',)

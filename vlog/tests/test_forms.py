@@ -1,5 +1,7 @@
 from django.test import TestCase
 from vlog.forms import CommentForm, EMPTY_COMMENT_ERROR
+from vlog.models import JugglingVideo, VideoComment
+
 
 class ItemFormTest(TestCase):
 
@@ -16,11 +18,17 @@ class ItemFormTest(TestCase):
         self.assertIn('class="commenter_name green_border"', form.as_p())
 
     def test_validation_of_empty_comment(self):
+        """
+        The form should be invalid if the comment text field is empty
+        """
         form = CommentForm(data = {'text': ''})
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['text'], [EMPTY_COMMENT_ERROR])
 
     def test_validation_of_empty_commenter_name_field(self):
+        """
+        The form should be valid even if the comment author field is empty
+        """
         form = CommentForm(data = {'text': 'Some text', 'author': ''})
         self.assertTrue(form.is_valid())
 
@@ -32,4 +40,25 @@ class ItemFormTest(TestCase):
         form = CommentForm()
         self.assertIn('cols=""', form.as_p())
         self.assertIn('rows=""', form.as_p())
+
+    def test_form_can_save_a_comment(self):
+        """
+        The form should be able to save a comment object to the database
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
+        form = CommentForm(data = {'text': 'Some text', 'author': 'Someone'})
+        new_comment = form.save(for_video = juggling_video)
+        self.assertEqual(new_comment, VideoComment.objects.first())
+        self.assertEqual(new_comment.text, 'Some text')
+        self.assertEqual(new_comment.author, 'Someone')
+        self.assertEqual(new_comment.video, juggling_video)
+
+    def test_comment_author_is_anonymous_if_no_author_is_supplied(self):
+        """
+        When a form is saved with an empty author field, the comment's author attribute should be 'anonymous'
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'five_ball_juggle_50_catches.mp4')
+        form = CommentForm(data = {'text': 'Some text', 'author': ''})
+        new_comment = form.save(for_video = juggling_video)
+        self.assertEqual(new_comment.author, 'anonymous')
 

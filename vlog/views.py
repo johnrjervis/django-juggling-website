@@ -47,12 +47,7 @@ def video_detail(request, jugglingvideo_id):
 
         form = CommentForm(data = request.POST)
         if form.is_valid():
-            comment_author = request.POST['author'] if request.POST['author'] else 'anonymous'
-            VideoComment.objects.create(
-                text = request.POST['text'],
-                author = comment_author,
-                video = juggling_video,
-            )
+            form.save(for_video = juggling_video)
             return redirect(juggling_video)
 
     return render(
