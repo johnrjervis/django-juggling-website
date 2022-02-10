@@ -15,7 +15,7 @@ class JugglingVideo(models.Model):
         return reverse('vlog:detail', args = [self.id])
 
     def __str__(self):
-        return f'Juggling video: {self.filename}'
+        return self.filename
 
     def __repr__(self):
         return f'{self.__class__}: {self.filename}'
@@ -29,7 +29,7 @@ class VideoComment(models.Model):
     is_approved = models.BooleanField(default = True)
 
     def __str__(self):
-        return f'Comment: {self.text}'
+        return self.text
 
     def __repr__(self):
         return f'{self.__class__}: {self.text}'
@@ -41,7 +41,7 @@ class Acknowledgement(models.Model):
     description = models.TextField(default = '')
 
     def __str__(self):
-        return f'Acknowledgement: {self.name}'
+        return self.name
 
     def __repr__(self):
         return f'{self.__class__}: {self.name}'

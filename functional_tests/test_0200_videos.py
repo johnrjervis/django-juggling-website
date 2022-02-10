@@ -147,7 +147,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         # JJ removes this comment from the website
         comment_admin_link = self.jj_browser.find_element_by_link_text('Video comments')
         comment_admin_link.click()
-        silly_comment_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('Comment: I can has a cheezburger?'))
+        silly_comment_link = self.wait_for(lambda: self.jj_browser.find_element_by_link_text('I can has a cheezburger?'))
         silly_comment_link.click()
         enable_checkbox = self.wait_for(lambda: self.jj_browser.find_element_by_id('id_is_approved'))
         enable_checkbox.click()
