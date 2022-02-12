@@ -114,7 +114,7 @@ class IndexViewTest(JugglingVideoSiteTest):
 
         response = self.client.get(reverse('vlog:index'))
 
-        self.assertContains(response, first_video.filename)
+        self.assertContains(response, f'vlog/videos/{first_video.filename}')
 
     def test_home_page_shows_most_recently_published_video(self):
         """
@@ -186,7 +186,7 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         response = self.client.get(reverse('vlog:detail', args = [first_video.id]))
 
-        self.assertContains(response, first_video.filename)
+        self.assertContains(response, f'vlog/videos/{first_video.filename}')
 
     def test_detail_views_only_display_correct_videos(self):
         """
@@ -490,7 +490,7 @@ class VideosListViewTest(JugglingVideoSiteTest):
 
         response = self.client.get(reverse('vlog:videos'))
 
-        self.assertContains(response, older_video.filename)
+        self.assertContains(response, f'vlog/videos/{older_video.filename}')
         self.assertNotContains(response, newer_video.filename)
 
     def test_videos_delivered_in_order_of_increasing_age_in_context(self):

@@ -11,6 +11,9 @@ class JugglingVideo(models.Model):
     pub_date = models.DateTimeField(default = timezone.now)
     author_comment = models.TextField(default = '')
 
+    def get_static_filename(self):
+        return f'vlog/videos/{self.filename}'
+
     def get_absolute_url(self):
         return reverse('vlog:detail', args = [self.id])
 

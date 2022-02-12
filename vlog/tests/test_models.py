@@ -26,6 +26,17 @@ class VideoModelTest(TestCase):
         self.assertEqual(first_video.pub_date, first_saved_video.pub_date)
         self.assertEqual(first_video.author_comment, first_saved_video.author_comment)
 
+    def test_static_filename_attribute_provides_correct_path_to_video_file(self):
+        """
+        The (non DB) static file attribute of a video object should point to the correct file location
+        """
+        first_video_filename = 'behind_the_back_juggle.mp4'
+        first_video = JugglingVideo.objects.create(filename = first_video_filename, title = 'Behind the back juggle')
+
+        first_saved_video = JugglingVideo.objects.first()
+
+        self.assertEqual(first_saved_video.get_static_filename(), f'vlog/videos/{first_video_filename}')
+
     def test_get_absolute_url(self):
         """
         Tests the absolute URL retrieval for the JugglingVideo model

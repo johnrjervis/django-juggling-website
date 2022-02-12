@@ -13,7 +13,7 @@
 
           <div class="vid-container">
             <video class="video-with-splash" controls preload="metadata" muted>
-              <source src="{% static video.filename %}" type="video/mp4">
+              <source src="{% static video.get_static_filename %}" type="video/mp4">
               <p>There was a problem displaying this video. Sorry!</p>
             </video>
           </div>
