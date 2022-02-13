@@ -27,18 +27,15 @@
             {% endif %}
           </div>
 
-          {% if video.videocomment_set.all %}
-            {% for comment in video.videocomment_set.all %}
-              {% if comment.is_approved %}
+          {% for comment in video.get_approved_comments %}
           <div class="comment green_border">
             <p class="comment_text">{{ comment.text }}</p>
             <hr>
             <p class="comment_details"><span class="comment_author">Posted by {{ comment.author }}</span> <span class="comment_date">on {{ comment.date|date:'d/m/Y \a\t H:i' }}</span></p>
           </div>
-              {% endif %}
-            {% endfor %}
+          {% endfor %}
 
-          {% else %}
+          {% if not video.get_approved_comments %}
           <div class="comment green_border">
             <p class="comment_invite">There are no comments for this video yet. Use the form below to post the first comment!</p>
           </div>

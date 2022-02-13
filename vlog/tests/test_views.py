@@ -390,6 +390,17 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
 
         self.assertContains(response, 'There are no comments for this video yet. Use the form below to post the first comment!')
 
+    def test_comment_invite_is_displayed_if_video_has_no_approved_comments(self):
+        """
+        Test that an invite is shown if all the comments posted for the video are not approved
+        """
+        juggling_video = self.post_video()
+        VideoComment.objects.create(text = 'First comment!', video = juggling_video, is_approved = False)
+
+        response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
+
+        self.assertContains(response, 'There are no comments for this video yet. Use the form below to post the first comment!')
+
     def test_comment_invite_is_not_displayed_if_a_comment_has_been_posted_for_a_video(self):
         """
         Test that the invite is not shown if a comment has been posted

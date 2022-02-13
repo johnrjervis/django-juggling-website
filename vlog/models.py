@@ -14,6 +14,9 @@ class JugglingVideo(models.Model):
     def get_static_filename(self):
         return f'vlog/videos/{self.filename}'
 
+    def get_approved_comments(self):
+        return self.videocomment_set.filter(is_approved = True)
+
     def get_absolute_url(self):
         return reverse('vlog:detail', args = [self.id])
 

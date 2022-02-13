@@ -37,6 +37,19 @@ class VideoModelTest(TestCase):
 
         self.assertEqual(first_saved_video.get_static_filename(), f'vlog/videos/{first_video_filename}')
 
+    def test_get_approved_comments_only_returns_approved_comments(self):
+        """
+        The get_approved_comments should filter out comments that are not approved
+        """
+        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        VideoComment.objects.create(text = 'First comment!', video = juggling_video)
+        VideoComment.objects.create(text = 'Inappropriate comment!', video = juggling_video, is_approved = False)
+        VideoComment.objects.create(text = 'Nice!', video = juggling_video)
+
+        self.assertEqual(len(juggling_video.get_approved_comments()), 2)
+        for comment in juggling_video.get_approved_comments():
+            self.assertTrue(comment.is_approved)
+
     def test_get_absolute_url(self):
         """
         Tests the absolute URL retrieval for the JugglingVideo model
