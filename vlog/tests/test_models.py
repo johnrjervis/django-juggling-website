@@ -3,10 +3,10 @@ from django.urls import reverse
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
-from datetime import timedelta
+from .base import JugglingVideoSiteTest
 
 
-class VideoModelTest(TestCase):
+class VideoModelTest(JugglingVideoSiteTest):
     """
     Tests for the juggling video database
     """
@@ -15,7 +15,7 @@ class VideoModelTest(TestCase):
         """
         The attributes of a video object should match those that it was saved with 
         """
-        first_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle', pub_date = timezone.now(), author_comment = 'This video was recorded in hotel quarantine')
+        first_video = self.post_video(pub_date = timezone.now())
 
         saved_videos = JugglingVideo.objects.all()
         first_saved_video = saved_videos[0]
@@ -30,18 +30,17 @@ class VideoModelTest(TestCase):
         """
         The (non DB) static file attribute of a video object should point to the correct file location
         """
-        first_video_filename = 'behind_the_back_juggle.mp4'
-        first_video = JugglingVideo.objects.create(filename = first_video_filename, title = 'Behind the back juggle')
+        first_video = self.post_video()
 
         first_saved_video = JugglingVideo.objects.first()
 
-        self.assertEqual(first_saved_video.get_static_filename(), f'vlog/videos/{first_video_filename}')
+        self.assertEqual(first_saved_video.get_static_filename(), f'vlog/videos/{first_video.filename}')
 
-    def test_get_approved_comments_only_returns_approved_comments(self):
+    def test_get_approved_comments_method_only_returns_approved_comments(self):
         """
-        The get_approved_comments should filter out comments that are not approved
+        A video object's self.get_approved_comments() should filter out comments that are not approved
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        juggling_video = self.post_video()
         VideoComment.objects.create(text = 'First comment!', video = juggling_video)
         VideoComment.objects.create(text = 'Inappropriate comment!', video = juggling_video, is_approved = False)
         VideoComment.objects.create(text = 'Nice!', video = juggling_video)
@@ -54,12 +53,12 @@ class VideoModelTest(TestCase):
         """
         Tests the absolute URL retrieval for the JugglingVideo model
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        juggling_video = self.post_video()
 
         self.assertEqual(juggling_video.get_absolute_url(), reverse('vlog:detail', args = [juggling_video.id]))
 
 
-class VideoAndCommentModelTest(TestCase):
+class VideoAndCommentModelTest(JugglingVideoSiteTest):
     """
     Tests for the video comments database
     """
@@ -68,7 +67,7 @@ class VideoAndCommentModelTest(TestCase):
         """
         The attributes of a comment object should match those that it was saved with 
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        juggling_video = self.post_video()
         first_comment = VideoComment()
         first_comment.text = 'First comment!'
         first_comment.video = juggling_video
@@ -101,7 +100,7 @@ class VideoAndCommentModelTest(TestCase):
         """
         Tests that an attempt to save a blank comment raises an exception
         """
-        juggling_video = JugglingVideo.objects.create(filename = 'behind_the_back_juggle.mp4', title = 'Behind the back juggle')
+        juggling_video = self.post_video()
         comment = VideoComment(video = juggling_video, text = '')
 
         with self.assertRaises(ValidationError):
