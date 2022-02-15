@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from datetime import timedelta
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 from .base import JugglingVideoSiteTest
 
@@ -56,6 +57,29 @@ class VideoModelTest(JugglingVideoSiteTest):
         juggling_video = self.post_video()
 
         self.assertEqual(juggling_video.get_absolute_url(), reverse('vlog:detail', args = [juggling_video.id]))
+
+    def test_get_homepage_class_method_returns_most_recently_published_current_video(self):
+        """
+        The get_homepage_video JugglingVideo class method should return the correct video for the homepage
+        """
+        future_date = timezone.now() + timedelta(days = 5)
+        older_date = timezone.now() - timedelta(days = 5)
+        current_date = timezone.now()
+        future_video = self.post_video(video = 'first', pub_date = future_date)
+        older_video = self.post_video(video = 'second', pub_date = older_date)
+        current_video = self.post_video(video = 'third', pub_date = current_date)
+
+        homepage_video = JugglingVideo.get_homepage_video()
+
+        self.assertEqual(homepage_video, current_video)
+
+    def test_get_homepage_class_method_returns_empty_string_if_no_videos_are_available(self):
+        """
+        The get_homepage_video JugglingVideo class method should return the empty string if no videos are available
+        """
+        homepage_video = JugglingVideo.get_homepage_video()
+
+        self.assertEqual(homepage_video, '')
 
 
 class VideoAndCommentModelTest(JugglingVideoSiteTest):

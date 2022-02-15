@@ -11,6 +11,12 @@ class JugglingVideo(models.Model):
     pub_date = models.DateTimeField(default = timezone.now)
     author_comment = models.TextField(default = '')
 
+    @classmethod
+    def get_homepage_video(cls):
+        videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
+
+        return videos[0] if videos else ''
+
     def get_static_filename(self):
         return f'vlog/videos/{self.filename}'
 

@@ -5,27 +5,24 @@
 {% block main_content %}
 
     <article>
-      {% if videos_list %}
+      <h2>This is my website for showing off my juggling skills!</h2>
 
-        {% for video in videos_list %}
+      {% if video %}
+      <p>Here's the latest video:</p>
 
-          <h2>This is my website for showing off my juggling skills!</h2>
+      <div class="vid-container">
+        <video class="video-with-splash" controls preload="metadata" muted>
+          <source src="{% static video.get_static_filename %}" type="video/mp4">
+          <p>There was a problem displaying this video. Sorry!</p>
+        </video>
+      </div>
 
-          <p>Here's the latest video:</p>
-
-          <div class="vid-container">
-            <video class="video-with-splash" controls preload="metadata" muted>
-              <source src="{% static video.get_static_filename %}" type="video/mp4">
-              <p>There was a problem displaying this video. Sorry!</p>
-            </video>
-          </div>
-
-          <p><a href="{% url 'vlog:detail' video.id %}" class="comment_link green_border lightgreen">Comment on this video</a></p>
-
-        {% endfor %}
+      <p>
+        <a href="{% url 'vlog:detail' video.id %}" class="comment_link green_border lightgreen">Comment on this video</a>
+      </p>
 
       {% else %}
-        <p id="id_error_message">No videos are available!</p>
+      <p id="id_error_message">No videos are available!</p>
       {% endif %}
 
     </article>

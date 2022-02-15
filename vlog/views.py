@@ -7,15 +7,10 @@ from vlog.forms import CommentForm, EMPTY_COMMENT_ERROR
 # Create your views here.
 
 def index(request):
-    videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
-    videos_list = ''
-
-    if videos:
-        videos_list = [videos[0]]
 
     return render(request, 'vlog/index.html', {
         'selected': 'Home',
-        'videos_list' : videos_list,
+        'video' : JugglingVideo.get_homepage_video(),
     })
 
 
