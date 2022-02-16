@@ -17,6 +17,12 @@ class JugglingVideo(models.Model):
 
         return videos[0] if videos else ''
 
+    @classmethod
+    def get_archive_videos(cls):
+        videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
+
+        return videos[1:] if (len(videos) > 1) else []
+
     def get_static_filename(self):
         return f'vlog/videos/{self.filename}'
 

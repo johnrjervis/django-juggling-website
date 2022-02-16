@@ -19,15 +19,10 @@ def index_redirect(request):
 
 
 def videos_list(request):
-    videos = JugglingVideo.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')
-    videos_list = ''
-
-    if len(videos) > 1:
-        videos_list = videos[1:]
 
     return render(request, 'vlog/videos.html', {
         'selected': 'Videos',
-        'videos_list': videos_list
+        'videos_list': JugglingVideo.get_archive_videos()
     })
 
 

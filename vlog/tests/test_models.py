@@ -63,10 +63,10 @@ class VideoModelTest(JugglingVideoSiteTest):
         The get_homepage_video JugglingVideo class method should return the correct video for the homepage
         """
         future_date = timezone.now() + timedelta(days = 5)
-        older_date = timezone.now() - timedelta(days = 5)
+        old_date = timezone.now() - timedelta(days = 5)
         current_date = timezone.now()
         future_video = self.post_video(video = 'first', pub_date = future_date)
-        older_video = self.post_video(video = 'second', pub_date = older_date)
+        old_video = self.post_video(video = 'second', pub_date = old_date)
         current_video = self.post_video(video = 'third', pub_date = current_date)
 
         homepage_video = JugglingVideo.get_homepage_video()
@@ -81,6 +81,56 @@ class VideoModelTest(JugglingVideoSiteTest):
 
         self.assertEqual(homepage_video, '')
 
+    def test_get_archive_videos_class_method_returns_list_of_videos_published_before_current_video(self):
+        """
+        The get_archive_videos JugglingVideo class method should return
+        a list of all videos that were published before the most recent video
+        The list should be in reverse order of publication date (i.e. newest first)
+        """
+        oldest_date = timezone.now() - timedelta(days = 10)
+        old_date = timezone.now() - timedelta(days = 5)
+        current_date = timezone.now()
+        oldest_video = self.post_video(video = 'first', pub_date = oldest_date)
+        old_video = self.post_video(video = 'second', pub_date = old_date)
+        current_video = self.post_video(video = 'third', pub_date = current_date)
+
+        archive_videos = JugglingVideo.get_archive_videos()
+
+        self.assertEqual(archive_videos, [old_video, oldest_video])
+
+    def test_get_archive_class_method_returns_an_empty_list_if_no_videos_are_available(self):
+        """
+        The get_archive_videos JugglingVideo class method should return an empty list if no videos are available
+        """
+        archive_videos = JugglingVideo.get_archive_videos()
+
+        self.assertEqual(archive_videos, [])
+
+    def test_get_archive_class_method_returns_an_empty_list_if_only_one_video_is_available(self):
+        """
+        The get_archive_videos JugglingVideo class method should return an empty list if one video is available
+        """
+        current_video = self.post_video(pub_date = timezone.now())
+
+        archive_videos = JugglingVideo.get_archive_videos()
+
+        self.assertEqual(archive_videos, [])
+
+    def test_get_archive_videos_class_method_ignores_future_videos(self):
+        """
+        The behavior of get_archive_videos JugglingVideo class method should
+        not be affected by videos with a future publication date
+        """
+        future_date = timezone.now() + timedelta(days = 5)
+        old_date = timezone.now() - timedelta(days = 5)
+        current_date = timezone.now()
+        future_video = self.post_video(video = 'first', pub_date = future_date)
+        old_video = self.post_video(video = 'second', pub_date = old_date)
+        current_video = self.post_video(video = 'third', pub_date = current_date)
+
+        archive_videos = JugglingVideo.get_archive_videos()
+
+        self.assertEqual(archive_videos, [old_video])
 
 class VideoAndCommentModelTest(JugglingVideoSiteTest):
     """
