@@ -169,3 +169,7 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.browser.find_element_by_css_selector('.comments_box').send_keys('Some text')
         self.wait_for(lambda: self.browser.find_element_by_css_selector('#id_text:valid'))
 
+        # The visitor then tries to enter the same comment as before
+        self.post_video_comment('Impressive!')
+        self.wait_for(lambda: self.check_for_text_in_css_class_list('That comment has already been posted!', 'comment_warning'))
+

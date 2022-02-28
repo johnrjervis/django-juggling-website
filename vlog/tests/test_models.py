@@ -137,42 +137,28 @@ class VideoAndCommentModelTest(JugglingVideoSiteTest):
     Tests for the video comments database
     """
 
-    def test_saving_and_retrieving_comments(self):
+    def test_comment_text(self):
         """
-        The attributes of a comment object should match those that it was saved with 
+        Check that a comment's text is saved correctly 
         """
         juggling_video = self.post_video()
-        first_comment = VideoComment()
-        first_comment.text = 'First comment!'
-        first_comment.video = juggling_video
-        comment_date = timezone.now()
-        first_comment.date = comment_date
-        first_comment.save()
-        second_comment = VideoComment()
-        second_comment.text = 'Nice video!'
-        second_comment.author = 'Site visitor'
-        second_comment.video = juggling_video
-        second_comment.is_approved = False
-        second_comment.save()
+        comment = VideoComment(text = 'First comment!', video = juggling_video)
 
-        saved_comments = VideoComment.objects.all()
-        first_saved_comment = saved_comments[0]
-        second_saved_comment = saved_comments[1]
+        self.assertEqual(comment.text, 'First comment!')
 
-        self.assertEqual(saved_comments.count(), 2)
-        self.assertEqual(first_saved_comment.text, 'First comment!')
-        self.assertEqual(first_saved_comment.author, 'anonymous')
-        self.assertEqual(first_saved_comment.video, juggling_video)
-        self.assertEqual(first_saved_comment.date, comment_date)
-        self.assertEqual(first_saved_comment.is_approved, True)
-        self.assertEqual(second_saved_comment.text, 'Nice video!')
-        self.assertEqual(second_saved_comment.author, 'Site visitor')
-        self.assertEqual(second_saved_comment.video, juggling_video)
-        self.assertEqual(second_saved_comment.is_approved, False)
+    def test_comment_is_related_to_video(self):
+        """
+        CHeck that a
+        """
+        juggling_video = self.post_video()
+        comment = VideoComment(text = 'First comment!', video = juggling_video)
+        comment.save()
+
+        self.assertIn(comment, juggling_video.videocomment_set.all())
 
     def test_cannot_save_a_blank_comment(self):
         """
-        Tests that an attempt to save a blank comment raises an exception
+        An attempt to save a blank comment should raise an exception
         """
         juggling_video = self.post_video()
         comment = VideoComment(video = juggling_video, text = '')
@@ -180,6 +166,58 @@ class VideoAndCommentModelTest(JugglingVideoSiteTest):
         with self.assertRaises(ValidationError):
             comment.save()
             comment.full_clean()
+
+    def test_duplicate_comments_are_invalid(self):
+        """
+        Comments that have the same author, video and text attributes should be invalid
+        """
+        juggling_video = self.post_video()
+        VideoComment.objects.create(video = juggling_video, text = 'Nice!', author = 'Site visitor')
+
+        with self.assertRaises(ValidationError):
+            comment = VideoComment(video = juggling_video, text = 'Nice!', author = 'Site visitor')
+            comment.full_clean()
+
+    def test_can_save_duplicate_comments_for_different_videos(self):
+        """
+        It should be possible to save the same comment with the same author for different videos
+        """
+        first_juggling_video = self.post_video(video = 'first')
+        second_juggling_video = self.post_video(video = 'second')
+        VideoComment.objects.create(video = first_juggling_video, text = 'Nice!', author = 'Site visitor')
+
+        comment = VideoComment(video = second_juggling_video, text = 'Nice!', author = 'Site visitor')
+        comment.full_clean() # Should not raise
+
+    def test_can_save_the_same_comments_for_the_same_video_with_different_authors(self):
+        """
+        It should be possible to save the same comment with the same author for different videos
+        """
+        juggling_video = self.post_video(video = 'first')
+        VideoComment.objects.create(video = juggling_video, text = 'Nice!', author = 'Site visitor')
+
+        comment = VideoComment(video = juggling_video, text = 'Nice!', author = 'Juggling fan')
+        comment.full_clean() # Should not raise
+
+    def test_comment_ordering(self):
+        """
+        VideoComment.objects should return comments in the order that they were saved
+        """
+        juggling_video = self.post_video()
+        comment1 = VideoComment.objects.create(video = juggling_video, text = '#1')
+        comment2 = VideoComment.objects.create(video = juggling_video, text = '#2')
+        comment3 = VideoComment.objects.create(video = juggling_video, text = '#3')
+
+        self.assertEqual(list(VideoComment.objects.all()), [comment1, comment2, comment3])
+
+    def test_str_representation_of_comments(self):
+        """
+        Using str() on a comment object should return it's text attribute
+        """
+        juggling_video = self.post_video()
+        comment = VideoComment.objects.create(video = juggling_video, text = 'comment text')
+
+        self.assertEqual(str(comment), 'comment text')
 
 
 class AcknowledgementsModelTest(TestCase):

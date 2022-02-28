@@ -46,6 +46,9 @@ class VideoComment(models.Model):
     date = models.DateTimeField(default = timezone.now)
     is_approved = models.BooleanField(default = True)
 
+    class Meta:
+        unique_together = ('text', 'author', 'video')
+
     def __str__(self):
         return self.text
 
