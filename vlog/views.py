@@ -31,13 +31,13 @@ def video_detail(request, jugglingvideo_id):
         JugglingVideo.objects.filter(pub_date__lte = timezone.now()),
         id = jugglingvideo_id
     )
-    form = CommentForm()
+    form = CommentForm(for_video = juggling_video)
 
     if request.method == 'POST':
 
-        form = CommentForm(data = request.POST)
+        form = CommentForm(for_video = juggling_video, data = request.POST)
         if form.is_valid():
-            form.save(for_video = juggling_video)
+            form.save()
             return redirect(juggling_video)
 
     return render(

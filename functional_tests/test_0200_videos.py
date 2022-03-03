@@ -3,6 +3,8 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from vlog.forms import DUPLICATE_COMMENT_ERROR
+
 
 class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
 
@@ -170,6 +172,12 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         self.wait_for(lambda: self.browser.find_element_by_css_selector('#id_text:valid'))
 
         # The visitor then tries to enter the same comment as before
+        for i in range(9):
+            self.browser.find_element_by_css_selector('.comments_box').send_keys(Keys.BACKSPACE)
         self.post_video_comment('Impressive!')
-        self.wait_for(lambda: self.check_for_text_in_css_class_list('That comment has already been posted!', 'comment_warning'))
+        #self.wait_for(lambda: self.check_for_text_in_css_class_list(DUPLICATE_COMMENT_ERROR, 'comment_warning'))
+        self.wait_for(lambda: self.assertEqual(
+            self.browser.find_element_by_css_selector('.errorlist').find_element_by_tag_name('li').text,
+            DUPLICATE_COMMENT_ERROR)
+        )
 

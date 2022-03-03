@@ -2,9 +2,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
-from vlog.forms import CommentForm, EMPTY_COMMENT_ERROR
+from vlog.forms import CommentForm, EMPTY_COMMENT_ERROR, DUPLICATE_COMMENT_ERROR
 from datetime import timedelta
 from .base import JugglingVideoSiteTest
+
+from unittest import skip
 
 
 class IndexViewTest(JugglingVideoSiteTest):
@@ -418,10 +420,24 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         A CommentForm object should be in the context dict of the detail view (under the key 'form')
         """
         juggling_video = self.post_video()
-        
+
         response = self.client.get(reverse('vlog:detail', args = [juggling_video.id]))
 
         self.assertIsInstance(response.context['form'], CommentForm)
+
+    def test_duplicate_comment_validation_errors_are_displayed_on_video_detail_page(self):
+        """
+        An error message should be displayed on the video detail page if a comment is duplicated
+        """
+        juggling_video = self.post_video()
+        video_comment = VideoComment.objects.create(text = 'comment text', video = juggling_video)
+
+        response = self.post_comment(juggling_video, text = 'comment text', author = '')
+        expected_error = DUPLICATE_COMMENT_ERROR
+
+        self.assertContains(response, expected_error)
+        self.assertTemplateUsed(response, 'vlog/detail.html')
+        self.assertEqual(VideoComment.objects.all().count(), 1)
 
 
 class VideosListViewTest(JugglingVideoSiteTest):

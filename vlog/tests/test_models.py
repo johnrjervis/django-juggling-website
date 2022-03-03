@@ -141,14 +141,13 @@ class VideoAndCommentModelTest(JugglingVideoSiteTest):
         """
         Check that a comment's text is saved correctly 
         """
-        juggling_video = self.post_video()
-        comment = VideoComment(text = 'First comment!', video = juggling_video)
+        comment = VideoComment(text = 'First comment!')
 
         self.assertEqual(comment.text, 'First comment!')
 
     def test_comment_is_related_to_video(self):
         """
-        CHeck that a
+        A comment should be linked to the video that it is posted for
         """
         juggling_video = self.post_video()
         comment = VideoComment(text = 'First comment!', video = juggling_video)
@@ -161,7 +160,7 @@ class VideoAndCommentModelTest(JugglingVideoSiteTest):
         An attempt to save a blank comment should raise an exception
         """
         juggling_video = self.post_video()
-        comment = VideoComment(video = juggling_video, text = '')
+        comment = VideoComment(text = '', video = juggling_video)
 
         with self.assertRaises(ValidationError):
             comment.save()
