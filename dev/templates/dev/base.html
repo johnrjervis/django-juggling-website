@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+
+<!-- Test site V2 -->
+{% load static %}
+
+  <head>
+    <title>JJ's juggling site</title>
+    <meta name="author" content="John J">
+    <meta name="description" content="My full stack test page v.0.0">
+    <meta name="keywords" content="HTML test page">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="shortcut icon" href="{% static 'vlog/images/ico.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vlog/style/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'dev/style/style.css' %}">
+  </head>
+
+  <body>
+
+  <header>
+    <h1>JJ's Juggling Videos</h1>
+
+    <nav>
+      <ul class="navlinks">
+        <li class="navlink {% if selected == 'Home' %}selected{% endif %}">
+          <a href="{% url 'vlog:index' %}" class="green_border">Home</a>
+        </li> 
+        <li class="navlink {% if selected == 'Videos' %}selected{% endif %}">
+          <a href="{% url 'vlog:videos' %}" class="green_border">Videos</a>
+        </li>
+        <li class="navlink {% if selected == 'Learn' %}selected{% endif %}">
+          <a href="{% url 'vlog:learn' %}" class="green_border">Learn</a>
+        </li>
+        <li class="navlink {% if selected == 'About' %}selected{% endif %}">
+          <a href="{% url 'vlog:about' %}" class="green_border">About</a>
+          <div class="flyout">
+            <ul>
+              <li>
+                <a href="{% url 'vlog:history' %}" class="green_border">History</a>
+              </li>
+              <li>
+                <a href="{% url 'vlog:thanks' %}" class="green_border">Thanks</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    {% block main_content %}
+    {% endblock %}
+
+  </main>
+
+  <footer>
+    Videos and site design &copy; J. Jervis 2022
+  </footer>
+
+  </body>
+
+  <script src="{% static 'vlog/scripts/flyout.js' %}"></script>
+
+</html>

@@ -21,6 +21,12 @@ class T05DeveloperPageTest(JugglingWebsiteTest):
         # A site visitor decides to visit the programming page
         self.browser.get(f'{self.live_server_url}/dev/programming/')
 
+        # This part of the site has a different colour scheme to the main site
+        ## This section tests that the CSS has been applied
+        site_header = self.browser.find_element_by_tag_name('header')
+        site_header_colour = site_header.value_of_css_property('background-color')
+        self.assertEqual(site_header_colour, 'rgb(200, 200, 246)')
+
         # There is information about JJ's programming experience
         self.wait_for(
             lambda: self.find_substring_in_elements('Python', 'li')
