@@ -34,6 +34,14 @@ a.comment_link:hover {
   background-color: darkblue;
 }
 
+li.selected > a {
+  background-color: #e9e9e9;
+}
+
+.selected > a:hover {
+  color: darkblue;
+}
+
 /* ---------------- Classes that can be applied to a range of elements ---------------- */
 
 .green_border {

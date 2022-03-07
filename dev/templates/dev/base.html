@@ -5,7 +5,7 @@
 {% load static %}
 
   <head>
-    <title>JJ's juggling site</title>
+    <title>John Jervis - programming</title>
     <meta name="author" content="John J">
     <meta name="description" content="My full stack test page v.0.0">
     <meta name="keywords" content="HTML test page">
@@ -19,31 +19,18 @@
   <body>
 
   <header>
-    <h1>JJ's Juggling Videos</h1>
+    <h1>Computer science skills</h1>
 
     <nav>
       <ul class="navlinks">
-        <li class="navlink {% if selected == 'Home' %}selected{% endif %}">
-          <a href="{% url 'vlog:index' %}" class="green_border">Home</a>
+        <li class="navlink {% if selected == 'Programming' %}selected{% endif %}">
+          <a href="{% url 'dev:programming' %}" class="green_border">Programming</a>
         </li> 
-        <li class="navlink {% if selected == 'Videos' %}selected{% endif %}">
-          <a href="{% url 'vlog:videos' %}" class="green_border">Videos</a>
+        <li class="navlink {% if selected == 'Web development' %}selected{% endif %}">
+          <a href="#" class="green_border">Web development</a>
         </li>
-        <li class="navlink {% if selected == 'Learn' %}selected{% endif %}">
-          <a href="{% url 'vlog:learn' %}" class="green_border">Learn</a>
-        </li>
-        <li class="navlink {% if selected == 'About' %}selected{% endif %}">
-          <a href="{% url 'vlog:about' %}" class="green_border">About</a>
-          <div class="flyout">
-            <ul>
-              <li>
-                <a href="{% url 'vlog:history' %}" class="green_border">History</a>
-              </li>
-              <li>
-                <a href="{% url 'vlog:thanks' %}" class="green_border">Thanks</a>
-              </li>
-            </ul>
-          </div>
+        <li class="navlink {% if selected == 'Contact' %}selected{% endif %}">
+          <a href="#" class="green_border">Contact</a>
         </li>
       </ul>
     </nav>
@@ -57,7 +44,7 @@
   </main>
 
   <footer>
-    Videos and site design &copy; J. Jervis 2022
+    Site design &copy; J. Jervis 2022
   </footer>
 
   </body>
