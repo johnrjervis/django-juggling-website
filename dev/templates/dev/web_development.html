@@ -1,0 +1,76 @@
+{% extends 'dev/base.html' %}
+
+{% block main_content %}
+
+    <section>
+
+      <h2>Overview</h2>
+
+      <p>After teaching myself <a href="{% url 'dev:programming' %}">Python programming</a>, I decided to build a website to showcase my juggling skills.</p>
+
+      <p>To achieve this, I learnt HTML, CSS and JavaScript from the Mozilla Developer Network's (MDN) web developer courses and launched a <a href="https://johnrjervis.github.io/index.html" target="_blank">front-end version of my website<a> on GitHub pages. I then learnt Django and built a <a href="{% url 'vlog:index' %}" target="_blank">full-stack version of my website</a> by adapting the example project from Harry Percival's book <em>Test-Driven Development with Python</em>.</p>
+
+    </section>
+
+    <section>
+
+      <h2>Skills and experience</h2>
+
+      <p>While creating my website, I gained experience of the following technologies (where possible, links to examples in my GitHub repositories have been provided):<p>
+
+      <ul>
+        <li>
+          <a href="https://github.com/johnrjervis/django-juggling-website/tree/main/functional_tests" target="_blank">Functional testing with Selenium</a>:
+           I wrote functional tests with the Selenium package for Python to simulate user interactions on all the pages of my website.
+        </li>
+        <li>
+          <a href="https://github.com/johnrjervis/django-juggling-website/tree/main/vlog/tests" target="_blank">Unit testing</a>:
+          I created unit tests with Django's test module to test the views, models and forms of my website.
+        </li>
+        <li>
+          <a href="https://github.com/johnrjervis/django-juggling-website/blob/main/vlog/forms.py" target="_blank">Web forms</a>:
+          Site visitors can post comments on each video via forms on my website. I created these using Django's ModelForm class.
+        </li>
+        <li>
+          <a href="https://github.com/johnrjervis/django-juggling-website/blob/main/vlog/static/vlog/style/style.css" target="_blank">Responsive design</a>:
+          I used media queries so that my website adapts its style to the size of the browser window that it is displayed in.
+        </li>
+        <li>
+          Database management:
+          I used SQLite database tables to store user comments and links to video files. The two tables are linked by a foreign key relationship.
+        </li>
+        <li>
+          Django's admin site:
+          I created an administration page for my website so that I can easily add new videos and moderate visitor comments.
+        </li>
+        <li>
+          Deployment:
+          I deployed my website through PythonAnywhere: this included editing the WSGI file, adjusting the security settings in Django, and setting environmental variables.
+        </li>
+      </ul>
+
+    </section>
+
+    <section>
+
+      <h2>Courses studied</h2>
+
+      <p>Here's a list of the courses that I have completed so far. Follow the links to view the certificates (or to view my solutions to the course assessments if no certificate is available):</p>
+
+      <ul>
+        <li>
+          <a href="https://johnrjervis.github.io/mdn-assessments/" target="_blank">MDN's front-end developer courses<a>: so far, I have completed the HTML, CSS, and JavaScript courses.
+        </li>
+      </ul>
+
+    </section>
+
+    <section>
+
+      <h2>Accepted pull requests</h2>
+
+      <p>While studying MDN's JavaScript course, I noticed a flaw in the tutorial on JavaScript events. The issue occured in an example for event bubbling and capture: messages appeared in a text log after the clear text button was pressed. I submitted a <a href="https://github.com/mdn/content/pull/10775" target="_blank">pull request</a>, which fixed this issue</p>
+
+    </section>
+
+{% endblock %}

@@ -4,6 +4,25 @@ body {
   color: darkblue;
 }
 
+section:last-child {
+  margin-bottom: 4rem;
+}
+
+/* ---------------- General elements ---------------- */
+
+*::selection {
+  background-color: darkblue;
+  color: #e9e9e9;
+}
+
+h1 {
+  font-family: 'linguistics_proregular', 'times new roman', serif;
+}
+
+li {
+  padding-bottom: 4px
+}
+
 /* ---------------- Formatting for combined title-navigation bar and footer elements ---------------- */
 
 header,
@@ -12,8 +31,13 @@ footer {
   background-color: #c8c8f6;
 }
 
-h1 {
-  font-family: 'linguistics_proregular', 'times new roman', serif;
+section {
+  margin-bottom: 3rem;
+}
+
+a,
+.selected > a {
+  color: darkblue;
 }
 
 header,
@@ -40,6 +64,15 @@ li.selected > a {
 
 .selected > a:hover {
   color: darkblue;
+}
+
+a[href^="http"],
+a[href^='http']:hover {
+  background: #e9e9e9 url('../images/external_link_blue.png');
+  background-image: linear-gradient(transparent, transparent), url('../images/external_link_blue.svg');
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.5rem) 40%;
+  background-size: 1.6rem;
 }
 
 /* ---------------- Classes that can be applied to a range of elements ---------------- */

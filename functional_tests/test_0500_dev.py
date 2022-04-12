@@ -31,3 +31,13 @@ class T05DeveloperPageTest(JugglingWebsiteTest):
         self.wait_for(
             lambda: self.find_substring_in_elements('Python', 'li')
         )
+
+    def test_web_development_page(self):
+
+        # A site visitor visits the web development page
+        self.browser.get(f'{self.live_server_url}/dev/web-development/')
+
+        # There is information about JJ's web development experience
+        self.wait_for(
+            lambda: self.find_substring_in_elements('Django', 'li')
+        )

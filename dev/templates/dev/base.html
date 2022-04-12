@@ -27,10 +27,7 @@
           <a href="{% url 'dev:programming' %}" class="green_border">Programming</a>
         </li> 
         <li class="navlink {% if selected == 'Web development' %}selected{% endif %}">
-          <a href="#" class="green_border">Web development</a>
-        </li>
-        <li class="navlink {% if selected == 'Contact' %}selected{% endif %}">
-          <a href="#" class="green_border">Contact</a>
+          <a href="{% url 'dev:web_development'  %}" class="green_border">Web development</a>
         </li>
       </ul>
     </nav>
