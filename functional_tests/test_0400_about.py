@@ -49,9 +49,10 @@ class T04AboutPagesTest(AdminAndSiteVisitorTest):
         # The flyout menu is hidden by default
         hover1 = ActionChains(self.browser).move_to_element(home_link)
         hover1.perform()
-        self.wait_for(lambda: self.assertEqual(flyout.value_of_css_property('visibility'), 'hidden'))
+        self.wait_for(lambda: self.assertEqual(flyout.is_displayed(), False))
         # But the flyout is displayed when the user hovers over the 'About' tab
         hover2 = ActionChains(self.browser).move_to_element(info_link)
         hover2.perform()
-        self.wait_for(lambda: self.assertEqual(flyout.value_of_css_property('visibility'), 'visible'))
+        #self.wait_for(lambda: self.assertEqual(flyout.value_of_css_property('visibility'), 'visible'))
+        self.wait_for(lambda: self.assertEqual(flyout.is_displayed(), True))
 
