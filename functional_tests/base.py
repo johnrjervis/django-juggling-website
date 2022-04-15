@@ -17,9 +17,9 @@ class JugglingWebsiteTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def wait_for(self, fn):
+    def wait_for(self, fn, refresh = True):
         start_time = time.time()
-        refresh_available = True
+        refresh_available = refresh
         while True:
             try:
                 return fn()

@@ -178,6 +178,13 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
         #self.wait_for(lambda: self.check_for_text_in_css_class_list(DUPLICATE_COMMENT_ERROR, 'comment_warning'))
         self.wait_for(lambda: self.assertEqual(
             self.browser.find_element_by_css_selector('.errorlist').find_element_by_tag_name('li').text,
-            DUPLICATE_COMMENT_ERROR)
+            DUPLICATE_COMMENT_ERROR),
+            refresh = False
+        )
+        # When the visitor types some more text into the input field, the error message disappears
+        self.browser.find_element_by_class_name('comments_box').send_keys('a')
+        self.wait_for(lambda: self.assertFalse(
+            self.browser.find_element_by_css_selector('.errorlist').find_element_by_tag_name('li').is_displayed()),
+            refresh = False
         )
 
