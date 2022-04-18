@@ -61,6 +61,14 @@
 
   </body>
 
+  <script src="{% static 'vlog/scripts/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'vlog/scripts/vlog.js' %}"></script>
   <script src="{% static 'vlog/scripts/flyout.js' %}"></script>
+
+  <script>
+    $(document).ready(() => {
+      window.jvlog.initialise();
+    });
+  </script>
 
 </html>

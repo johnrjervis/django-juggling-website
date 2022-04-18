@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>JavaScript tests</title>
+    <link rel="stylesheet" href="qunit/qunit-2.18.1.css">
+  </head>
+
+  <body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+      <form>
+        <input id="id_author" name="author" />
+        <textarea id="id_text" name="text"></textarea>
+        <div class="comment error">
+          <ul>
+            <li>Error text</li>
+          </ul>
+        </div>
+      </form>
+    </div>
+
+    <script src="../scripts/jquery-3.6.0.min.js"></script>
+    <script src="../scripts/vlog.js"></script>
+    <script src="qunit/qunit-2.18.1.js"></script>
+
+    <script src="test.js"></script>
+
+  </body>
+
+</html>

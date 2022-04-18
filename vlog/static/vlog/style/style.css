@@ -239,6 +239,18 @@ button:hover {
 .comment.error {
   color: darkred;
   border-color: darkred;
+  background-color: pink;
+}
+
+ul.errorlist {
+  list-style-type: none;
+  padding-left: 0.2rem;
+}
+
+form .errorlist {
+  visibility: hidden;
+  position: absolute;
+  top: -10000px;
 }
 
 /* ---------------- External links ---------------- */
