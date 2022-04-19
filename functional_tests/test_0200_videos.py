@@ -187,4 +187,18 @@ class T02VideoArchiveAndDetailViewTest(AdminAndSiteVisitorTest):
             self.browser.find_element_by_css_selector('.errorlist').find_element_by_tag_name('li').is_displayed()),
             refresh = False
         )
+        # The visitor deletes the extra character and re-submits the repeat message
+        self.browser.find_element_by_class_name('comments_box').send_keys(Keys.BACKSPACE)
+        self.browser.find_element_by_class_name('btn_submit').click();
+        # The error message reappears
+        self.wait_for(lambda: self.assertTrue(
+            self.browser.find_element_by_css_selector('.errorlist').find_element_by_tag_name('li').is_displayed()),
+            refresh = False
+        )
+        # The visitor clicks the close button, and the message disappears again
+        self.browser.find_element_by_class_name('btn_close').click();
+        self.wait_for(lambda: self.assertFalse(
+            self.browser.find_element_by_css_selector('.errorlist').find_element_by_tag_name('li').is_displayed()),
+            refresh = False
+        )
 

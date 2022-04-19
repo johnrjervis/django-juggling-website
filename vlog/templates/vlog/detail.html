@@ -43,14 +43,15 @@
 
           {% if form.errors %}
           <div class="comment error green_border">
-            <p class="comment_warning">{{ form.text.errors }}</p>
+            {{ form.text.errors }}
+            <button class="btn_close" type="button">x</button>
           </div>
           {% endif %}
 
           <form method="POST" action="{% url 'vlog:detail' video.id %}">
             {% csrf_token %}
             {{ form }}
-            <button type="submit" class="green_border">Post comment</button>
+            <button type="submit" class="green_border btn_submit">Post comment</button>
           </form>
 
         </section>

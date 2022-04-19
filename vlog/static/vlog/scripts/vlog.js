@@ -8,4 +8,8 @@ window.jvlog.initialise = () => {
   $('#id_text').on('keypress', () => {
     $('.comment.error').hide();
   });
+
+  $('.btn_close').click(function() {
+    $(this).parent().hide();
+  });
 };

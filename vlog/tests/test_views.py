@@ -384,17 +384,6 @@ class VideoDetailViewTest(JugglingVideoSiteTest):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'vlog/detail.html')
 
-    def test_validation_errors_are_shown_in_the_detail_view(self):
-        """
-        Test that the emtpy comment error is passed to the detail template if an empty comment is submitted
-        """
-        juggling_video = self.post_video()
-
-        response = self.post_comment(juggling_video, text = '', author = '')
-        #print(response.content)
-
-        self.assertContains(response, f'<p class="comment_warning"><ul class="errorlist"><li>{EMPTY_COMMENT_ERROR}')
-
     def test_comment_form_passed_to_template_after_invalid_input(self):
         """
         Test that the comment form is passed to the detail template if an empty comment is submitted
