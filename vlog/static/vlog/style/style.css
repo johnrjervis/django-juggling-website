@@ -303,7 +303,7 @@ a[href^="http"]:hover {
 .flyout {
   position: relative;
   top: -5px;
-  visibility: hidden;
+  display: none;
 }
 
 .flyout ul {
@@ -362,6 +362,11 @@ a[href^="http"]:hover {
     background-color: #e9e9e9;
     border-bottom: none;
     padding-bottom: 5px;
+  }
+
+  .selected > a.displaying-flyout {
+    border-bottom: 5px solid darkgreen;
+    padding-bottom: 0;
   }
 
   .selected > a:hover {

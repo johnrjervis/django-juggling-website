@@ -11,6 +11,48 @@
   <body>
     <div id="qunit"></div>
     <div id="qunit-fixture">
+
+      <header>
+        <h1>JJ's Juggling Videos</h1>
+
+        <nav>
+          <ul class="navlinks">
+            <li class="navlink home">
+              <a href="#" class="green_border">Home</a>
+            </li>
+            <li class="navlink videos">
+              <a href="#" class="green_border">Videos</a>
+            </li>
+            <li class="navlink learn">
+              <a href="#" class="green_border">Learn</a>
+              <div class="flyout" style="display: none;">
+                <ul>
+                  <li>
+                    <a href="#" class="green_border">Flyout 1</a>
+                  </li>
+                  <li>
+                    <a href="#" class="green_border">Flyout 2</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li class="navlink about selected">
+              <a href="#" class="green_border">About</a>
+              <div class="flyout" style="display: none;">
+                <ul>
+                  <li>
+                    <a href="#" class="green_border">History</a>
+                  </li>
+                  <li>
+                    <a href="#" class="green_border">Thanks</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
       <form>
         <input id="id_author" name="author" />
         <textarea id="id_text" name="text"></textarea>
@@ -21,13 +63,15 @@
           <button type="button" class="btn_close">x</button>
         </div>
       </form>
+
     </div>
 
     <script src="../scripts/jquery-3.6.0.min.js"></script>
     <script src="../scripts/vlog.js"></script>
     <script src="qunit/qunit-2.18.1.js"></script>
 
-    <script src="test.js"></script>
+    <script src="error_message_tests.js"></script>
+    <script src="flyout_tests.js"></script>
 
   </body>
 
