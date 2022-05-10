@@ -19,6 +19,10 @@ h1 {
   font-family: 'linguistics_proregular', 'times new roman', serif;
 }
 
+ul {
+  margin-left: 20px;
+}
+
 li {
   padding-bottom: 4px
 }
