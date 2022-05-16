@@ -41,3 +41,14 @@ class T05DeveloperPageTest(JugglingWebsiteTest):
         self.wait_for(
             lambda: self.find_substring_in_elements('Django', 'li')
         )
+
+    def test_portfolio_page(self):
+
+        # A site visitor visits the web development page
+        self.browser.get(f'{self.live_server_url}/dev/portfolio/')
+
+        # There are image links to JJ's web development projects
+        tile_links = self.wait_for(
+            lambda: self.browser.find_elements_by_class_name('tile')
+        )
+        self.assertGreater(len(tile_links), 0)

@@ -7,3 +7,6 @@ def programming(request):
 
 def web_development(request):
     return render(request, 'dev/web_development.html', {'selected': 'Web development'})
+
+def portfolio(request):
+    return render(request, 'dev/portfolio.html', {'selected': 'Portfolio'})

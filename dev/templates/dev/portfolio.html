@@ -1,0 +1,34 @@
+{% extends 'dev/base.html' %}
+
+{% load static %}
+
+{% block main_content %}
+
+    <section>
+
+      <h2>Some examples of my web development projects</h2>
+
+      <div class="flex">
+        <div class="grid">
+          <a href="{% url 'vlog:index' %}" class="tile">
+            <img src="{% static 'dev/images/website_cropped.png' %}" />
+            <p>Juggling website (Django)</p>
+          </a>
+          <a href="https://codepen.io/johnrjervis/full/vYdyYeP" class="tile">
+            <img src="{% static 'dev/images/calculator_cropped.png' %}">
+            <p>Calculator (React)</p>
+          </a>
+          <a href="https://codepen.io/johnrjervis/full/oNEjrEx" class="tile">
+            <img src="{% static 'dev/images/quote_generator_cropped.png' %}">
+            <p>Random quote generator (React)</p>
+          </a>
+          <a href="https://johnrjervis.github.io/juggling-simulator/" class="tile">
+            <img src="{% static 'dev/images/simulator_cropped.png' %}">
+            <p>Juggling simulator (JavaScript)</p>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+{% endblock %}

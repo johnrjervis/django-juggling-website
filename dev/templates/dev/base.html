@@ -29,6 +29,9 @@
         <li class="navlink {% if selected == 'Web development' %}selected{% endif %}">
           <a href="{% url 'dev:web_development'  %}" class="green_border">Web development</a>
         </li>
+        <li class="navlink {% if selected == 'Portfolio' %}selected{% endif %}">
+          <a href="{% url 'dev:portfolio'  %}" class="green_border">Portfolio</a>
+        </li>
       </ul>
     </nav>
   </header>
@@ -46,6 +49,6 @@
 
   </body>
 
-  <script src="{% static 'vlog/scripts/flyout.js' %}"></script>
+  <script src="{% static 'vlog/scripts/vlog.js' %}"></script>
 
 </html>
