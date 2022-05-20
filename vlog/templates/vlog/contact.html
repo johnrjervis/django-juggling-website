@@ -1,0 +1,21 @@
+{% extends 'vlog/base.html' %}
+
+{% load static %}
+
+{% block main_content %}
+
+    <article>
+      <h2>Get in touch!</h2>
+      <p>Want to let me know what you think of my juggling skills or this website?</p>
+      <p>Use the form below to send me a message.</p>
+      <form method="POST" action="{% url 'vlog:send_message' %}">
+        <label for="sender_name">Your name (optional):</label>
+        <input id="sender_name" name="sender_name" type="text" />
+        <label for="message">Your message:</label>
+        <textarea id="message" name="message" required></textarea>
+        <button type="submit">Send message</button>
+        {% csrf_token %}
+      </form>
+    </article>
+
+{% endblock %}

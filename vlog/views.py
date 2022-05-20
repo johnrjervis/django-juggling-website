@@ -1,6 +1,8 @@
+import os
 from django.shortcuts import render, redirect, reverse, get_object_or_404 
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 from vlog.forms import CommentForm, EMPTY_COMMENT_ERROR
 
@@ -76,3 +78,19 @@ def history(request):
     return render(request, 'vlog/history.html', {
         'selected': 'About',
     })
+
+def contact(request):
+    return render(request, 'vlog/contact.html', {
+        'selected': 'About',
+    })
+
+def send_message(request):
+    sender = request.POST['sender_name']
+    message = request.POST['message']
+    send_mail(
+        'A message via the juggling website',
+        f'from: {sender}\nmessage: {message}',
+        'jjs_juggling_videos@outlook.com',
+        [os.environ.get('EMAIL_ADDRESS')]
+    )
+    return redirect(reverse('vlog:contact'))
