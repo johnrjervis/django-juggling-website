@@ -1,4 +1,6 @@
+import os
 from .base import AdminAndSiteVisitorTest
+from django.core import mail
 from selenium.webdriver.common.action_chains import ActionChains
 
 class T04AboutPagesTest(AdminAndSiteVisitorTest):
@@ -6,6 +8,12 @@ class T04AboutPagesTest(AdminAndSiteVisitorTest):
     Tests for the about pages
     (Includes the History and Thanks pages)
     """
+    def submit_form(self, form_dict):
+        """Fills out a form using the supplied dictionary and then clicks the submit button"""
+        for key in form_dict.keys():
+            field = self.wait_for(lambda: self.browser.find_element_by_id(key))
+            field.send_keys(form_dict[key])
+        self.browser.find_element_by_tag_name('button').click()
 
     def test_about_pages(self):
 
@@ -56,3 +64,19 @@ class T04AboutPagesTest(AdminAndSiteVisitorTest):
         #self.wait_for(lambda: self.assertEqual(flyout.value_of_css_property('visibility'), 'visible'))
         self.wait_for(lambda: self.assertEqual(flyout.is_displayed(), True))
 
+    def test_contact_page(self):
+
+        # A visitor accesses the contact page
+        self.browser.get(f'{self.live_server_url}/juggling/about/contact/')
+        # The visitor fills out the contact form and submits it
+        visitor_message = {
+            'message': 'I really like your website',
+            'sender_name': 'A site visitor'
+        }
+        self.submit_form(visitor_message)
+
+        # JJ receives an email
+        email = mail.outbox[0]
+        self.assertIn(os.environ.get('EMAIL_ADDRESS') ,email.to)
+        self.assertIn(visitor_message['message'],email.body)
+        self.assertIn(visitor_message['sender_name'],email.body)
