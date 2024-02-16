@@ -1,13 +1,15 @@
+from os import environ as os_environ
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+import vlog.views
 from vlog.models import JugglingVideo, VideoComment, Acknowledgement
 from vlog.forms import CommentForm, EMPTY_COMMENT_ERROR, DUPLICATE_COMMENT_ERROR
 from datetime import timedelta
 from .base import JugglingVideoSiteTest
 
 from unittest import skip
-
+from unittest.mock import patch
 
 class IndexViewTest(JugglingVideoSiteTest):
     """
@@ -635,4 +637,65 @@ class HistoryViewTest(JugglingVideoSiteTest):
         """
         self.check_context_dict_contains_correct_selected_item_for_view('vlog:history', 'About')
 
+@patch('vlog.views.send_mail')
+class ContactViewTest(JugglingVideoSiteTest):
+    """
+    Tests for the Contact page
+    """
 
+    def test_contact_view_uses_correct_template(self, mock_send_mail):
+        """
+        Test that this view uses the correct template
+        """
+        response = self.client.get(reverse('vlog:contact'))
+
+        self.assertTemplateUsed(response, 'vlog/contact.html')
+
+    def test_contact_post_redirects_to_contact_page(self, mock_send_mail):
+        """
+        Test that the page redirects to the contact form after the form is submitted
+        """
+        response = self.client.post(reverse('vlog:contact'), data = {
+            'message': 'Great website!',
+            'sender_name': 'Anonymous',
+        })
+
+        self.assertRedirects(response, reverse('vlog:contact'))
+
+    def test_contact_post_sends_email(self, mock_send_mail):
+        """
+        Uses mocks to check that a POST request to the contact form calls send_mail in the correct manner
+        """
+        self.client.post(reverse('vlog:contact'), data = {
+            'message': 'Love the website!',
+            'sender_name': 'Anonymous',
+        })
+
+        self.assertTrue(mock_send_mail.called)
+        (subject, body, from_email, to_list), kwargs = mock_send_mail.call_args
+        self.assertEqual(subject, "A message from a website visitor")
+        self.assertEqual(from_email, os_environ.get('OUTBOUND_EMAIL_ADDRESS'))
+        self.assertEqual(to_list, [os_environ.get('EMAIL_ADDRESS')])
+
+    def test_contact_post_includes_form_data_in_email(self, mock_send_mail):
+        """
+        The contact form's sender and message fields should be included in the body of the email that is sent
+        """
+        self.client.post(reverse('vlog:contact'), data = {
+            'sender_name': 'A juggling fan',
+            'message': 'Great website!',
+        })
+
+        (subject, body, from_email, to_list), kwargs = mock_send_mail.call_args
+        self.assertIn('From: A juggling fan', body)
+        self.assertIn('Message: Great website!', body)
+
+    def test_contact_form_submission_adds_success_message(self, mock_send_mail):
+        response = self.client.post(reverse('vlog:contact'), data={
+            'message': 'meh',
+            'sender_name': 'Anonymous',
+        }, follow=True)
+
+        message = list(response.context['messages'])[0]
+        self.assertEqual(message.message, 'Your message has been sent!')
+        self.assertEqual(message.tags, 'success')

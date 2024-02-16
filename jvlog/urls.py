@@ -18,10 +18,11 @@ from django.urls import include, path
 from vlog import urls as vlog_urls
 from vlog import views as vlog_views
 from dev import urls as dev_urls
+from os import environ as os_environ
 
 urlpatterns = [
     path('', vlog_views.index_redirect),
-    path('admin/', admin.site.urls),
+    path(f"{os_environ.get('ADMIN_URL')}/", admin.site.urls),
     path('juggling/', include(vlog_urls)),
     path('dev/', include(dev_urls)),
 ]

@@ -1,0 +1,22 @@
+{% extends 'vlog/base.html' %}
+
+{% load static %}
+
+{% block main_content %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <label for="sender_name">Name: </label>
+      <input id="sender_name" name="sender_name"/>
+      <label for="message">Message: </label>
+      <textarea id="message" name="message"></textarea>
+      <button>Submit</button>
+    </form>
+
+    {% if messages %}
+      {% for message in messages %}
+      <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+{% endblock %}

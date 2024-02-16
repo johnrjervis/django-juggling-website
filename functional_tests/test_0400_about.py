@@ -1,4 +1,4 @@
-import os
+from os import environ as os_environ
 from .base import AdminAndSiteVisitorTest
 from django.core import mail
 from selenium.webdriver.common.action_chains import ActionChains
@@ -74,9 +74,11 @@ class T04AboutPagesTest(AdminAndSiteVisitorTest):
             'sender_name': 'A site visitor'
         }
         self.submit_form(visitor_message)
+        # A message appears to say that the message has been sent
+        self.wait_for(lambda: self.assertIn("Your message has been sent!", self.browser.find_element_by_tag_name('body').text))
 
         # JJ receives an email
         email = mail.outbox[0]
-        self.assertIn(os.environ.get('EMAIL_ADDRESS') ,email.to)
-        self.assertIn(visitor_message['message'],email.body)
-        self.assertIn(visitor_message['sender_name'],email.body)
+        self.assertIn(os_environ.get('EMAIL_ADDRESS'), email.to)
+        self.assertIn(visitor_message['message'], email.body)
+        self.assertIn(visitor_message['sender_name'], email.body)
