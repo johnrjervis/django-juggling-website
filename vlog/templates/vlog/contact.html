@@ -4,19 +4,29 @@
 
 {% block main_content %}
 
-    <form method="POST">
-      {% csrf_token %}
-      <label for="sender_name">Name: </label>
-      <input id="sender_name" name="sender_name"/>
-      <label for="message">Message: </label>
-      <textarea id="message" name="message"></textarea>
-      <button>Submit</button>
-    </form>
+    <article>
 
-    {% if messages %}
-      {% for message in messages %}
-      <p>{{ message }}</p>
-      {% endfor %}
-    {% endif %}
+      <h2>Contact form</h2>
+      <p>Use the form below to send me your comments.</p>
+
+      <section class="comments">
+
+        <form method="POST">
+          {% csrf_token %}
+          <label for="sender_name">Name: </label>
+          <input id="sender_name" name="sender_name" class="commenter_name green_border"/>
+          <label for="message">Message: </label>
+          <textarea id="message" name="message" class="green_border" required></textarea>
+          <button type="submit" class="green_border btn_submit">Submit</button>
+        </form>
+
+        {% if messages %}
+          {% for message in messages %}
+          <p>{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+
+      </section>
+    </article>
 
 {% endblock %}
