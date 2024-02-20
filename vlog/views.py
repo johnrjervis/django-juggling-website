@@ -83,8 +83,11 @@ def history(request):
 def contact(request):
     if request.method == 'POST':
         email_body = f"From: {request.POST['sender_name']}\nMessage: {request.POST['message']}"
-        send_mail('A message from a website visitor', email_body, os_environ.get('OUTBOUND_EMAIL_ADDRESS'), [os_environ.get('EMAIL_ADDRESS')])
-        messages.success(request, 'Your message has been sent!')
+        if request.POST['message']:
+            send_mail('A message from a website visitor', email_body, os_environ.get('OUTBOUND_EMAIL_ADDRESS'), [os_environ.get('EMAIL_ADDRESS')])
+            messages.success(request, 'Your message has been sent!')
+        else:
+            messages.warning(request, 'Please enter a message.')
         return redirect('vlog:contact')
 
     return render(request, 'vlog/contact.html', {

@@ -16,13 +16,13 @@
           <label for="sender_name">Name: </label>
           <input id="sender_name" name="sender_name" class="commenter_name green_border"/>
           <label for="message">Message: </label>
-          <textarea id="message" name="message" class="green_border" required></textarea>
+          <textarea id="message" name="message" class="green_border"></textarea>
           <button type="submit" class="green_border btn_submit">Submit</button>
         </form>
 
         {% if messages %}
           {% for message in messages %}
-          <p>{{ message }}</p>
+          <p class="{{ message.tags }} lightgreen green_border">{{ message }}</p>
           {% endfor %}
         {% endif %}
 

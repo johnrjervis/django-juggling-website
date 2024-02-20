@@ -691,6 +691,9 @@ class ContactViewTest(JugglingVideoSiteTest):
         self.assertIn('Message: Great website!', body)
 
     def test_contact_form_submission_adds_success_message(self, mock_send_mail):
+        """
+        A success message should be displayed when the contact form is submitted
+        """
         response = self.client.post(reverse('vlog:contact'), data={
             'message': 'meh',
             'sender_name': 'Anonymous',
@@ -699,3 +702,28 @@ class ContactViewTest(JugglingVideoSiteTest):
         message = list(response.context['messages'])[0]
         self.assertEqual(message.message, 'Your message has been sent!')
         self.assertEqual(message.tags, 'success')
+
+    def test_contact_form_submission_without_message_adds_warning_message(self, mock_send_mail):
+        """
+        A warning message should be displayed when the contact form is submitted with a blank message field
+        """
+        response = self.client.post(reverse('vlog:contact'), data={
+            'message': '',
+            'sender_name': 'Anonymous',
+        }, follow=True)
+
+        message = list(response.context['messages'])[0]
+        self.assertEqual(message.message, 'Please enter a message.')
+        self.assertEqual(message.tags, 'warning')
+
+    def test_contact_post_without_message_does_not_send_email(self, mock_send_mail):
+        """
+        Uses mocks to check that a POST request to the contact form without a message property does not call send_mail
+        """
+        self.client.post(reverse('vlog:contact'), data = {
+            'message': '',
+            'sender_name': 'Anonymous',
+        })
+
+        self.assertFalse(mock_send_mail.called)
+

@@ -68,6 +68,13 @@ class T04AboutPagesTest(AdminAndSiteVisitorTest):
 
         # A visitor accesses the contact page
         self.browser.get(f'{self.live_server_url}/juggling/about/contact/')
+        # The visitor accidentally clicks the submit button without filling in the contact form
+        self.submit_form({'message': ''})
+        # A message appears to say that the message box must be filled in
+        self.wait_for(lambda: self.assertIn("Please enter a message.", self.browser.find_element_by_tag_name('body').text))
+        # JJ does not receive an email
+        with self.assertRaises(AttributeError):
+            mail.inbox[0] # it seems mail has no inbox attribute until an email is sent, hence this should raise an AttributeError
         # The visitor fills out the contact form and submits it
         visitor_message = {
             'message': 'I really like your website',

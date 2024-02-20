@@ -195,7 +195,7 @@ footer {
   font-size: 1.8rem;
 }
 
-/* ---------------- Comments ---------------- */
+/* ---------------- Comments & Django messages ---------------- */
 
 section.comments {
   display: flex;
@@ -243,6 +243,9 @@ button:hover {
   bottom: 0;
   width: 100%;
   margin: 0;
+}
+
+.comment.error, .warning {
   color: darkred;
   border-color: darkred;
   background-color: pink;
